@@ -94,7 +94,7 @@ SESSION_SECRET_KEY=
 
 ## License
 
-This project is licensed under the MIT License. See the LICENSE file for details.
+This project is licensed under a custom license. Non-commercial use is allowed. Commercial use is strictly prohibited without prior written permission. See the [LICENSE](./LICENSE) file for details.
 
 ## Contact
 
