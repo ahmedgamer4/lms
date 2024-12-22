@@ -1,0 +1,21 @@
+{
+  "name": "@lms-saas/shared-lib",
+  "version": "1.0.0",
+  "license": "UNLICENSED",
+  "scripts": {
+    "dev": "tsc --watch",
+    "build": "tsc",
+    "db:push": "drizzle-kit push",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate"
+  },
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": "./dist/index.js",
+    "./dtos": "./dist/dtos/index.js",
+    "./db/schema": "./dist/db/schema/index.js"
+  },
+  "devDependencies": {
+    "typescript": "latest"
+  }
+}
