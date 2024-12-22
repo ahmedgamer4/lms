@@ -47,6 +47,12 @@ A multi-tenant Learning Management System (LMS) designed for teachers to create 
    - Create a `.env` file in the root directory.
    - Add the following variables:
 
+@lms-saas
+
+```bash
+DATABASE_URL=postgresql://username:password@localhost:5432/lms
+```
+
 @lms-saas/api
 
 ```bash
@@ -57,12 +63,6 @@ JWT_SECRET=
 JWT_EXPIRES_IN=
 REFRESH_JWT_SECRET=
 REFRESH_JWT_EXPIRES_IN=
-```
-
-@lms-saas/shared-lib
-
-```bash
-DATABASE_URL=postgresql://username:password@localhost:5432/lms
 ```
 
 @lms-saas/web
