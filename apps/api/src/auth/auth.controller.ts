@@ -45,7 +45,6 @@ export class AuthController {
   @UseGuards(RefreshAuthGuard)
   @Post('refresh-token')
   refreshToken(@Req() req, @Body() body: any) {
-    console.log(req.user);
     return this.authService.refreshToken(req.user.id, req.user.name, body.role);
   }
 
