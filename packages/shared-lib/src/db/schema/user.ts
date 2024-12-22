@@ -1,4 +1,4 @@
-import { InferSelectModel, sql } from "drizzle-orm";
+import { InferSelectModel, relations, sql } from "drizzle-orm";
 import {
   integer,
   pgTable,
@@ -7,6 +7,7 @@ import {
   timestamp,
   varchar,
 } from "drizzle-orm/pg-core";
+import { courses } from "./course";
 
 export const teachers = pgTable("teachers", {
   teacherId: serial("teacher_id").primaryKey(),
@@ -24,5 +25,9 @@ export const teachers = pgTable("teachers", {
     .default(sql`CURRENT_TIMESTAMP`)
     .$onUpdate(() => new Date()),
 });
+
+export const teacherRelations = relations(teachers, ({ many }) => ({
+  courses: many(courses),
+}));
 
 export type SelectTeacher = InferSelectModel<typeof teachers>;
