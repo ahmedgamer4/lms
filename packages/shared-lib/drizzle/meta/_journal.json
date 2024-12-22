@@ -15,6 +15,13 @@
       "when": 1734718389009,
       "tag": "0001_flashy_the_call",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1734891952623,
+      "tag": "0002_tan_chronomancer",
+      "breakpoints": true
     }
   ]
 }
