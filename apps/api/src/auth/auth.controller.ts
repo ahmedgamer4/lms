@@ -40,12 +40,17 @@ export class AuthController {
     return res;
   }
 
+  @Public()
   @Roles('student', 'teacher')
   @ApiBody({ type: class schema {} })
   @UseGuards(RefreshAuthGuard)
   @Post('refresh-token')
-  refreshToken(@Req() req, @Body() body: any) {
-    return this.authService.refreshToken(req.user.id, req.user.name, body.role);
+  refreshToken(@Req() req) {
+    return this.authService.refreshToken(
+      req.user.id,
+      req.user.name,
+      req.user.role,
+    );
   }
 
   @Post('logout')

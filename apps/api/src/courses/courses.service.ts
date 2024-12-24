@@ -8,6 +8,7 @@ export class CoursesService {
     await db.insert(courses).values({ price: '0.00', ...dto, teacherId });
   }
 
+  // TODO: Return number of students
   async getByTeacherId(
     teacherId: number,
     offset: number = NaN,
