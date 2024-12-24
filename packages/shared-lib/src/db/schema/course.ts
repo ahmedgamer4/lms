@@ -1,4 +1,5 @@
 import {
+  boolean,
   integer,
   numeric,
   pgTable,
@@ -8,7 +9,7 @@ import {
   varchar,
 } from "drizzle-orm/pg-core";
 import { teachers } from "./user";
-import { relations, sql } from "drizzle-orm";
+import { InferSelectModel, relations, sql } from "drizzle-orm";
 
 export const courses = pgTable("courses", {
   id: serial("id").primaryKey(),
@@ -21,6 +22,7 @@ export const courses = pgTable("courses", {
   description: text("description"),
   imageUrl: varchar("image_url"),
   price: numeric("price", { precision: 10, scale: 2 }).notNull(),
+  published: boolean("published").notNull().default(false),
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
   updatedAt: timestamp("updated_at", { withTimezone: true })
     .default(sql`CURRENT_TIMESTAMP`)
@@ -33,3 +35,5 @@ export const coursesRelations = relations(courses, ({ one }) => ({
     references: [teachers.teacherId],
   }),
 }));
+
+export type SelectCourse = InferSelectModel<typeof courses>;
