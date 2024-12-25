@@ -1,4 +1,4 @@
-import { CreateTeacherDto, LoginTeacherDto } from "@lms-saas/shared-lib/dtos";
+import { CreateTeacherDto, LoginUserDto } from "@lms-saas/shared-lib/dtos";
 import axios, { AxiosError } from "axios";
 import { BACKEND_URL } from "./constants";
 import { createSession } from "./session";
@@ -16,7 +16,7 @@ export async function signupTeacher(input: CreateTeacherDto) {
   }
 }
 
-export async function loginTeacher(input: LoginTeacherDto) {
+export async function loginTeacher(input: LoginUserDto) {
   try {
     const res = await axios.post(`teacher/login`, input, {
       baseURL: baseUrl,

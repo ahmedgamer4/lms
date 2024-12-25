@@ -7,7 +7,6 @@ export async function authFetch<T>(
   options?: AxiosRequestConfig
 ): Promise<AxiosResponse<T>> {
   const session = await getSession();
-  console.log(session);
 
   // Prepare the headers with Authorization if accessToken exists
   const authHeaders = session?.accessToken
