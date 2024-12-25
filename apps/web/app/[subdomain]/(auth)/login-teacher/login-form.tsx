@@ -36,7 +36,7 @@ export function TeacherLoginForm() {
     if (res?.status !== 200)
       form.setError("root", { message: res?.data.message });
     else {
-      router.replace("/");
+      router.replace("/dashboard/courses");
     }
   }
 
