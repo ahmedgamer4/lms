@@ -1,7 +1,7 @@
 // @ts-nocheck
 import { IsEmail, IsString, MaxLength, MinLength } from "class-validator";
 
-export class LoginTeacherDto {
+export class LoginUserDto {
   @IsEmail()
   @IsString()
   email: string;
