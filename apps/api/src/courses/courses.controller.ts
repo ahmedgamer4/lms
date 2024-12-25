@@ -7,13 +7,16 @@ import {
   Post,
   Query,
   Req,
+  UseGuards,
 } from '@nestjs/common';
 import { CoursesService } from './courses.service';
 import { CreateCourseDto } from '@lms-saas/shared-lib';
 import { Roles } from '@/auth/decorators/roles.decorator';
 import { ApiBearerAuth } from '@nestjs/swagger';
+import { RolesGuard } from '@/auth/guards/roles/roles.guard';
 
 @ApiBearerAuth()
+@UseGuards(RolesGuard)
 @Controller('courses')
 export class CoursesController {
   constructor(private readonly coursesService: CoursesService) {}
@@ -32,7 +35,6 @@ export class CoursesController {
     @Query('with-teacher', ParseBoolPipe) withTeacher: boolean,
     @Query('published', ParseBoolPipe) published: boolean,
   ) {
-    console.log(req.user);
     const offset = (page - 1) * limit;
     return this.coursesService.getByTeacherId(
       req.user.id,

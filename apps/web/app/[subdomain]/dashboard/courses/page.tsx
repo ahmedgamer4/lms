@@ -40,7 +40,6 @@ export default function CoursesPage() {
   const count = data.data.count || 0;
 
   const totalPages = Math.ceil(count / 8);
-  console.log(totalPages, count);
   const handlePageChange = (newPage: number) => {
     if (newPage > 0 && newPage <= totalPages) {
       setPage(newPage);
