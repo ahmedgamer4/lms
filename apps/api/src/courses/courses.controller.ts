@@ -30,13 +30,16 @@ export class CoursesController {
     @Query('page', ParseIntPipe) page: number,
     @Query('limit', ParseIntPipe) limit: number,
     @Query('with-teacher', ParseBoolPipe) withTeacher: boolean,
+    @Query('published', ParseBoolPipe) published: boolean,
   ) {
+    console.log(req.user);
     const offset = (page - 1) * limit;
     return this.coursesService.getByTeacherId(
       req.user.id,
       offset,
       limit,
       withTeacher,
+      published,
     );
   }
 

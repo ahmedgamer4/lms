@@ -1,6 +1,6 @@
 import { courses, CreateCourseDto, db } from '@lms-saas/shared-lib';
 import { Injectable } from '@nestjs/common';
-import { eq } from 'drizzle-orm';
+import { and, count, eq } from 'drizzle-orm';
 
 @Injectable()
 export class CoursesService {
@@ -14,10 +14,15 @@ export class CoursesService {
     offset: number = NaN,
     limit: number = NaN,
     withTeacher: boolean = false,
+    published: boolean = false,
   ) {
+    let res;
     if (!offset && !limit)
-      return await db.query.courses.findMany({
-        where: eq(courses.teacherId, teacherId),
+      res = await db.query.courses.findMany({
+        where: and(
+          eq(courses.teacherId, teacherId),
+          eq(courses.published, published),
+        ),
         orderBy: courses.createdAt,
         columns: {
           createdAt: false,
@@ -34,8 +39,11 @@ export class CoursesService {
           : {},
       });
     else {
-      return await db.query.courses.findMany({
-        where: eq(courses.teacherId, teacherId),
+      res = await db.query.courses.findMany({
+        where: and(
+          eq(courses.teacherId, teacherId),
+          eq(courses.published, published),
+        ),
         orderBy: courses.createdAt,
         columns: {
           createdAt: false,
@@ -54,5 +62,22 @@ export class CoursesService {
         offset,
       });
     }
+
+    const coursesCount = (
+      await db
+        .select({ count: count() })
+        .from(courses)
+        .where(
+          and(
+            eq(courses.teacherId, teacherId),
+            eq(courses.published, published),
+          ),
+        )
+    )[0].count;
+
+    return {
+      courses: res,
+      count: coursesCount,
+    };
   }
 }
