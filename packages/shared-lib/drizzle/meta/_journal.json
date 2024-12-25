@@ -43,6 +43,13 @@
       "when": 1735158415771,
       "tag": "0005_ancient_kate_bishop",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1735159151034,
+      "tag": "0006_watery_microchip",
+      "breakpoints": true
     }
   ]
 }

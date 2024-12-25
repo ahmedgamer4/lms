@@ -1,0 +1,1 @@
+ALTER TABLE "students" ADD COLUMN "hashed_refresh_token" text;

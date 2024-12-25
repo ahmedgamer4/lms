@@ -40,6 +40,7 @@ export const students = pgTable(
         onDelete: "cascade",
         onUpdate: "cascade",
       }),
+    hashedRefreshToken: text("hashed_refresh_token"),
     createdAt: timestamp("created_at").defaultNow(),
     updatedAt: timestamp("updated_at")
       .defaultNow()
