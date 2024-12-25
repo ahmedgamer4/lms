@@ -39,28 +39,39 @@ export async function loginTeacher(input: LoginTeacherDto) {
   }
 }
 
-export async function refreshToken(oldRefreshToken: string) {
+export async function refreshToken(
+  oldRefreshToken: string
+): Promise<string | null> {
   try {
     const res = await axios.post(
       "refresh-token",
-      {
-        refreshToken: oldRefreshToken,
-      },
+      { refreshToken: oldRefreshToken },
       { baseURL: baseUrl }
     );
 
-    const { accessToken, refreshToken } = res.data;
-    try {
-      const res = await fetch("http://localhost:3000/api/auth/update", {
-        method: "POST",
-        body: JSON.stringify({ accessToken, refreshToken }),
-      });
-      if (!res.ok) throw new Error("Failed to refresh token");
-      return accessToken;
-    } catch (error) {
-      console.error(error);
+    const { accessToken, refreshToken: newRefreshToken } = res.data;
+
+    // Update tokens on the server
+    const updateRes = await fetch("http://localhost:3000/api/auth/update", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ accessToken, refreshToken: newRefreshToken }),
+    });
+
+    if (!updateRes.ok) {
+      console.error("Failed to update tokens on the server");
+      return null;
     }
+
+    return accessToken;
   } catch (error) {
-    if (error instanceof AxiosError) return error.response;
+    // Unified error handling
+    console.error(
+      "Error refreshing token:",
+      error instanceof AxiosError
+        ? error.response?.data || error.message
+        : error
+    );
+    return null;
   }
 }

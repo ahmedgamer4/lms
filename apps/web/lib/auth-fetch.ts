@@ -1,35 +1,63 @@
-import axios from "axios";
+import axios, { AxiosRequestConfig, AxiosResponse } from "axios";
 import { getSession } from "./session";
 import { refreshToken } from "./auth";
 
-export async function authFetch<T>(url: string | URL, options?: RequestInit) {
+export async function authFetch<T>(
+  url: string | URL,
+  options?: AxiosRequestConfig
+): Promise<AxiosResponse<T>> {
   const session = await getSession();
-  const authOptions: RequestInit = {
+  console.log(session);
+
+  // Prepare the headers with Authorization if accessToken exists
+  const authHeaders = session?.accessToken
+    ? { Authorization: `Bearer ${session.accessToken}` }
+    : {};
+
+  const config: AxiosRequestConfig = {
     ...options,
     headers: {
       ...options?.headers,
-      ...(session?.accessToken
-        ? { Authorization: `Bearer ${session.accessToken}` }
-        : {}),
+      ...authHeaders,
     },
+    url: url.toString(),
   };
 
-  let res = await axios({
-    url: url.toString(),
-    fetchOptions: authOptions,
-  });
+  try {
+    // Attempt the request
+    const response = await axios(config);
+    return response;
+  } catch (error) {
+    if (
+      axios.isAxiosError(error) &&
+      error.response?.status === 401 &&
+      session?.refreshToken
+    ) {
+      console.warn("Access token expired. Attempting to refresh token...");
 
-  if (res.status === 401 && session?.refreshToken) {
-    const newAccessToken = await refreshToken(session?.refreshToken);
+      const newAccessToken = await refreshToken(session.refreshToken);
 
-    if (newAccessToken) {
-      authOptions.headers = {
-        ...authOptions.headers,
-        Authorization: `Bearer ${newAccessToken}`,
-      };
+      if (newAccessToken) {
+        // Retry the request with the new token
+        const retryConfig: AxiosRequestConfig = {
+          ...config,
+          headers: {
+            ...config.headers,
+            Authorization: `Bearer ${newAccessToken}`,
+          },
+        };
 
-      res = await axios(url.toString(), { fetchOptions: authFetch });
+        try {
+          return await axios(retryConfig);
+        } catch (retryError) {
+          console.error("Retry after refresh failed:", retryError);
+          throw retryError;
+        }
+      }
     }
+
+    // Rethrow the error if it's not recoverable
+    console.error("Request failed:", error);
+    throw error;
   }
-  return res;
 }
