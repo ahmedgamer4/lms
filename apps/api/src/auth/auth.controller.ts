@@ -8,7 +8,11 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { CreateTeacherDto, LoginTeacherDto } from '@lms-saas/shared-lib';
+import {
+  CreateStudentDto,
+  CreateTeacherDto,
+  LoginUserDto,
+} from '@lms-saas/shared-lib';
 import { ApiBody } from '@nestjs/swagger';
 import { LocalAuthGuard } from './guards/local-auth/local-auth.guard';
 import { RefreshAuthGuard } from './guards/refresh-auth/refresh-auth.guard';
@@ -26,11 +30,32 @@ export class AuthController {
   }
 
   @Public()
-  @ApiBody({ type: LoginTeacherDto })
+  @Post('student/register')
+  registerStudent(@Body() dto: CreateStudentDto) {
+    return this.authService.registerStudent(dto);
+  }
+
+  @Public()
+  @ApiBody({ type: LoginUserDto })
   @Post('teacher/login')
   @HttpCode(HttpStatus.OK)
   @UseGuards(LocalAuthGuard)
   async login(@Req() req) {
+    const res = await this.authService.login(
+      req.user.id,
+      req.user.name,
+      req.user.role,
+      req.user.subdomain || null,
+    );
+    return res;
+  }
+
+  @Public()
+  @ApiBody({ type: LoginUserDto })
+  @Post('student/login')
+  @HttpCode(HttpStatus.OK)
+  @UseGuards(LocalAuthGuard)
+  async loginStudent(@Req() req) {
     const res = await this.authService.login(
       req.user.id,
       req.user.name,

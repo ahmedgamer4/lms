@@ -1,4 +1,9 @@
-import { CreateTeacherDto, SelectTeacher } from '@lms-saas/shared-lib';
+import {
+  CreateStudentDto,
+  CreateTeacherDto,
+  SelectStudent,
+  SelectTeacher,
+} from '@lms-saas/shared-lib';
 import {
   ConflictException,
   Inject,
@@ -22,8 +27,10 @@ export class AuthService {
     private refreshTokenConfig: ConfigType<typeof refreshConfig>,
   ) {}
 
-  async validateLocalUser(email: string, password: string) {
-    return this.validateLocalTeacher(email, password);
+  async validateLocalUser(email: string, password: string, role: Role) {
+    return role === 'teacher'
+      ? await this.validateLocalTeacher(email, password)
+      : await this.validateLocalStudent(email, password);
   }
 
   private async validateLocalTeacher(email: string, password: string) {
@@ -38,6 +45,20 @@ export class AuthService {
       name: teacher.name,
       role: 'teacher',
       subdomain: teacher.subdomain,
+    };
+  }
+
+  private async validateLocalStudent(email: string, password: string) {
+    const student = await this.usersService.findStudentByEmail(email);
+    if (!student) throw new UnauthorizedException('User not found!');
+    const passwordMatched = await verify(student.passwordHash, password);
+    if (!passwordMatched)
+      throw new UnauthorizedException('Invalid credentials');
+
+    return {
+      id: student.id,
+      name: student.name,
+      role: 'student',
     };
   }
 
@@ -79,13 +100,19 @@ export class AuthService {
     return this.usersService.createTeacher(dto);
   }
 
+  async registerStudent(dto: CreateStudentDto) {
+    const exists = await this.usersService.findStudentByEmail(dto.email);
+    if (exists) throw new ConflictException('Email already exists');
+    return this.usersService.createStudent(dto);
+  }
+
   async validateJwtUser(userId: number, role: Role) {
     if (role === 'teacher') return this.validateJwtTeacher(userId);
-    else return null;
+    else return this.validateJwtStudent(userId);
   }
 
   async validateJwtTeacher(teacherId: number) {
-    const user = await this.usersService.findTeacher(teacherId);
+    const user = await this.usersService.findUser(teacherId, 'teacher');
     if (!user) throw new UnauthorizedException('User not found!');
 
     const currentUser = {
@@ -96,11 +123,30 @@ export class AuthService {
     return currentUser;
   }
 
+  async validateJwtStudent(id: number) {
+    const user = await this.usersService.findUser(id, 'student');
+    if (!user) throw new UnauthorizedException('User not found!');
+
+    const currentUser = {
+      id: (user as SelectStudent).id,
+      name: user.name,
+      role: 'student',
+    };
+    return currentUser;
+  }
+
   async validateRefreshToken(userId: number, refreshToken: string, role: Role) {
-    let user: SelectTeacher | null;
+    let user: SelectTeacher | SelectStudent;
     if (role === 'teacher')
-      user = (await this.usersService.findTeacher(userId)) as SelectTeacher;
-    else user = null;
+      user = (await this.usersService.findUser(
+        userId,
+        'teacher',
+      )) as SelectTeacher;
+    else
+      user = (await this.usersService.findUser(
+        userId,
+        'student',
+      )) as SelectStudent;
 
     if (!user) throw new UnauthorizedException('User not found!');
 
@@ -115,7 +161,7 @@ export class AuthService {
       throw new UnauthorizedException('Invalid refresh token!');
 
     const currentUser = {
-      id: user.teacherId,
+      id: role === 'teacher' ? user.teacherId : (user as SelectStudent).id,
       name: user.name,
       role,
     };

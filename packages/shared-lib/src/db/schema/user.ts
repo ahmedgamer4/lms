@@ -66,3 +66,4 @@ export const studentsRelations = relations(students, ({ one }) => ({
 }));
 
 export type SelectTeacher = InferSelectModel<typeof teachers>;
+export type SelectStudent = InferSelectModel<typeof students>;
