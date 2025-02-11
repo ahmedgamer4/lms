@@ -37,25 +37,10 @@ export class AuthController {
 
   @Public()
   @ApiBody({ type: LoginUserDto })
-  @Post('teacher/login')
+  @Post('login')
   @HttpCode(HttpStatus.OK)
   @UseGuards(LocalAuthGuard)
   async login(@Req() req) {
-    const res = await this.authService.login(
-      req.user.id,
-      req.user.name,
-      req.user.role,
-      req.user.subdomain || null,
-    );
-    return res;
-  }
-
-  @Public()
-  @ApiBody({ type: LoginUserDto })
-  @Post('student/login')
-  @HttpCode(HttpStatus.OK)
-  @UseGuards(LocalAuthGuard)
-  async loginStudent(@Req() req) {
     const res = await this.authService.login(
       req.user.id,
       req.user.name,
