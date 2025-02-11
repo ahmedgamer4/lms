@@ -1,13 +1,5 @@
 // @ts-nocheck
-import {
-  IsEmail,
-  IsNumber,
-  IsString,
-  Matches,
-  MaxLength,
-  Min,
-  MinLength,
-} from "class-validator";
+import { IsEmail, IsString, MaxLength, MinLength } from "class-validator";
 
 export class CreateStudentDto {
   @IsString()
@@ -24,7 +16,7 @@ export class CreateStudentDto {
   @IsString()
   password: string;
 
-  @Min(1)
-  @IsNumber()
-  teacherId: number;
+  @MinLength(3)
+  @IsString()
+  teacherSubdomain: string;
 }

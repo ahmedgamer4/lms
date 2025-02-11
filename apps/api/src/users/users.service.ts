@@ -37,7 +37,15 @@ export class UsersService {
   }
 
   async createStudent(dto: CreateStudentDto) {
-    const { password, email, name, teacherId } = dto;
+    const { password, email, name, teacherSubdomain } = dto;
+    const res = await db.query.teachers.findFirst({
+      where: eq(teachers.subdomain, teacherSubdomain),
+      columns: {
+        teacherId: true,
+      },
+    });
+    if (!res) throw new BadRequestException('No such domain');
+    const teacherId = res.teacherId;
 
     // Hash password
     const passwordHash = await hash(password);

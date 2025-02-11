@@ -16,6 +16,7 @@
     "./db/schema": "./dist/db/schema/index.js"
   },
   "devDependencies": {
+    "drizzle-kit": "^0.30.4",
     "typescript": "latest"
   }
 }

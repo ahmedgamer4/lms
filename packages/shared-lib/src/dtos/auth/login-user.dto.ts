@@ -10,4 +10,9 @@ export class LoginUserDto {
   @MaxLength(100)
   @IsString()
   password: string;
+
+  @MinLength(3)
+  @MaxLength(100)
+  @IsString()
+  role: string;
 }
