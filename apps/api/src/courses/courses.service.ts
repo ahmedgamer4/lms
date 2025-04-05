@@ -13,7 +13,6 @@ export class CoursesService {
     await db.insert(courses).values({ price: '0.00', ...dto, teacherId });
   }
 
-  // TODO: Return number of students
   async getByTeacherId(
     teacherId: number,
     offset: number = NaN,
@@ -86,11 +85,17 @@ export class CoursesService {
     };
   }
 
-  async update(input: CourseEditDto) {
-    await db.update(courses).set(input);
+  async update(courseId: number, input: CourseEditDto) {
+    await db.update(courses).set(input).where(eq(courses.id, courseId));
   }
 
-  getOne(cousreId: number) {
-    return db.query.courses.findFirst({ where: eq(courses.id, cousreId) });
+  async getOne(courseId: number) {
+    return await db.query.courses.findFirst({
+      where: eq(courses.id, courseId),
+    });
+  }
+
+  async delete(courseId: number) {
+    await db.delete(courses).where(eq(courses.id, courseId));
   }
 }

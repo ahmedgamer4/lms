@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   InternalServerErrorException,
   Param,
@@ -49,29 +50,45 @@ export class CoursesController {
   }
 
   @Get('/:courseId')
-  getOne(@Param('courseId', ParseIntPipe) cousreId: number) {
+  getOne(@Param('courseId', ParseIntPipe) courseId: number) {
     try {
-      return this.coursesService.getOne(cousreId);
+      return this.coursesService.getOne(courseId);
     } catch (error) {
       throw new InternalServerErrorException('Cannot update course');
     }
   }
 
-  @Put('/:cousreId')
+  @Put('/:courseId')
   update(
-    @Param('courseId', ParseIntPipe) cousreId: number,
+    @Param('courseId', ParseIntPipe) courseId: number,
     @Body() input: CourseEditDto,
   ) {
     try {
-      this.coursesService.update(input);
+      this.coursesService.update(courseId, input);
     } catch (error) {
       throw new InternalServerErrorException('Cannot update course');
     }
   }
 
-  delete() {}
+  @Delete('/:courseId')
+  @Roles('teacher')
+  delete(@Param('courseId', ParseIntPipe) courseId: number) {
+    return this.coursesService.delete(courseId);
+  }
 
-  publish() {}
+  @Put('/:courseId/publish')
+  @Roles('teacher')
+  publish(@Param('courseId', ParseIntPipe) courseId: number) {
+    return this.coursesService.update(courseId, {
+      published: true,
+    });
+  }
 
-  unPublish() {}
+  @Delete('/:courseId/unpublish')
+  @Roles('teacher')
+  unPublish(@Param('courseId', ParseIntPipe) courseId: number) {
+    return this.coursesService.update(courseId, {
+      published: false,
+    });
+  }
 }
