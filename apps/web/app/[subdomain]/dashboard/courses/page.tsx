@@ -107,7 +107,7 @@ export default function CoursesPage() {
 
           {totalPages > 5 && <PaginationEllipsis />}
 
-          <PaginationItem className={page === totalPages ? "hidden" : ""}>
+          <PaginationItem className={page === totalPages || totalPages === 0 ? "hidden" : ""}>
             <PaginationNext
               onClick={() => handlePageChange(page + 1)}
               aria-disabled={page === totalPages}
