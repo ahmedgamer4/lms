@@ -1,4 +1,5 @@
 import {
+  IsBoolean,
   IsDecimal,
   IsOptional,
   IsString,
@@ -26,4 +27,9 @@ export class CourseEditDto {
   @Min(0)
   @IsOptional()
   price?: string;
+
+  @IsBoolean()
+  @Min(0)
+  @IsOptional()
+  published?: boolean;
 }
