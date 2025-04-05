@@ -2,15 +2,18 @@ import {
   Body,
   Controller,
   Get,
+  InternalServerErrorException,
+  Param,
   ParseBoolPipe,
   ParseIntPipe,
   Post,
+  Put,
   Query,
   Req,
   UseGuards,
 } from '@nestjs/common';
 import { CoursesService } from './courses.service';
-import { CreateCourseDto } from '@lms-saas/shared-lib';
+import { CourseEditDto, CreateCourseDto } from '@lms-saas/shared-lib';
 import { Roles } from '@/auth/decorators/roles.decorator';
 import { ApiBearerAuth } from '@nestjs/swagger';
 import { RolesGuard } from '@/auth/guards/roles/roles.guard';
@@ -45,9 +48,26 @@ export class CoursesController {
     );
   }
 
-  getOne() {}
+  @Get('/:courseId')
+  getOne(@Param('courseId', ParseIntPipe) cousreId: number) {
+    try {
+      return this.coursesService.getOne(cousreId);
+    } catch (error) {
+      throw new InternalServerErrorException('Cannot update course');
+    }
+  }
 
-  update() {}
+  @Put('/:cousreId')
+  update(
+    @Param('courseId', ParseIntPipe) cousreId: number,
+    @Body() input: CourseEditDto,
+  ) {
+    try {
+      this.coursesService.update(input);
+    } catch (error) {
+      throw new InternalServerErrorException('Cannot update course');
+    }
+  }
 
   delete() {}
 

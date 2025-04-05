@@ -1,4 +1,9 @@
-import { courses, CreateCourseDto, db } from '@lms-saas/shared-lib';
+import {
+  CourseEditDto,
+  courses,
+  CreateCourseDto,
+  db,
+} from '@lms-saas/shared-lib';
 import { Injectable } from '@nestjs/common';
 import { and, count, eq } from 'drizzle-orm';
 
@@ -79,5 +84,13 @@ export class CoursesService {
       courses: res,
       count: coursesCount,
     };
+  }
+
+  async update(input: CourseEditDto) {
+    await db.update(courses).set(input);
+  }
+
+  getOne(cousreId: number) {
+    return db.query.courses.findFirst({ where: eq(courses.id, cousreId) });
   }
 }
