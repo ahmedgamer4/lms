@@ -4,7 +4,7 @@ import React, { useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { classValidatorResolver } from "@hookform/resolvers/class-validator";
 import { Input } from "@/components/ui/input";
-import { LoginTeacherDto } from "@lms-saas/shared-lib/dtos";
+import { CreateStudentDto } from "@lms-saas/shared-lib/dtos";
 import {
   Form,
   FormField,
@@ -15,28 +15,34 @@ import {
 } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
-import { loginTeacher } from "@/lib/auth";
+import { signupStudent } from "@/lib/auth";
 
-export function TeacherLoginForm() {
+export function SignupForm({ subdomain }: { subdomain: string }) {
+  console.log(subdomain);
   const router = useRouter();
   const resolver = useMemo(() => {
-    return classValidatorResolver(LoginTeacherDto);
+    return classValidatorResolver(CreateStudentDto);
   }, []);
 
-  const form = useForm<LoginTeacherDto>({
+  const form = useForm<CreateStudentDto>({
     resolver,
     defaultValues: {
       email: "",
+      name: "",
       password: "",
+      teacherSubdomain: "",
     },
   });
 
-  async function onSubmit(data: LoginTeacherDto) {
-    const res = await loginTeacher(data);
-    if (res?.status !== 200)
-      form.setError("root", { message: res?.data.message });
+  form.setValue("teacherSubdomain", subdomain);
+
+  async function onSubmit(data: CreateStudentDto) {
+    const res = await signupStudent(data);
+    console.log(res);
+    if (res.data?.status !== 201)
+      form.setError("root", { message: res?.error.message });
     else {
-      router.replace("/dashboard/courses");
+      router.push("/login");
     }
   }
 
@@ -44,11 +50,24 @@ export function TeacherLoginForm() {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="space-y-4 mb-2 w-full"
+        className="space-y-3 w-full mb-3"
       >
         <div className="text-red-500 text-sm">
           {form.formState.errors.root?.message}
         </div>
+        <FormField
+          control={form.control}
+          name="name"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Username</FormLabel>
+              <FormControl>
+                <Input placeholder="Enter your username" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
         <FormField
           control={form.control}
           name="email"
@@ -79,7 +98,7 @@ export function TeacherLoginForm() {
             </FormItem>
           )}
         />
-        <Button className="w-full">Sign In</Button>
+        <Button className="w-full">Sign Up</Button>
       </form>
     </Form>
   );
