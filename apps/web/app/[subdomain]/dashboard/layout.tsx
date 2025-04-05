@@ -12,30 +12,31 @@ import {
 } from "@/components/ui/sidebar";
 import { getSession } from "@/lib/session";
 import { Book, ChartBar, Settings } from "lucide-react";
-import Link from "next/link";
 import { redirect } from "next/navigation";
 import { PropsWithChildren } from "react";
+import { SidebarItem } from "./sidebar-item";
 
 const items = [
   {
     title: "Courses",
     url: "/dashboard/courses",
-    icon: Book,
+    // icon: Book,
   },
   {
     title: "Analytics",
     url: "/dashboard/analytics",
-    icon: ChartBar,
+    // icon: ChartBar,
   },
   {
     title: "Settings",
     url: "/dashboard/settings",
-    icon: Settings,
+    // icon: Settings,
   },
 ];
 
 export default async function DashboardLayout({ children }: PropsWithChildren) {
   const session = await getSession();
+  console.log(session);
   if (!session || !session.user) redirect("/login-teacher");
 
   return (
@@ -51,18 +52,9 @@ export default async function DashboardLayout({ children }: PropsWithChildren) {
           <SidebarContent>
             <SidebarGroup>
               <SidebarGroupLabel>Items</SidebarGroupLabel>
-              <SidebarGroupContent>
+              <SidebarGroupContent className="flex flex-col gap-2">
                 {items.map((item) => (
-                  <SidebarMenuItem key={item.title} className="list-none ">
-                    <SidebarMenuButton asChild>
-                      <Link replace={true} href={item.url}>
-                        <item.icon />
-                        <span className="font-semibold text-md">
-                          {item.title}
-                        </span>
-                      </Link>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
+                  <SidebarItem key={item.title} item={item} />
                 ))}
               </SidebarGroupContent>
             </SidebarGroup>
