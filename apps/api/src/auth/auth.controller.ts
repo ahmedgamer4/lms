@@ -13,7 +13,7 @@ import {
   CreateTeacherDto,
   LoginUserDto,
 } from '@lms-saas/shared-lib';
-import { ApiBody } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody } from '@nestjs/swagger';
 import { LocalAuthGuard } from './guards/local-auth/local-auth.guard';
 import { RefreshAuthGuard } from './guards/refresh-auth/refresh-auth.guard';
 import { Public } from './decorators/public.decorator';
@@ -50,6 +50,7 @@ export class AuthController {
     return res;
   }
 
+  @ApiBearerAuth()
   @Public()
   @Roles('student', 'teacher')
   @ApiBody({ type: class schema {} })
@@ -63,6 +64,7 @@ export class AuthController {
     );
   }
 
+  @ApiBearerAuth()
   @Post('logout')
   @HttpCode(HttpStatus.OK)
   logout(@Req() req) {
