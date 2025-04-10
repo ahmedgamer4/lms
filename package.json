@@ -11,6 +11,7 @@
     "@types/pg": "^8.11.10",
     "drizzle-kit": "^0.30.1",
     "prettier": "^3.2.5",
+    "prettier-plugin-tailwindcss": "^0.6.11",
     "tsx": "^4.19.2",
     "turbo": "^2.3.3",
     "typescript": "5.5.4"
