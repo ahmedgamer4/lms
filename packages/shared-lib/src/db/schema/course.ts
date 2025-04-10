@@ -29,11 +29,31 @@ export const courses = pgTable("courses", {
     .$onUpdate(() => new Date()),
 });
 
-export const coursesRelations = relations(courses, ({ one }) => ({
+export const courseSections = pgTable("course_sections", {
+  id: serial("id").primaryKey(),
+  courseId: integer("course_id")
+    .notNull()
+    .references(() => courses.id, {
+      onDelete: "cascade",
+    }),
+  title: varchar("title", { length: 255 }).notNull(),
+  orderIndex: integer("order_index").notNull(),
+});
+
+export const coursesRelations = relations(courses, ({ one, many }) => ({
   teacher: one(teachers, {
     fields: [courses.teacherId],
     references: [teachers.teacherId],
   }),
+  courseSections: many(courseSections),
+}));
+
+export const courseSectionsRelations = relations(courseSections, ({ one }) => ({
+  course: one(courses, {
+    fields: [courseSections.courseId],
+    references: [courses.id],
+  }),
 }));
 
 export type SelectCourse = InferSelectModel<typeof courses>;
+export type SelectCourseSection = InferSelectModel<typeof courseSections>;

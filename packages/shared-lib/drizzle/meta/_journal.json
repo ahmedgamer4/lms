@@ -50,6 +50,13 @@
       "when": 1735159151034,
       "tag": "0006_watery_microchip",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1744245329498,
+      "tag": "0007_wealthy_surge",
+      "breakpoints": true
     }
   ]
 }

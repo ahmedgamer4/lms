@@ -1,8 +1,11 @@
 import {
   CourseEditDto,
   courses,
+  courseSections,
   CreateCourseDto,
+  CreateCourseSectionDto,
   db,
+  UpdateCourseSectionDto,
 } from '@lms-saas/shared-lib';
 import { Injectable } from '@nestjs/common';
 import { and, count, eq } from 'drizzle-orm';
@@ -97,5 +100,32 @@ export class CoursesService {
 
   async delete(courseId: number) {
     await db.delete(courses).where(eq(courses.id, courseId));
+  }
+
+  async addSection(courseId: number, dto: CreateCourseSectionDto) {
+    return await db.insert(courseSections).values({ ...dto, courseId });
+  }
+
+  async getSections(courseId: number) {
+    return await db.query.courseSections.findMany({
+      where: eq(courseSections.courseId, courseId),
+    });
+  }
+
+  async updateSection(sectionId: number, dto: UpdateCourseSectionDto) {
+    return await db
+      .update(courseSections)
+      .set(dto)
+      .where(eq(courses.id, sectionId));
+  }
+
+  async deleteSection(sectionId: number) {
+    return await db.delete(courseSections).where(eq(courses.id, sectionId));
+  }
+
+  async findSection(sectionId: number) {
+    return await db.query.courseSections.findFirst({
+      where: eq(courseSections.id, sectionId),
+    });
   }
 }
