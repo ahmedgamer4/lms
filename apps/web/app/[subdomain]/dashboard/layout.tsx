@@ -5,13 +5,10 @@ import {
   SidebarGroupContent,
   SidebarGroupLabel,
   SidebarHeader,
-  SidebarMenuButton,
-  SidebarMenuItem,
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { getSession } from "@/lib/session";
-import { Book, ChartBar, Settings } from "lucide-react";
 import { redirect } from "next/navigation";
 import { PropsWithChildren } from "react";
 import { SidebarItems } from "./sidebar-item";
