@@ -19,7 +19,8 @@ import { SidebarItems } from "./sidebar-item";
 export default async function DashboardLayout({ children }: PropsWithChildren) {
   const session = await getSession();
   console.log(session);
-  if (!session || !session.user) redirect("/login-teacher");
+  if (!session || !session.user || session.user.role !== "teacher")
+    redirect("/login-teacher");
 
   return (
     <SidebarProvider>
@@ -40,7 +41,7 @@ export default async function DashboardLayout({ children }: PropsWithChildren) {
             </SidebarGroup>
           </SidebarContent>
         </Sidebar>
-        <div className="w-full py-2">{children}</div>
+        <div className="w-full p-4 py-8 pl-0">{children}</div>
       </div>
     </SidebarProvider>
   );
