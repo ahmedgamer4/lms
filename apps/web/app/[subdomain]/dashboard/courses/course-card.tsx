@@ -9,26 +9,27 @@ import {
 import { Button } from "@/components/ui/button";
 import { SelectCourse } from "@lms-saas/shared-lib";
 import { Pen } from "lucide-react";
+import Link from "next/link";
 
 export function CourseCard({ course }: { course: SelectCourse }) {
   return (
-    <Card className="flex flex-col overflow-hidden border hover:shadow-md transition-shadow rounded-lg">
+    <Card className="flex flex-col overflow-hidden rounded-lg border transition-shadow hover:shadow-md">
       <CardHeader className="p-0">
         <img
           src={course.imageUrl || "https://placehold.co/600x400"}
           alt={course.title}
-          className="object-cover w-full h-36"
+          className="h-52 w-full object-cover"
         />
       </CardHeader>
 
-      <CardContent className="p-4 h-40">
-        <h3 className="text-lg font-semibold text-gray-800 truncate">
+      <CardContent className="h-32 p-4">
+        <h3 className="truncate text-lg font-semibold text-gray-800">
           {course.title}
         </h3>
-        <p className="mt-2 text-sm text-gray-600 line-clamp-2">
+        <p className="mt-2 line-clamp-2 text-sm text-gray-600">
           {course.description || "No description available for this course."}
         </p>
-        <div className="mt-6">
+        <div className="mt-2">
           {/* Fixed spacing between description and price */}
           <span className="text-sm text-gray-500">Price:</span>
           <span className="ml-2 text-base font-medium text-gray-800">
@@ -37,15 +38,17 @@ export function CourseCard({ course }: { course: SelectCourse }) {
         </div>
       </CardContent>
 
-      <CardFooter className="p-4 bg-gray-50 border-t">
-        <Button
-          variant="holo"
-          className="w-full text-sm "
-          onClick={() => console.log(`Editing course: ${course.title}`)}
-        >
-          <Pen className="w-4 h-4" />
-          Edit
-        </Button>
+      <CardFooter className="border-t bg-gray-50 p-4">
+        <Link href={`/dashboard/courses/${course.id}`} className="w-full">
+          <Button
+            variant="bw"
+            className="w-full text-sm"
+            onClick={() => console.log(`Editing course: ${course.title}`)}
+          >
+            <Pen className="h-4 w-4" />
+            Edit
+          </Button>
+        </Link>
       </CardFooter>
     </Card>
   );
