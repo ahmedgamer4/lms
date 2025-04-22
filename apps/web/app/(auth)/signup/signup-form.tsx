@@ -42,7 +42,7 @@ export function SignupForm() {
         method: "POST",
         body: JSON.stringify({ subdomain: form.getValues().subdomain }),
       });
-      router.push("/login");
+      router.push("/subdomain?subdomain=" + form.getValues().subdomain);
     }
   }
 
@@ -50,9 +50,9 @@ export function SignupForm() {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="space-y-3 w-full mb-3"
+        className="mb-3 w-full space-y-3"
       >
-        <div className="text-red-500 text-sm">
+        <div className="text-sm text-red-500">
           {form.formState.errors.root?.message}
         </div>
         <FormField
