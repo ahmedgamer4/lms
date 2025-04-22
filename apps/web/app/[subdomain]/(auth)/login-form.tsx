@@ -91,7 +91,7 @@ export function LoginForm({
             </FormItem>
           )}
         />
-        <Button type="submit" className="w-full">
+        <Button variant={"bw"} type="submit" className="w-full">
           Sign In
         </Button>
       </form>
