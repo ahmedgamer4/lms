@@ -1,10 +1,13 @@
 import {
   CreateStudentDto,
   CreateTeacherDto,
+  db,
   SelectStudent,
   SelectTeacher,
+  teachers,
 } from '@lms-saas/shared-lib';
 import {
+  BadRequestException,
   ConflictException,
   Inject,
   Injectable,
@@ -17,6 +20,7 @@ import { JwtService } from '@nestjs/jwt';
 import refreshConfig from './config/refresh.config';
 import { ConfigType } from '@nestjs/config';
 import { Role } from './types/roles';
+import { eq } from 'drizzle-orm';
 
 @Injectable()
 export class AuthService {
@@ -63,6 +67,22 @@ export class AuthService {
   }
 
   async login(userId: number, name: string, role: Role, subdomain?: string) {
+    // Handle student login
+    if (role === 'student' && subdomain) {
+      if (!subdomain) throw new BadRequestException('Subdomain is required');
+
+      const teacher = await db.query.teachers.findFirst({
+        where: eq(teachers.subdomain, subdomain),
+      });
+      if (!teacher) throw new BadRequestException('Subdomain not found');
+
+      const student = await this.usersService.findUser(userId, 'student');
+      if (!student) throw new UnauthorizedException('User not found!');
+
+      if (teacher.teacherId !== student.teacherId)
+        throw new UnauthorizedException('Invalid credentials');
+    }
+
     const { accessToken, refreshToken } = await this.generateTokens(
       userId,
       role,

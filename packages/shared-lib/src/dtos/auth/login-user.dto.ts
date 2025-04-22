@@ -1,5 +1,11 @@
 // @ts-nocheck
-import { IsEmail, IsString, MaxLength, MinLength } from "class-validator";
+import {
+  IsEmail,
+  IsOptional,
+  IsString,
+  MaxLength,
+  MinLength,
+} from "class-validator";
 
 export class LoginUserDto {
   @IsEmail()
@@ -15,4 +21,10 @@ export class LoginUserDto {
   @MaxLength(100)
   @IsString()
   role: string;
+
+  @IsOptional()
+  @IsString()
+  @MinLength(3)
+  @MaxLength(100)
+  subdomain?: string;
 }

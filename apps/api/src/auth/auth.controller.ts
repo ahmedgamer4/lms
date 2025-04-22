@@ -40,12 +40,12 @@ export class AuthController {
   @Post('login')
   @HttpCode(HttpStatus.OK)
   @UseGuards(LocalAuthGuard)
-  async login(@Req() req) {
+  async login(@Req() req, @Body() dto: LoginUserDto) {
     const res = await this.authService.login(
       req.user.id,
       req.user.name,
       req.user.role,
-      req.user.subdomain || null,
+      req.user.subdomain || dto.subdomain,
     );
     return res;
   }
