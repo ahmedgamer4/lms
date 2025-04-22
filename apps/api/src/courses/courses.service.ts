@@ -95,6 +95,15 @@ export class CoursesService {
   async getOne(courseId: number) {
     return await db.query.courses.findFirst({
       where: eq(courses.id, courseId),
+      with: {
+        courseSections: {
+          columns: {
+            id: true,
+            title: true,
+            orderIndex: true,
+          },
+        },
+      },
     });
   }
 
@@ -103,7 +112,14 @@ export class CoursesService {
   }
 
   async addSection(courseId: number, dto: CreateCourseSectionDto) {
-    return await db.insert(courseSections).values({ ...dto, courseId });
+    return await db
+      .insert(courseSections)
+      .values({ ...dto, courseId })
+      .returning({
+        id: courseSections.id,
+        title: courseSections.title,
+        orderIndex: courseSections.orderIndex,
+      });
   }
 
   async getSections(courseId: number) {
@@ -116,11 +132,13 @@ export class CoursesService {
     return await db
       .update(courseSections)
       .set(dto)
-      .where(eq(courses.id, sectionId));
+      .where(eq(courseSections.id, sectionId));
   }
 
   async deleteSection(sectionId: number) {
-    return await db.delete(courseSections).where(eq(courses.id, sectionId));
+    return await db
+      .delete(courseSections)
+      .where(eq(courseSections.id, sectionId));
   }
 
   async findSection(sectionId: number) {
