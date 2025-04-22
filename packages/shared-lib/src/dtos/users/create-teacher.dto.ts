@@ -10,7 +10,7 @@ import {
 export class CreateTeacherDto {
   @IsString()
   @MinLength(3)
-  @MaxLength(100)
+  @MaxLength(200)
   name: string;
 
   @IsEmail()
@@ -18,12 +18,12 @@ export class CreateTeacherDto {
   email: string;
 
   @MinLength(8)
-  @MaxLength(100)
+  @MaxLength(256)
   @IsString()
   password: string;
 
   @MinLength(2)
-  @MaxLength(100)
+  @MaxLength(200)
   @Matches(/^[a-zA-Z0-9-]+$/)
   @IsString()
   subdomain: string;
