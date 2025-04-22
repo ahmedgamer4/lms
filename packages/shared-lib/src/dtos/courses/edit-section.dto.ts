@@ -15,7 +15,7 @@ export class UpdateCourseSectionDto {
   title?: string;
 
   @IsNumber()
-  @Min(1)
+  @Min(0)
   @IsOptional()
   orderIndex?: number;
 }

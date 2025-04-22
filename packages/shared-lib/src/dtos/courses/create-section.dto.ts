@@ -8,6 +8,6 @@ export class CreateCourseSectionDto {
   title: string;
 
   @IsNumber()
-  @Min(1)
+  @Min(0)
   orderIndex: number;
 }
