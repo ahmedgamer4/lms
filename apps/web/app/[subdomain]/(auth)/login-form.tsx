@@ -17,7 +17,13 @@ import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { loginUser } from "@/lib/auth";
 
-export function LoginForm({ role }: { role: string }) {
+export function LoginForm({
+  subdomain,
+  role,
+}: {
+  subdomain: string;
+  role: string;
+}) {
   const router = useRouter();
   const resolver = useMemo(() => {
     return classValidatorResolver(LoginUserDto);
@@ -34,7 +40,8 @@ export function LoginForm({ role }: { role: string }) {
   });
 
   async function onSubmit(data: LoginUserDto) {
-    console.log(data);
+    data.subdomain = subdomain;
+    console.log(subdomain);
     const res = await loginUser(data);
     console.log(res);
     if (res?.status !== 200)
@@ -49,9 +56,9 @@ export function LoginForm({ role }: { role: string }) {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="space-y-4 mb-2 w-full"
+        className="mb-2 w-full space-y-4"
       >
-        <div className="text-red-500 text-sm">
+        <div className="text-sm text-red-500">
           {form.formState.errors.root?.message}
         </div>
         <FormField

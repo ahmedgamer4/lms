@@ -39,9 +39,9 @@ export function SignupForm({ subdomain }: { subdomain: string }) {
   async function onSubmit(data: CreateStudentDto) {
     const res = await signupStudent(data);
     console.log(res);
-    if (res.data?.status !== 201)
-      form.setError("root", { message: res?.error.message });
-    else {
+    if (res.error) {
+      form.setError("root", { message: res.error.response.data.message });
+    } else {
       router.push("/login");
     }
   }
@@ -50,9 +50,9 @@ export function SignupForm({ subdomain }: { subdomain: string }) {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="space-y-3 w-full mb-3"
+        className="mb-3 w-full space-y-3"
       >
-        <div className="text-red-500 text-sm">
+        <div className="text-sm text-red-500">
           {form.formState.errors.root?.message}
         </div>
         <FormField
