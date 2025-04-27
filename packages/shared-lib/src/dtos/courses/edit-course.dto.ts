@@ -24,12 +24,10 @@ export class CourseEditDto {
   imageUrl?: string;
 
   @IsDecimal()
-  @Min(0)
   @IsOptional()
   price?: string;
 
   @IsBoolean()
-  @Min(0)
   @IsOptional()
   published?: boolean;
 }
