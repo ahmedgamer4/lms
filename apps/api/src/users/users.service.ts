@@ -67,7 +67,7 @@ export class UsersService {
 
   async findStudentByEmail(email: string) {
     return await db.query.students.findFirst({
-      where: eq(teachers.email, email),
+      where: eq(students.email, email),
     });
   }
 
