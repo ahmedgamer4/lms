@@ -19,7 +19,10 @@ async function bootstrap() {
     adapter,
   );
 
-  app.enableCors();
+  app.enableCors({
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    credentials: true,
+  });
 
   const config = new DocumentBuilder()
     .setTitle('LMS API')
