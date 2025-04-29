@@ -6,13 +6,17 @@ import {
   NestFastifyApplication,
 } from '@nestjs/platform-fastify';
 import { ValidationPipe } from '@nestjs/common';
+const multipart = require('@fastify/multipart');
 
 async function bootstrap() {
+  const adapter = new FastifyAdapter({
+    logger: true,
+  });
+  await adapter.register(multipart);
+
   const app = await NestFactory.create<NestFastifyApplication>(
     AppModule,
-    new FastifyAdapter({
-      logger: true,
-    }),
+    adapter,
   );
 
   app.enableCors();
