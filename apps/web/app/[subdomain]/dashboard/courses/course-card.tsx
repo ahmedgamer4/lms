@@ -41,7 +41,6 @@ export function CourseCard({ course }: { course: SelectCourse }) {
       <CardFooter className="border-t bg-gray-50 p-4">
         <Link href={`/dashboard/courses/${course.id}`} className="w-full">
           <Button
-            variant="bw"
             className="w-full text-sm"
             onClick={() => console.log(`Editing course: ${course.title}`)}
           >

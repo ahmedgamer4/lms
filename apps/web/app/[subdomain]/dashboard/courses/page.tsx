@@ -49,8 +49,8 @@ export default function CoursesPage() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <div className="w-full pr-8">
-        <div className="flex justify-between w-full">
-          <h2 className="font-bold text-2xl">All Courses</h2>
+        <div className="flex w-full justify-between">
+          <h2 className="text-2xl font-bold">All Courses</h2>
           <DialogTrigger asChild>
             <Button>
               <Plus />
@@ -60,7 +60,7 @@ export default function CoursesPage() {
         </div>
 
         <div>
-          <div className="mb-2 mt-4">
+          <div className="mt-4 mb-2">
             <Button
               variant={"link"}
               className={published ? "underline" : ""}
@@ -77,10 +77,14 @@ export default function CoursesPage() {
             </Button>
           </div>
           <Separator />
-          <div className="grid mt-4 grid-cols-[repeat(auto-fill,_minmax(350px,_1fr))] gap-6">
-            {courses.map((course) => (
-              <CourseCard key={course.id} course={course} />
-            ))}
+          <div className="mt-4 grid grid-cols-[repeat(auto-fill,_minmax(350px,_1fr))] gap-6">
+            {courses.length === 0 ? (
+              <div>No Courses</div>
+            ) : (
+              courses.map((course) => (
+                <CourseCard key={course.id} course={course} />
+              ))
+            )}
           </div>
         </div>
       </div>
@@ -88,6 +92,7 @@ export default function CoursesPage() {
         <PaginationContent>
           <PaginationItem className={page === 1 ? "hidden" : ""}>
             <PaginationPrevious
+              size={"icon"}
               onClick={() => handlePageChange(page - 1)}
               aria-disabled={page === 1}
             />
@@ -96,6 +101,7 @@ export default function CoursesPage() {
           {Array.from({ length: totalPages }, (_, i) => (
             <PaginationItem key={i}>
               <PaginationLink
+                size={"icon"}
                 href="#"
                 onClick={() => handlePageChange(i + 1)}
                 isActive={i + 1 === page}
@@ -107,7 +113,9 @@ export default function CoursesPage() {
 
           {totalPages > 5 && <PaginationEllipsis />}
 
-          <PaginationItem className={page === totalPages || totalPages === 0 ? "hidden" : ""}>
+          <PaginationItem
+            className={page === totalPages || totalPages === 0 ? "hidden" : ""}
+          >
             <PaginationNext
               onClick={() => handlePageChange(page + 1)}
               aria-disabled={page === totalPages}
