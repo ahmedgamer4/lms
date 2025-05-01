@@ -33,7 +33,7 @@ export const SidebarItems = () => {
             <Link
               className={
                 item.url === path
-                  ? `text-primary-foreground bg-[#616161] hover:bg-[#616161]/90 hover:text-white`
+                  ? `text-primary-foreground hover:text-primary/90 bg-primary hover:bg-primary/90`
                   : ``
               }
               replace={true}
