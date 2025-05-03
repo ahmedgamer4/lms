@@ -21,6 +21,7 @@
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.802.0",
+    "@aws-sdk/s3-presigned-post": "^3.802.0",
     "@aws-sdk/s3-request-presigner": "^3.802.0",
     "@fastify/formbody": "^8.0.2",
     "@fastify/multipart": "^9.0.3",
