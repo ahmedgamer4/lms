@@ -40,3 +40,4 @@ yarn.lock
 *.pem
 
 .vscode
+subdomains.json
