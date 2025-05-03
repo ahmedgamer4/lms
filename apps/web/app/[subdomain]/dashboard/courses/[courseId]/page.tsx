@@ -39,6 +39,10 @@ export default function EditCoursePage({}: {}) {
           <BreadcrumbItem>
             <BreadcrumbLink href="/dashboard/courses">Courses</BreadcrumbLink>
           </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
+            <BreadcrumbPage>{course.title}</BreadcrumbPage>
+          </BreadcrumbItem>
         </BreadcrumbList>
       </Breadcrumb>
 
