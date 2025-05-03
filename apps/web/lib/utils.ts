@@ -7,7 +7,7 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export async function asyncWrapper<T>(
-  fn: () => Promise<T>
+  fn: () => Promise<T>,
 ): Promise<AsyncWrapperResponse<T>> {
   try {
     const data = await fn();

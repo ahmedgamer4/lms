@@ -155,6 +155,21 @@ export const getCourseSections = (courseId: number) => {
   });
 };
 
+export const findCourseSection = (courseId: number, sectionId: number) => {
+  return asyncWrapper(async () => {
+    return await authFetch<
+      SelectCourseSection & {
+        videos: {
+          id: number;
+          title: string;
+          s3Key: string;
+          orderIndex: number;
+        }[];
+      }
+    >(`${baseUrl}/${courseId}/sections/${sectionId}`, { method: "GET" });
+  });
+};
+
 export const deleteCourseSection = (courseId: number, sectionId: number) => {
   return asyncWrapper(async () => {
     await authFetch<void>(`${baseUrl}/${courseId}/sections/${sectionId}`, {
