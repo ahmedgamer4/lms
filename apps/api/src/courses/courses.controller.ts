@@ -157,12 +157,22 @@ export class CoursesController {
   }
 
   @Get('/:courseId/sections')
-  @Roles('teacher')
+  @Roles('teacher', 'student')
   getSections(@Param('courseId', ParseIntPipe) courseId: number) {
     try {
       return this.coursesService.getSections(courseId);
     } catch (error) {
       throw new InternalServerErrorException('Cannot find course sections');
+    }
+  }
+
+  @Get('/:courseId/sections/:sectionId')
+  @Roles('teacher', 'student')
+  findSection(@Param('sectionId', ParseIntPipe) sectionId: number) {
+    try {
+      return this.coursesService.findSection(sectionId);
+    } catch (error) {
+      throw new InternalServerErrorException('Cannot find course section');
     }
   }
 

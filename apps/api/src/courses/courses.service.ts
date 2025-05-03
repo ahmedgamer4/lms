@@ -144,6 +144,16 @@ export class CoursesService {
   async findSection(sectionId: number) {
     return await db.query.courseSections.findFirst({
       where: eq(courseSections.id, sectionId),
+      with: {
+        videos: {
+          columns: {
+            id: true,
+            title: true,
+            s3Key: true,
+            orderIndex: true,
+          },
+        },
+      },
     });
   }
 }
