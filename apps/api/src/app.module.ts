@@ -6,7 +6,6 @@ import { AuthModule } from './auth/auth.module';
 import { PassportModule } from '@nestjs/passport';
 import { ConfigModule } from '@nestjs/config';
 import { CoursesModule } from './courses/courses.module';
-import { YoutubeModule } from './youtube/youtube.module';
 
 @Module({
   imports: [
@@ -15,7 +14,6 @@ import { YoutubeModule } from './youtube/youtube.module';
     PassportModule,
     ConfigModule.forRoot({ isGlobal: true }),
     CoursesModule,
-    YoutubeModule,
   ],
   controllers: [AppController],
   providers: [AppService],

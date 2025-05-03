@@ -30,7 +30,6 @@ import {
 import { Roles } from '@/auth/decorators/roles.decorator';
 import { ApiBearerAuth, ApiBody, ApiConsumes } from '@nestjs/swagger';
 import { RolesGuard } from '@/auth/guards/roles/roles.guard';
-import { YoutubeService } from '@/youtube/youtube.service';
 import { File, FileInterceptor } from '@nest-lab/fastify-multer';
 import { CloudinaryService } from '@/cloudinary/cloudinary.service';
 
@@ -40,7 +39,6 @@ import { CloudinaryService } from '@/cloudinary/cloudinary.service';
 export class CoursesController {
   constructor(
     private readonly coursesService: CoursesService,
-    private readonly youtubeService: YoutubeService,
     private readonly cloudinaryService: CloudinaryService,
   ) {}
 
@@ -192,42 +190,6 @@ export class CoursesController {
       return this.coursesService.deleteSection(sectionId);
     } catch (error) {
       throw new InternalServerErrorException('Cannot delete course section');
-    }
-  }
-
-  @Post('/:courseId/sections/:sectionId/initiate-resumable-upload')
-  @Roles('teacher')
-  async initiateResumableUpload(
-    @Param('courseId', ParseIntPipe) courseId: number,
-    @Param('sectionId', ParseIntPipe) sectionId: number,
-    @Body() dto: InitiateVideoUploadDto,
-  ) {
-    try {
-      const videoMetadata = {
-        snippet: {
-          title: dto.title,
-          description: dto.description,
-          categoryId: '27',
-        },
-        status: {
-          privacyStatus: 'unlisted',
-          embeddable: true,
-        },
-      };
-
-      const uploadUrl = await this.youtubeService.initResumableUpload(
-        videoMetadata,
-        dto.fileSize,
-        dto.mimeType,
-      );
-
-      return { uploadUrl };
-    } catch (error) {
-      console.error(
-        `Failed initiating upload for section ${sectionId}:`,
-        error,
-      );
-      throw new InternalServerErrorException('Cannot initiate video upload.');
     }
   }
 }
