@@ -10,6 +10,7 @@ import {
 } from "drizzle-orm/pg-core";
 import { teachers } from "./user";
 import { InferSelectModel, relations, sql } from "drizzle-orm";
+import { videos } from "./video";
 
 export const courses = pgTable("courses", {
   id: serial("id").primaryKey(),
@@ -48,12 +49,16 @@ export const coursesRelations = relations(courses, ({ one, many }) => ({
   courseSections: many(courseSections),
 }));
 
-export const courseSectionsRelations = relations(courseSections, ({ one }) => ({
-  course: one(courses, {
-    fields: [courseSections.courseId],
-    references: [courses.id],
+export const courseSectionsRelations = relations(
+  courseSections,
+  ({ one, many }) => ({
+    course: one(courses, {
+      fields: [courseSections.courseId],
+      references: [courses.id],
+    }),
+    videos: many(videos),
   }),
-}));
+);
 
 export type SelectCourse = InferSelectModel<typeof courses>;
 export type SelectCourseSection = InferSelectModel<typeof courseSections>;

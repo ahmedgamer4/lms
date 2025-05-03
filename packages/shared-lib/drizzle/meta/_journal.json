@@ -57,6 +57,13 @@
       "when": 1744245329498,
       "tag": "0007_wealthy_surge",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1746279083803,
+      "tag": "0008_flashy_the_executioner",
+      "breakpoints": true
     }
   ]
 }
