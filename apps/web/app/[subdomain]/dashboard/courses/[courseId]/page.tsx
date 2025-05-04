@@ -46,7 +46,6 @@ export default function EditCoursePage({}: {}) {
         </BreadcrumbList>
       </Breadcrumb>
 
-      <h1 className="mt-3 text-3xl font-bold">Course Setup</h1>
       <CourseEditForm course={course} />
     </div>
   );
