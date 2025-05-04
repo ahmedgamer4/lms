@@ -117,6 +117,7 @@ export default function CoursesPage() {
             className={page === totalPages || totalPages === 0 ? "hidden" : ""}
           >
             <PaginationNext
+              size={"sm"}
               onClick={() => handlePageChange(page + 1)}
               aria-disabled={page === totalPages}
             />
