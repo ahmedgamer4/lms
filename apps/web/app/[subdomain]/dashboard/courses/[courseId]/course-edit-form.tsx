@@ -62,7 +62,7 @@ export default function CourseEditForm({ course }: { course: any }) {
   }
 
   return (
-    <div className="mx-auto mt-3 space-y-6">
+    <div className="mx-auto mt-4 space-y-4">
       <div className="items-center justify-between md:flex">
         <div className="space-y-1">
           <h1 className="text-2xl font-bold tracking-tight">Course Settings</h1>
@@ -173,7 +173,7 @@ export default function CourseEditForm({ course }: { course: any }) {
               </p>
             </div>
             <Badge variant="secondary" className="font-medium">
-              {course.chapters?.length || 0} Chapters
+              {course.courseSections?.length || 0} Chapters
             </Badge>
           </div>
           <ChaptersList course={course} />
