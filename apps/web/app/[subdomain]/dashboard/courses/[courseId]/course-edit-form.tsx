@@ -5,7 +5,14 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { deleteCourse, updateCourse } from "@/lib/courses";
 import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
-import { LayoutDashboard, Trash, Loader2, Eye, EyeOff } from "lucide-react";
+import {
+  LayoutDashboard,
+  Trash,
+  Loader2,
+  Eye,
+  EyeOff,
+  List,
+} from "lucide-react";
 import { TitleForm } from "./_components/title-form";
 import { DescriptionForm } from "./_components/description-form";
 import { PriceForm } from "./_components/price-form";
@@ -55,15 +62,15 @@ export default function CourseEditForm({ course }: { course: any }) {
   }
 
   return (
-    <div className="mt-3 w-full max-w-[1600px] space-y-8">
-      <div className="flex w-full items-center justify-between">
+    <div className="mx-auto mt-3 space-y-6">
+      <div className="items-center justify-between md:flex">
         <div className="space-y-1">
           <h1 className="text-2xl font-bold tracking-tight">Course Settings</h1>
           <p className="text-muted-foreground text-sm">
             Manage your course details and content
           </p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="mt-3 flex items-center gap-2 md:mt-0">
           <Button
             disabled={publishLoading}
             variant={course.published ? "outline" : "default"}
@@ -116,12 +123,14 @@ export default function CourseEditForm({ course }: { course: any }) {
         </div>
       </div>
 
+      <Separator />
+
       <div className="grid gap-6 lg:grid-cols-2">
         <Card className="border-none shadow-none">
-          <CardHeader className="space-y-1 px-0">
-            <div className="flex items-center gap-3">
-              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-blue-100">
-                <LayoutDashboard className="text-blue-900" />
+          <CardHeader className="flex-row justify-start px-0 pt-0">
+            <div className="flex gap-3">
+              <div className="bg-primary/10 flex h-10 w-10 items-center justify-center rounded-full">
+                <LayoutDashboard className="text-primary" />
               </div>
               <div>
                 <CardTitle className="text-xl">Course Details</CardTitle>
@@ -153,7 +162,12 @@ export default function CourseEditForm({ course }: { course: any }) {
         <div className="space-y-6">
           <div className="flex items-center justify-between">
             <div className="space-y-1">
-              <h2 className="text-xl font-semibold">Course Content</h2>
+              <div className="flex items-center gap-3">
+                <div className="bg-primary/10 flex h-10 w-10 items-center justify-center rounded-full">
+                  <List className="text-primary" />
+                </div>
+                <h2 className="text-xl font-semibold">Course Content</h2>
+              </div>
               <p className="text-muted-foreground text-sm">
                 Manage your course chapters and lessons
               </p>
