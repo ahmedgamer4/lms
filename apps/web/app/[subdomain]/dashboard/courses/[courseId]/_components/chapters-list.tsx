@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import {
   CourseSection,
   createCourseSection,
@@ -12,11 +12,23 @@ import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 import { ListChecks, Plus, GripVertical, Trash2, Pen } from "lucide-react";
 import { useState } from "react";
 import Link from "next/link";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 export const ChaptersList = ({ course }: { course: any }) => {
   const [sections, setSections] = useState<Omit<CourseSection, "courseId">[]>(
     course?.courseSections || [],
   );
+
   async function addSection() {
     const newSection = {
       title: "New Section",
@@ -64,87 +76,131 @@ export const ChaptersList = ({ course }: { course: any }) => {
       setSections(reorderedSections);
     }
   }
+
   return (
-    <Card className="mt-4 border-none shadow-none lg:mt-0 lg:w-1/2">
-      <CardHeader className="flex flex-row items-center justify-between px-0">
-        <CardTitle className="flex items-center gap-2 text-xl">
-          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-blue-100">
-            <ListChecks className="text-blue-900" />
-          </div>
-          Course Details
-        </CardTitle>
-        <Button type="button" onClick={addSection} variant="default" size="sm">
-          <Plus className="mr-2 h-4 w-4" />
-          Add Section
-        </Button>
-      </CardHeader>
-      <CardContent className="px-0">
-        <Card className="bg-primary/5 shadow-none">
-          <CardContent className="p-6">
-            <DragDropContext onDragEnd={handleDragEnd}>
-              <Droppable droppableId="sections" type="section">
-                {(provided) => (
-                  <div
-                    {...provided.droppableProps}
-                    ref={provided.innerRef}
-                    className="space-y-4"
-                  >
-                    {sections.length > 0 ? (
-                      sections.map((section, sectionIndex) => (
-                        <Draggable
-                          key={`section-${sectionIndex}`}
-                          draggableId={`section-${sectionIndex}`}
-                          index={sectionIndex}
+    <Card className="border-none shadow-none">
+      <CardContent className="space-y-6 p-0">
+        <DragDropContext onDragEnd={handleDragEnd}>
+          <Droppable droppableId="sections" type="section">
+            {(provided) => (
+              <div
+                {...provided.droppableProps}
+                ref={provided.innerRef}
+                className="space-y-4"
+              >
+                {sections.length > 0 ? (
+                  sections.map((section, sectionIndex) => (
+                    <Draggable
+                      key={`section-${sectionIndex}`}
+                      draggableId={`section-${sectionIndex}`}
+                      index={sectionIndex}
+                    >
+                      {(provided) => (
+                        <div
+                          ref={provided.innerRef}
+                          {...provided.draggableProps}
+                          className="group bg-card hover:border-primary/50 relative rounded-lg border p-4 transition-all hover:shadow-sm"
                         >
-                          {(provided) => (
-                            <div
-                              ref={provided.innerRef}
-                              {...provided.draggableProps}
-                              className="bg-background rounded-lg border p-4"
-                            >
-                              <div className="mb-4 flex items-center justify-between">
-                                <div className="flex items-center">
-                                  <div
-                                    {...provided.dragHandleProps}
-                                    className="mr-2 cursor-grab"
-                                  >
-                                    <GripVertical className="text-muted-foreground h-5 w-5" />
-                                  </div>
-                                  <div>{section.title}</div>
-                                </div>
-                                <Button
-                                  type="button"
-                                  variant="ghost"
-                                  size="icon"
-                                  onClick={() => removeSection(sectionIndex)}
-                                >
-                                  <Trash2 className="h-4 w-4" />
-                                </Button>
+                          <div className="flex items-start justify-between gap-4">
+                            <div className="flex flex-1 items-start gap-3">
+                              <div
+                                {...provided.dragHandleProps}
+                                className="hover:bg-muted mt-1 cursor-grab rounded-md p-1"
+                              >
+                                <GripVertical className="text-muted-foreground h-4 w-4" />
                               </div>
+                              <div className="flex-1 space-y-1">
+                                <h3 className="font-medium">{section.title}</h3>
+                                <p className="text-muted-foreground text-sm">
+                                  No lessons added yet
+                                </p>
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-2">
                               <Link
                                 href={`/dashboard/courses/${course.id}/sections/${section.id}`}
                               >
-                                <Button variant={"outline"} className="w-full">
-                                  <Pen /> Edit
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  className="gap-2"
+                                >
+                                  <Pen className="h-4 w-4" />
+                                  Edit
                                 </Button>
                               </Link>
+                              <AlertDialog>
+                                <AlertDialogTrigger asChild>
+                                  <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    className="text-muted-foreground hover:text-destructive"
+                                  >
+                                    <Trash2 className="h-4 w-4" />
+                                  </Button>
+                                </AlertDialogTrigger>
+                                <AlertDialogContent>
+                                  <AlertDialogHeader>
+                                    <AlertDialogTitle>
+                                      Delete Section
+                                    </AlertDialogTitle>
+                                    <AlertDialogDescription>
+                                      Are you sure you want to delete this
+                                      section? This action cannot be undone.
+                                    </AlertDialogDescription>
+                                  </AlertDialogHeader>
+                                  <AlertDialogFooter>
+                                    <AlertDialogCancel>
+                                      Cancel
+                                    </AlertDialogCancel>
+                                    <AlertDialogAction
+                                      onClick={() =>
+                                        removeSection(sectionIndex)
+                                      }
+                                      className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                    >
+                                      Delete
+                                    </AlertDialogAction>
+                                  </AlertDialogFooter>
+                                </AlertDialogContent>
+                              </AlertDialog>
                             </div>
-                          )}
-                        </Draggable>
-                      ))
-                    ) : (
-                      <div className="text-muted-foreground p-4 text-center">
-                        No sections created yet. Click "Add Section" to get
-                        started.
-                      </div>
-                    )}
-                    {provided.placeholder}
+                          </div>
+                        </div>
+                      )}
+                    </Draggable>
+                  ))
+                ) : (
+                  <div className="flex flex-col items-center justify-center rounded-lg border border-dashed p-8 text-center">
+                    <ListChecks className="text-muted-foreground mb-4 h-12 w-12" />
+                    <h3 className="mb-2 text-lg font-medium">
+                      No sections created yet
+                    </h3>
+                    <p className="text-muted-foreground mb-4 text-sm">
+                      Get started by creating your first course section
+                    </p>
+                    <Button onClick={addSection} className="gap-2">
+                      <Plus className="h-4 w-4" />
+                      Add Section
+                    </Button>
                   </div>
                 )}
-              </Droppable>
-            </DragDropContext>
-          </CardContent>
-        </Card>
+                {provided.placeholder}
+              </div>
+            )}
+          </Droppable>
+        </DragDropContext>
+
+        {sections.length > 0 && (
+          <Button
+            onClick={addSection}
+            variant="outline"
+            className="w-full gap-2"
+          >
+            <Plus className="h-4 w-4" />
+            Add Section
+          </Button>
+        )}
       </CardContent>
     </Card>
   );
