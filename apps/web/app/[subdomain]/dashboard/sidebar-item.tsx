@@ -40,7 +40,7 @@ export const SidebarItems = () => {
               href={item.url}
             >
               <item.icon />
-              <span className="text-md font-semibold">{item.title}</span>
+              <span className="text-md">{item.title}</span>
             </Link>
           </SidebarMenuButton>
         </SidebarMenuItem>

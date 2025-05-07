@@ -24,7 +24,7 @@ export default async function DashboardLayout({ children }: PropsWithChildren) {
       <div className="flex min-h-screen w-full">
         <SidebarTrigger />
         <Sidebar>
-          <SidebarHeader className="ml-3 mt-3 text-xl font-bold">
+          <SidebarHeader className="mt-3 ml-3 text-xl font-bold">
             {session.user.name[0]?.toUpperCase() +
               session.user.name.substring(1)}{" "}
             Platform
