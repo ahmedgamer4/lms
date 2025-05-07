@@ -23,8 +23,10 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { useQueryClient } from "@tanstack/react-query";
 
 export const ChaptersList = ({ course }: { course: any }) => {
+  const queryClient = useQueryClient();
   const [sections, setSections] = useState<Omit<CourseSection, "courseId">[]>(
     course?.courseSections || [],
   );
@@ -40,6 +42,9 @@ export const ChaptersList = ({ course }: { course: any }) => {
       console.log(res.error);
     } else {
       setSections([...sections, res.data?.data[0]!]);
+      queryClient.invalidateQueries({
+        queryKey: ["dashboard-course", course.id],
+      });
     }
   }
 
