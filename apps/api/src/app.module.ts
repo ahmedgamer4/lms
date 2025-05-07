@@ -8,6 +8,7 @@ import { ConfigModule } from '@nestjs/config';
 import { CoursesModule } from './courses/courses.module';
 import { S3Module } from './s3/s3.module';
 import { VideosModule } from './videos/videos.module';
+import { LessonsModule } from './lessons/lessons.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { VideosModule } from './videos/videos.module';
     CoursesModule,
     S3Module,
     VideosModule,
+    LessonsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

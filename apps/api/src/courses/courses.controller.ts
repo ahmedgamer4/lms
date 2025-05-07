@@ -25,7 +25,6 @@ import {
   CreateCourseDto,
   CreateCourseSectionDto,
   UpdateCourseSectionDto,
-  InitiateVideoUploadDto,
 } from '@lms-saas/shared-lib';
 import { Roles } from '@/auth/decorators/roles.decorator';
 import { ApiBearerAuth, ApiBody, ApiConsumes } from '@nestjs/swagger';

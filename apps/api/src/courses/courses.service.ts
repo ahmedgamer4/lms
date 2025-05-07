@@ -6,6 +6,7 @@ import {
   CreateCourseSectionDto,
   db,
   UpdateCourseSectionDto,
+  lessons,
 } from '@lms-saas/shared-lib';
 import { Injectable } from '@nestjs/common';
 import { and, count, eq } from 'drizzle-orm';
@@ -129,10 +130,36 @@ export class CoursesService {
   }
 
   async updateSection(sectionId: number, dto: UpdateCourseSectionDto) {
-    return await db
-      .update(courseSections)
-      .set(dto)
-      .where(eq(courseSections.id, sectionId));
+    await db.transaction(async (tx) => {
+      // Update section
+      await tx
+        .update(courseSections)
+        .set({
+          title: dto.title,
+          orderIndex: dto.orderIndex,
+        })
+        .where(eq(courseSections.id, sectionId));
+
+      // Update lesson order if provided
+      if (dto.lessons?.length) {
+        for (const lesson of dto.lessons) {
+          await tx
+            .update(lessons)
+            .set({
+              title: lesson.title,
+              orderIndex: lesson.orderIndex,
+            })
+            .where(eq(lessons.id, lesson.id!));
+        }
+      }
+    });
+
+    return await db.query.courseSections.findFirst({
+      where: eq(courseSections.id, sectionId),
+      with: {
+        lessons: true,
+      },
+    });
   }
 
   async deleteSection(sectionId: number) {
@@ -145,13 +172,13 @@ export class CoursesService {
     return await db.query.courseSections.findFirst({
       where: eq(courseSections.id, sectionId),
       with: {
-        videos: {
+        lessons: {
           columns: {
             id: true,
             title: true,
-            s3Key: true,
             orderIndex: true,
           },
+          orderBy: lessons.orderIndex,
         },
       },
     });
