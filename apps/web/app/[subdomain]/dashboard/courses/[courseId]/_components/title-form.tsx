@@ -19,7 +19,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { updateCourse } from "@/lib/courses";
-import { useQueryClient } from "@tanstack/react-query";
 
 interface TitleFormProps {
   initialData: {
@@ -70,8 +69,8 @@ export const TitleForm = ({ initialData, courseId }: TitleFormProps) => {
             <>Cancel</>
           ) : (
             <>
-              <Pencil className="mr-2 h-4 w-4" />
-              Edit title
+              <Pencil className="mr-0.5 h-4 w-4" />
+              Edit
             </>
           )}
         </Button>
