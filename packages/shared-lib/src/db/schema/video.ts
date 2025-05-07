@@ -1,12 +1,12 @@
 import { integer, pgTable, serial, varchar } from "drizzle-orm/pg-core";
-import { courseSections } from "./course";
+import { lessons } from "./course";
 import { relations } from "drizzle-orm";
 
 export const videos = pgTable("videos", {
   id: serial("id").primaryKey(),
-  sectionId: integer("section_id")
+  lessonId: integer("lesson_id")
     .notNull()
-    .references(() => courseSections.id, {
+    .references(() => lessons.id, {
       onDelete: "cascade",
     }),
   title: varchar("title", { length: 255 }).notNull(),
@@ -15,8 +15,8 @@ export const videos = pgTable("videos", {
 });
 
 export const videosRelations = relations(videos, ({ one }) => ({
-  section: one(courseSections, {
-    fields: [videos.sectionId],
-    references: [courseSections.id],
+  lesson: one(lessons, {
+    fields: [videos.lessonId],
+    references: [lessons.id],
   }),
 }));

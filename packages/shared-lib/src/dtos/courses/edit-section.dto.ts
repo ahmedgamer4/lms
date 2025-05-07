@@ -5,7 +5,26 @@ import {
   MaxLength,
   Min,
   MinLength,
+  IsArray,
+  ValidateNested,
 } from "class-validator";
+
+class UpdateLessonOrderDto {
+  @IsNumber()
+  @IsOptional()
+  id?: number;
+
+  @IsString()
+  @IsOptional()
+  @MinLength(3)
+  @MaxLength(200)
+  title?: string;
+
+  @IsNumber()
+  @IsOptional()
+  @Min(0)
+  orderIndex?: number;
+}
 
 export class UpdateCourseSectionDto {
   @IsString()
@@ -18,4 +37,10 @@ export class UpdateCourseSectionDto {
   @Min(0)
   @IsOptional()
   orderIndex?: number;
+
+  @IsArray()
+  @ValidateNested({ each: true })
+  // @Type(() => UpdateLessonOrderDto)
+  @IsOptional()
+  lessons?: UpdateLessonOrderDto[];
 }

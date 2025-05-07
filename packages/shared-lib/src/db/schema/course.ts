@@ -41,6 +41,18 @@ export const courseSections = pgTable("course_sections", {
   orderIndex: integer("order_index").notNull(),
 });
 
+export const lessons = pgTable("lessons", {
+  id: serial("id").primaryKey(),
+  title: varchar("title", { length: 255 }).notNull(),
+  orderIndex: integer("order_index").notNull(),
+  sectionId: integer("section_id")
+    .references(() => courseSections.id, {
+      onDelete: "cascade",
+      onUpdate: "cascade",
+    })
+    .notNull(),
+});
+
 export const coursesRelations = relations(courses, ({ one, many }) => ({
   teacher: one(teachers, {
     fields: [courses.teacherId],
@@ -56,9 +68,19 @@ export const courseSectionsRelations = relations(
       fields: [courseSections.courseId],
       references: [courses.id],
     }),
-    videos: many(videos),
+    lessons: many(lessons),
   }),
 );
 
+export const lessonsRelations = relations(lessons, ({ one, many }) => ({
+  courseSection: one(courseSections, {
+    fields: [lessons.sectionId],
+    references: [courseSections.id],
+  }),
+
+  videos: many(videos),
+}));
+
 export type SelectCourse = InferSelectModel<typeof courses>;
 export type SelectCourseSection = InferSelectModel<typeof courseSections>;
+export type SelectLesson = InferSelectModel<typeof lessons>;
