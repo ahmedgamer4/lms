@@ -70,6 +70,7 @@ export type CourseSection = {
   title: string;
   orderIndex: number;
   courseId: number;
+  lessons: Lesson[];
 };
 
 export const createCourseSection = (

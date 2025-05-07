@@ -117,7 +117,7 @@ export const ChaptersList = ({ course }: { course: any }) => {
                               <div className="flex-1 space-y-1">
                                 <h3 className="font-medium">{section.title}</h3>
                                 <p className="text-muted-foreground text-sm">
-                                  No lessons added yet
+                                  Press edit to see details
                                 </p>
                               </div>
                             </div>
