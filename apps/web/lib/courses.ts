@@ -9,9 +9,12 @@ import {
   CourseEditDto,
   CreateCourseDto,
   CreateCourseSectionDto,
+  CreateLessonDto,
   UpdateCourseSectionDto,
+  UpdateLessonDto,
 } from "@lms-saas/shared-lib/dtos";
-import { z } from "zod";
+import { Quiz } from "./quizzes";
+import { Video } from "./videos";
 
 const baseUrl = `${BACKEND_URL}/courses`;
 
@@ -62,55 +65,6 @@ export function deleteCourse(id: number) {
   });
 }
 
-export const courseFormSchema = z.object({
-  id: z.number().min(1),
-  title: z.string().min(1, "Title is required"),
-  description: z.string().optional(),
-  imageUrl: z
-    .string()
-    .url("Please enter a valid URL")
-    .optional()
-    .or(z.literal("")),
-  price: z.string().min(0, "Price cannot be negative").optional(),
-  published: z.boolean(),
-});
-
-export const sectionSchema = z.object({
-  id: z.number().optional(),
-  title: z.string().min(1, "Section title is required"),
-  orderIndex: z.number(),
-  videos: z.array(
-    z.object({
-      id: z.number().optional(),
-      title: z.string().min(1, "Video title is required"),
-      videoUrl: z.string().url("Please enter a valid video URL"),
-      orderIndex: z.number(),
-    }),
-  ),
-  quizzes: z.array(
-    z.object({
-      id: z.number().optional(),
-      title: z.string().min(1, "Quiz title is required"),
-      duration: z.coerce.number().min(1, "Duration must be at least 1 minute"),
-      orderIndex: z.number(),
-      questions: z.array(
-        z.object({
-          id: z.number().optional(),
-          questionText: z.string().min(1, "Question text is required"),
-          orderIndex: z.number(),
-          answers: z.array(
-            z.object({
-              id: z.number().optional(),
-              answerText: z.string().min(1, "Answer text is required"),
-              isCorrect: z.boolean(),
-            }),
-          ),
-        }),
-      ),
-    }),
-  ),
-});
-
 export type CourseSection = {
   id: number;
   title: string;
@@ -159,10 +113,9 @@ export const findCourseSection = (courseId: number, sectionId: number) => {
   return asyncWrapper(async () => {
     return await authFetch<
       SelectCourseSection & {
-        videos: {
+        lessons: {
           id: number;
           title: string;
-          s3Key: string;
           orderIndex: number;
         }[];
       }
@@ -188,5 +141,62 @@ export const uploadCoverImage = async (courseId: number, file: File) => {
       data: formData,
       headers: { "Content-Type": "multipart/form-data" },
     });
+  });
+};
+
+// Lessons
+export interface Lesson {
+  id: number;
+  title: string;
+  orderIndex: number;
+  videos: Video[];
+  quizzes: Quiz[];
+}
+
+export const createLesson = (
+  courseId: number,
+  sectionId: number,
+  input: CreateLessonDto,
+) => {
+  return asyncWrapper(async () => {
+    return authFetch<{ id: number }>(
+      `${baseUrl}/${courseId}/sections/${sectionId}/lessons`,
+      {
+        method: "POST",
+        data: input,
+      },
+    );
+  });
+};
+
+export const updateLesson = (
+  courseId: number,
+  sectionId: number,
+  lessonId: number,
+  input: UpdateLessonDto,
+) => {
+  return asyncWrapper(async () => {
+    return authFetch<{ id: number }>(
+      `${baseUrl}/${courseId}/sections/${sectionId}/lessons/${lessonId}`,
+      {
+        method: "PUT",
+        data: input,
+      },
+    );
+  });
+};
+
+export const deleteLesson = (
+  courseId: number,
+  sectionId: number,
+  lessonId: number,
+) => {
+  return asyncWrapper(async () => {
+    return authFetch<{ id: number }>(
+      `${baseUrl}/${courseId}/sections/${sectionId}/lessons/${lessonId}`,
+      {
+        method: "DELETE",
+      },
+    );
   });
 };
