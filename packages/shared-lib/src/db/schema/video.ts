@@ -1,4 +1,10 @@
-import { integer, pgTable, serial, varchar } from "drizzle-orm/pg-core";
+import {
+  integer,
+  pgTable,
+  serial,
+  timestamp,
+  varchar,
+} from "drizzle-orm/pg-core";
 import { lessons } from "./course";
 import { relations } from "drizzle-orm";
 
@@ -11,7 +17,7 @@ export const videos = pgTable("videos", {
     }),
   title: varchar("title", { length: 255 }).notNull(),
   s3Key: varchar("s3_key", { length: 255 }).notNull(),
-  orderIndex: integer("order_index").notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
 });
 
 export const videosRelations = relations(videos, ({ one }) => ({

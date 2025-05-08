@@ -1,1 +1,0 @@
-ALTER TABLE "lessons" ALTER COLUMN "order_index" SET DATA TYPE serial;

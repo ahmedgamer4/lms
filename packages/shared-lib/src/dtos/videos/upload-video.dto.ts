@@ -6,8 +6,4 @@ export class UploadVideoDto {
   @MinLength(3)
   @MaxLength(200)
   title: string;
-
-  @IsNumber()
-  @Min(0)
-  orderIndex: number;
 }

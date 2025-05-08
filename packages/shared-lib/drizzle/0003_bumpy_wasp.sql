@@ -1,1 +1,0 @@
-ALTER TABLE "courses" ADD COLUMN "published" boolean DEFAULT false NOT NULL;
