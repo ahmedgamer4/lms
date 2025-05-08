@@ -53,31 +53,16 @@ export class LessonsService {
           .where(eq(lessons.id, lessonId));
 
         // Update videos
-        await tx.delete(videos).where(eq(videos.lessonId, lessonId));
         if (dto.videos && dto.videos.length > 0) {
+          await tx.delete(videos).where(eq(videos.lessonId, lessonId));
           await tx.insert(videos).values(
             dto.videos.map((video) => ({
               lessonId,
               title: video.title!,
               s3Key: video.s3Key!,
-              orderIndex: video.orderIndex!,
             })),
           );
         }
-
-        // // Update quizzes
-        // await tx.delete(quizzes).where(eq(quizzes.lessonId, lessonId));
-        // if (dto.quizzes.length > 0) {
-        //   await tx.insert(quizzes).values(
-        //     dto.quizzes.map((quiz) => ({
-        //       lessonId,
-        //       title: quiz.title,
-        //       duration: quiz.duration,
-        //       questions: quiz.questions,
-        //       orderIndex: quiz.orderIndex,
-        //     })),
-        //   );
-        // }
       });
 
       return await this.findOne(lessonId);
