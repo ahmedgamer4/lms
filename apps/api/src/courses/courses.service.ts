@@ -178,6 +178,13 @@ export class CoursesService {
             title: true,
             orderIndex: true,
           },
+          with: {
+            videos: {
+              columns: {
+                createdAt: false,
+              },
+            },
+          },
           orderBy: lessons.orderIndex,
         },
       },
