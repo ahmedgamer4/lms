@@ -112,15 +112,10 @@ export const getCourseSections = (courseId: number) => {
 
 export const findCourseSection = (courseId: number, sectionId: number) => {
   return asyncWrapper(async () => {
-    return await authFetch<
-      SelectCourseSection & {
-        lessons: {
-          id: number;
-          title: string;
-          orderIndex: number;
-        }[];
-      }
-    >(`${baseUrl}/${courseId}/sections/${sectionId}`, { method: "GET" });
+    return await authFetch<CourseSection>(
+      `${baseUrl}/${courseId}/sections/${sectionId}`,
+      { method: "GET" },
+    );
   });
 };
 
