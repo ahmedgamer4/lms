@@ -1,9 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
-import {
-  S3Client,
-  PutObjectCommand,
-  GetObjectCommand,
-} from '@aws-sdk/client-s3';
+import { S3Client, GetObjectCommand } from '@aws-sdk/client-s3';
 import { ConfigType } from '@nestjs/config';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import s3Config from './config/s3.config';
@@ -16,7 +12,7 @@ export class S3Service {
     @Inject(s3Config.KEY) private _s3Config: ConfigType<typeof s3Config>,
   ) {
     this.s3Client = new S3Client({
-      region: 'us-east-1', // Required, but use endpoint for Spaces
+      region: 'us-east-1',
       endpoint: this._s3Config.endpoint!,
       credentials: {
         accessKeyId: this._s3Config.accessKeyId!,
