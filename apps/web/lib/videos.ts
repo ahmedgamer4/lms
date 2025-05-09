@@ -46,6 +46,7 @@ export const getPresignedUrl = (lessonId: number, data: UploadVideoDto) => {
 export const uploadVideo = async (
   file: File,
   presignedPostInput: SignedUrlResponse,
+  setProgress: (progress: number) => void,
 ) => {
   const { url, fields } = presignedPostInput;
   console.log("url", url);
@@ -61,9 +62,12 @@ export const uploadVideo = async (
   for (const name in data) formData.append(name, data[name]);
   console.log("form data", formData);
 
-  await fetch(url, {
-    method: "POST",
-    body: formData,
+  await axios.post(url, formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+    onUploadProgress: (progress) =>
+      setProgress((progress.loaded / (progress.total || 1)) * 100),
   });
 };
 
