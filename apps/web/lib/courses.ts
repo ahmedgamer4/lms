@@ -182,6 +182,19 @@ export const updateLesson = (
   });
 };
 
+export const findLesson = (
+  courseId: number,
+  sectionId: number,
+  lessonId: number,
+) => {
+  return asyncWrapper(async () => {
+    return await authFetch<Lesson>(
+      `${baseUrl}/${courseId}/sections/${sectionId}/lessons/${lessonId}`,
+      { method: "GET" },
+    );
+  });
+};
+
 export const deleteLesson = (
   courseId: number,
   sectionId: number,
