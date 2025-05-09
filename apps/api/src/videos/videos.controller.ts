@@ -34,7 +34,7 @@ export class VideosController {
     const s3Res = await this.s3Service.uploadVideo(key, 'video/mp4');
 
     const res = await this.videosService.create(lessonId, key, dto);
-    return { ...s3Res, videoDetails: res };
+    return { ...s3Res, videoDetails: res[0] };
   }
 
   @Delete('/:videoId')
