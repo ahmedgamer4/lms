@@ -7,7 +7,7 @@ import axios from "axios";
 const baseUrl = `${BACKEND_URL}/courses`;
 
 export interface Video {
-  id: number;
+  id: string;
   title: string;
   s3Key: string;
 }
@@ -15,7 +15,7 @@ export interface Video {
 export type SignedUrlResponse = {
   url: string;
   videoDetails: {
-    id: number;
+    id: string;
     title: string;
     s3Key: string;
   };
@@ -71,18 +71,18 @@ export const uploadVideo = async (
   });
 };
 
-export const deleteVideo = (videoId: number) => {
+export const deleteVideo = (id: string) => {
   return asyncWrapper(() => {
-    return authFetch(`${baseUrl}/1/sections/1/lessons/1/videos/${videoId}`, {
+    return authFetch(`${baseUrl}/1/sections/1/lessons/1/videos/${id}`, {
       method: "DELETE",
     });
   });
 };
 
-export const getVideo = (videoId: number) => {
+export const getVideo = (id: string) => {
   return asyncWrapper(async () => {
     return authFetch<{ videoId: number; url: string }>(
-      `${baseUrl}/1/sections/1/lessons/1/videos/${videoId}`,
+      `${baseUrl}/1/sections/1/lessons/1/videos/${id}`,
       {
         method: "GET",
       },
