@@ -3,13 +3,14 @@ import {
   pgTable,
   serial,
   timestamp,
+  uuid,
   varchar,
 } from "drizzle-orm/pg-core";
 import { lessons } from "./course";
 import { relations } from "drizzle-orm";
 
 export const videos = pgTable("videos", {
-  id: serial("id").primaryKey(),
+  id: uuid("id").defaultRandom().primaryKey(),
   lessonId: integer("lesson_id")
     .notNull()
     .references(() => lessons.id, {
