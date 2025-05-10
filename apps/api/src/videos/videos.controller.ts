@@ -13,6 +13,7 @@ import {
 } from '@nestjs/common';
 import { ApiBearerAuth } from '@nestjs/swagger';
 import { VideosService } from './videos.service';
+import { uuid } from 'drizzle-orm/pg-core';
 
 @ApiBearerAuth()
 @Controller('courses/:courseId/sections/:sectionId/lessons/:lessonId/videos')
@@ -29,23 +30,23 @@ export class VideosController {
     @Param('lessonId', ParseIntPipe) lessonId: number,
     @Body() dto: UploadVideoDto,
   ) {
-    const key = `videos/${teacher.id}/${lessonId}/${Date.now()}-${dto.title}.mp4`;
+    const key = `videos/${teacher.id}/${lessonId}/${crypto.randomUUID()}-${dto.title}`;
     const s3Res = await this.s3Service.uploadVideo(key, 'video/mp4');
 
     const res = await this.videosService.create(lessonId, key, dto);
     return { ...s3Res, videoDetails: res[0] };
   }
 
-  @Delete('/:videoId')
+  @Delete('/:id')
   @Roles('teacher')
-  delete(@Param('videoId', ParseIntPipe) videoId: number) {
-    return this.videosService.delete(videoId);
+  delete(@Param('id') id: string) {
+    return this.videosService.delete(id);
   }
 
-  @Get('/:videoId')
+  @Get('/:id')
   @Roles('teacher', 'student')
-  async getVideoUrl(@Param('videoId', ParseIntPipe) videoId: number) {
-    const video = await this.videosService.getVideo(videoId);
+  async getVideoUrl(@Param('id') id: string) {
+    const video = await this.videosService.getVideo(id);
     const url = await this.s3Service.getSignedUrl(video[0].s3Key);
     return { videoId: video[0].id, url };
   }

@@ -19,17 +19,17 @@ export class VideosService {
     }
   }
 
-  async delete(videoId: number) {
+  async delete(id: string) {
     try {
-      await db.delete(videos).where(eq(videos.id, videoId));
+      await db.delete(videos).where(eq(videos.s3Key, id));
     } catch (error) {
       throw new InternalServerErrorException(`Cannot remove video. ${error}`);
     }
   }
 
-  async getVideo(videoId: number) {
+  async getVideo(id: string) {
     try {
-      return db.select().from(videos).where(eq(videos.id, videoId));
+      return db.select().from(videos).where(eq(videos.id, id));
     } catch (error) {
       throw new InternalServerErrorException(`Cannot get video. ${error}`);
     }
