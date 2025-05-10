@@ -5,13 +5,13 @@ import { getVideo } from "@/lib/videos";
 import { SecureVideoPlayer } from "./secure-video-player";
 
 interface VideoPreviewProps {
-  videoId: number;
+  videoId: string;
   title: string;
   onDelete?: () => void;
 }
 
 export const VideoPreview = ({
-  videoId,
+  videoId: s3Key,
   title,
   onDelete,
 }: VideoPreviewProps) => {
@@ -20,9 +20,9 @@ export const VideoPreview = ({
     isLoading,
     isError,
   } = useQuery({
-    queryKey: ["video-url", videoId],
+    queryKey: ["video-url", s3Key],
     queryFn: () =>
-      getVideo(videoId).then((res) => {
+      getVideo(s3Key).then((res) => {
         if (res.error || !res.data) throw new Error("Cannot fetch video URL");
         return res.data.data.url;
       }),

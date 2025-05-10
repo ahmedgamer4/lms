@@ -19,8 +19,8 @@ export const LessonTabs = ({ lesson }: LessonTabsProps) => {
     setLessonVideos([...lessonVideos, video]);
   };
 
-  const handleVideoDelete = async (videoIndex: number, videoId: number) => {
-    const videoQuery = await deleteVideo(videoId);
+  const handleVideoDelete = async (videoIndex: number, id: string) => {
+    const videoQuery = await deleteVideo(id);
     if (videoQuery.error) {
       toast.error("Cannot remove video");
       return;
