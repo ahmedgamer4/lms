@@ -28,7 +28,7 @@ export class VideosService {
 
   async delete(id: string) {
     try {
-      await db.delete(videos).where(eq(videos.s3Key, id));
+      await db.delete(videos).where(eq(videos.id, id));
     } catch (error) {
       throw new InternalServerErrorException(`Cannot remove video. ${error}`);
     }
