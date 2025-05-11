@@ -1,21 +1,28 @@
-import { db, UploadVideoDto, videos } from '@lms-saas/shared-lib';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { eq } from 'drizzle-orm';
+import { UploadVideoDto } from '@lms-saas/shared-lib';
+import { db, videos } from '@lms-saas/shared-lib';
 
 @Injectable()
 export class VideosService {
   async create(lessonId: number, s3Key: string, dto: UploadVideoDto) {
     try {
-      return db
+      const [video] = await db
         .insert(videos)
-        .values({ ...dto, lessonId, s3Key })
+        .values({
+          lessonId,
+          title: dto.title,
+          s3Key,
+        })
         .returning({
-          id: videos.id,
           title: videos.title,
           s3Key: videos.s3Key,
+          id: videos.id,
         });
+
+      return video;
     } catch (error) {
-      throw new InternalServerErrorException(`Cannot create video. ${error}`);
+      throw new InternalServerErrorException('Failed to create video');
     }
   }
 

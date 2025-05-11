@@ -11,12 +11,12 @@ import {
   ParseIntPipe,
   Post,
 } from '@nestjs/common';
-import { ApiBearerAuth } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { VideosService } from './videos.service';
-import { uuid } from 'drizzle-orm/pg-core';
 
 @ApiBearerAuth()
-@Controller('courses/:courseId/sections/:sectionId/lessons/:lessonId/videos')
+@ApiTags('videos')
+@Controller('lessons/:lessonId/videos')
 export class VideosController {
   constructor(
     private s3Service: S3Service,
@@ -34,7 +34,7 @@ export class VideosController {
     const s3Res = await this.s3Service.uploadVideo(key, 'video/mp4');
 
     const res = await this.videosService.create(lessonId, key, dto);
-    return { ...s3Res, videoDetails: res[0] };
+    return { ...s3Res, videoDetails: res };
   }
 
   @Delete('/:id')
