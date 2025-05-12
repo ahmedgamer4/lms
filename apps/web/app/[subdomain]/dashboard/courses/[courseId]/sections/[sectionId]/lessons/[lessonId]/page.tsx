@@ -123,7 +123,6 @@ export default function LessonPage() {
   }
 
   const lesson = lessonData.data.data;
-  console.log(lesson);
 
   return (
     <div className="container mx-auto space-y-4">
@@ -153,7 +152,7 @@ export default function LessonPage() {
         </BreadcrumbList>
       </Breadcrumb>
 
-      <div className="flex items-center justify-between">
+      <div className="items-center justify-between md:flex">
         <div className="flex items-center gap-4">
           <Link
             href={`/dashboard/courses/${params.courseId}/sections/${params.sectionId}`}
@@ -171,12 +170,14 @@ export default function LessonPage() {
           </div>
         </div>
         <AlertDialog>
-          <AlertDialogTrigger asChild>
-            <Button variant="destructive">
-              <Trash2 className="mr-2 h-4 w-4" />
-              Delete Lesson
-            </Button>
-          </AlertDialogTrigger>
+          <div className="flex w-full justify-end">
+            <AlertDialogTrigger asChild>
+              <Button className="mt-2 md:mt-0" variant="destructive">
+                <Trash2 className="mr-2 h-4 w-4" />
+                Delete Lesson
+              </Button>
+            </AlertDialogTrigger>
+          </div>
           <AlertDialogContent>
             <AlertDialogHeader>
               <AlertDialogTitle>Are you sure?</AlertDialogTitle>

@@ -170,7 +170,7 @@ export default function SectionPage() {
         </BreadcrumbList>
       </Breadcrumb>
 
-      <div className="flex items-center justify-between">
+      <div className="items-center justify-between md:flex">
         <div className="flex items-center gap-4">
           <Link href={`/dashboard/courses/${params.courseId}`}>
             <Button variant="ghost" size="icon">
@@ -185,12 +185,14 @@ export default function SectionPage() {
           </div>
         </div>
         <AlertDialog>
-          <AlertDialogTrigger asChild>
-            <Button variant="destructive">
-              <Trash2 className="mr-2 h-4 w-4" />
-              Delete Section
-            </Button>
-          </AlertDialogTrigger>
+          <div className="flex w-full justify-end md:w-auto">
+            <AlertDialogTrigger asChild>
+              <Button className="mt-2 md:mt-0" variant="destructive">
+                <Trash2 className="mr-2 h-4 w-4" />
+                Delete Section
+              </Button>
+            </AlertDialogTrigger>
+          </div>
           <AlertDialogContent>
             <AlertDialogHeader>
               <AlertDialogTitle>Are you sure?</AlertDialogTitle>
