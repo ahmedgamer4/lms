@@ -23,7 +23,6 @@ export default async function DashboardLayout({ children }: PropsWithChildren) {
   return (
     <SidebarProvider>
       <div className="flex min-h-screen w-full">
-        <SidebarTrigger />
         <Sidebar>
           <SidebarHeader className="mt-3 ml-3 text-xl font-bold">
             <div className="flex items-center">
@@ -42,7 +41,10 @@ export default async function DashboardLayout({ children }: PropsWithChildren) {
             </SidebarGroup>
           </SidebarContent>
         </Sidebar>
-        <div className="w-full p-4 py-8 pl-0">{children}</div>
+        <div className="w-full">
+          <SidebarTrigger />
+          <div className="w-full px-4 py-1">{children}</div>
+        </div>
       </div>
     </SidebarProvider>
   );
