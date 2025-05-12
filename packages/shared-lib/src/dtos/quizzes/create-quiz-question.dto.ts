@@ -30,5 +30,6 @@ export class CreateQuizQuestionDto {
 
   @IsArray()
   @ValidateNested({ each: true })
+  @Type(() => CreateQuizAnswerDto)
   answers: CreateQuizAnswerDto[];
 }
