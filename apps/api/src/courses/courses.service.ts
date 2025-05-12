@@ -181,7 +181,14 @@ export class CoursesService {
           with: {
             videos: {
               columns: {
+                lessonId: false,
                 createdAt: false,
+              },
+            },
+            quizzes: {
+              columns: {
+                id: true,
+                title: true,
               },
             },
           },
