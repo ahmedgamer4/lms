@@ -22,6 +22,20 @@
       "when": 1746889380531,
       "tag": "0002_first_luke_cage",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1746965001925,
+      "tag": "0003_calm_lyja",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1746965603247,
+      "tag": "0004_tiresome_squadron_supreme",
+      "breakpoints": true
     }
   ]
 }

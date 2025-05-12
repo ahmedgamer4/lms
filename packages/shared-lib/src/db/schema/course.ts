@@ -11,6 +11,7 @@ import {
 import { teachers } from "./user";
 import { InferSelectModel, relations, sql } from "drizzle-orm";
 import { videos } from "./video";
+import { quizzes } from "./quiz";
 
 export const courses = pgTable("courses", {
   id: serial("id").primaryKey(),
@@ -79,6 +80,7 @@ export const lessonsRelations = relations(lessons, ({ one, many }) => ({
   }),
 
   videos: many(videos),
+  quizzes: many(quizzes),
 }));
 
 export type SelectCourse = InferSelectModel<typeof courses>;
