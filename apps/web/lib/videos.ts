@@ -4,7 +4,7 @@ import { BACKEND_URL } from "./constants";
 import { asyncWrapper } from "./utils";
 import axios from "axios";
 
-const baseUrl = `${BACKEND_URL}/courses`;
+const baseUrl = `${BACKEND_URL}/lessons/1/videos`;
 
 export interface Video {
   id: string;
@@ -34,7 +34,7 @@ export type SignedUrlResponse = {
 export const getPresignedUrl = (lessonId: number, data: UploadVideoDto) => {
   return asyncWrapper(async () => {
     return authFetch<SignedUrlResponse>(
-      `${baseUrl}/1/sections/1/lessons/${lessonId}/videos/upload`,
+      `${BACKEND_URL}/lessons/${lessonId}/videos/upload`,
       {
         method: "POST",
         data,
@@ -49,18 +49,15 @@ export const uploadVideo = async (
   setProgress: (progress: number) => void,
 ) => {
   const { url, fields } = presignedPostInput;
-  console.log("url", url);
 
   const data: Record<string, any> = {
     ...fields,
     "Content-Type": file.type,
     file,
   };
-  console.log("data", data);
 
   const formData = new FormData();
   for (const name in data) formData.append(name, data[name]);
-  console.log("form data", formData);
 
   await axios.post(url, formData, {
     headers: {
@@ -73,7 +70,7 @@ export const uploadVideo = async (
 
 export const deleteVideo = (id: string) => {
   return asyncWrapper(() => {
-    return authFetch(`${baseUrl}/1/sections/1/lessons/1/videos/${id}`, {
+    return authFetch(`${baseUrl}/${id}`, {
       method: "DELETE",
     });
   });
@@ -81,11 +78,8 @@ export const deleteVideo = (id: string) => {
 
 export const getVideo = (id: string) => {
   return asyncWrapper(async () => {
-    return authFetch<{ videoId: number; url: string }>(
-      `${baseUrl}/1/sections/1/lessons/1/videos/${id}`,
-      {
-        method: "GET",
-      },
-    );
+    return authFetch<{ videoId: number; url: string }>(`${baseUrl}/${id}`, {
+      method: "GET",
+    });
   });
 };
