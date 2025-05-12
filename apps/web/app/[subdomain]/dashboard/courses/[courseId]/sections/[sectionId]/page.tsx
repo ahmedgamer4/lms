@@ -67,8 +67,8 @@ export default function SectionPage() {
           id: lesson.id,
           title: lesson.title,
           orderIndex: lesson.orderIndex,
-          videos: [],
-          quizzes: [],
+          videos: lesson.videos,
+          quizzes: lesson.quizzes,
         })),
       });
     }
