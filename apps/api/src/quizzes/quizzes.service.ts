@@ -23,7 +23,11 @@ export class QuizzesService {
         ...dto,
         lessonId,
       })
-      .returning();
+      .returning({
+        id: quizzes.id,
+        title: quizzes.title,
+        duration: quizzes.duration,
+      });
 
     return quiz;
   }
@@ -35,12 +39,14 @@ export class QuizzesService {
   }
 
   async update(id: string, dto: UpdateQuizDto) {
-    await db.transaction(async (tx) => {
+    const quiz = await db.transaction(async (tx) => {
       const [quiz] = await db
         .update(quizzes)
         .set(dto)
         .where(eq(quizzes.id, id))
-        .returning();
+        .returning({
+          id: quizzes.id,
+        });
 
       if (dto.questions) {
         await tx.delete(quizQuestions).where(eq(quizQuestions.quizId, id));
@@ -53,16 +59,18 @@ export class QuizzesService {
           })),
         );
       }
+
+      return quiz;
     });
 
-    return this.findOne(id);
+    return quiz;
   }
 
   async delete(id: string) {
     const [quiz] = await db
       .delete(quizzes)
       .where(eq(quizzes.id, id))
-      .returning();
+      .returning({ id: quizzes.id });
 
     return quiz;
   }
@@ -108,13 +116,21 @@ export class QuizzesService {
 
   async findQuestion(id: number) {
     const [question] = await db
-      .select()
+      .select({
+        id: quizQuestions.id,
+        questionText: quizQuestions.questionText,
+        orderIndex: quizQuestions.orderIndex,
+      })
       .from(quizQuestions)
       .where(eq(quizQuestions.id, id));
 
     if (question) {
       const answers = await db
-        .select()
+        .select({
+          id: quizAnswers.id,
+          answerText: quizAnswers.answerText,
+          isCorrect: quizAnswers.isCorrect,
+        })
         .from(quizAnswers)
         .where(eq(quizAnswers.questionId, id));
 
@@ -133,7 +149,9 @@ export class QuizzesService {
           orderIndex: dto.orderIndex,
         })
         .where(eq(quizQuestions.id, id))
-        .returning();
+        .returning({
+          id: quizQuestions.id,
+        });
 
       if (dto.answers) {
         await tx.delete(quizAnswers).where(eq(quizAnswers.questionId, id));
@@ -160,14 +178,18 @@ export class QuizzesService {
     const [question] = await db
       .delete(quizQuestions)
       .where(eq(quizQuestions.id, id))
-      .returning();
+      .returning({ id: quizQuestions.id });
 
     return question;
   }
 
   async getQuizQuestions(quizId: string) {
     const questions = await db
-      .select()
+      .select({
+        id: quizQuestions.id,
+        questionText: quizQuestions.questionText,
+        orderIndex: quizQuestions.orderIndex,
+      })
       .from(quizQuestions)
       .where(eq(quizQuestions.quizId, quizId))
       .orderBy(quizQuestions.orderIndex);
@@ -230,7 +252,11 @@ export class QuizzesService {
           answerText: dto.answerText,
           isCorrect: dto.isCorrect,
         })
-        .returning();
+        .returning({
+          id: quizAnswers.id,
+          answerText: quizAnswers.answerText,
+          isCorrect: quizAnswers.isCorrect,
+        });
 
       return answer;
     } catch (error) {
