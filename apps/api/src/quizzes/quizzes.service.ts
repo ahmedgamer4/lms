@@ -7,6 +7,7 @@ import {
   quizAnswers,
   quizQuestions,
   quizzes,
+  SelectQuizAnswer,
   UpdateQuizAnswerDto,
   UpdateQuizDto,
   UpdateQuizQuestionDto,
@@ -80,15 +81,24 @@ export class QuizzesService {
         .returning();
 
       // Create answers
+      let answers;
       if (dto.answers && dto.answers.length > 0) {
-        await tx.insert(quizAnswers).values(
-          dto.answers.map((answer) => ({
-            questionId: newQuestion.id,
-            answerText: answer.answerText,
-            isCorrect: answer.isCorrect,
-          })),
-        );
+        answers = await tx
+          .insert(quizAnswers)
+          .values(
+            dto.answers.map((answer) => ({
+              questionId: newQuestion.id,
+              answerText: answer.answerText,
+              isCorrect: answer.isCorrect,
+            })),
+          )
+          .returning({
+            id: quizAnswers.id,
+            answerText: quizAnswers.answerText,
+            isCorrect: quizAnswers.isCorrect,
+          });
       }
+      newQuestion['answers'] = answers;
 
       return [newQuestion];
     });
@@ -165,7 +175,11 @@ export class QuizzesService {
     const questionsWithAnswers = await Promise.all(
       questions.map(async (question) => {
         const answers = await db
-          .select()
+          .select({
+            id: quizAnswers.id,
+            answerText: quizAnswers.answerText,
+            isCorrect: quizAnswers.isCorrect,
+          })
           .from(quizAnswers)
           .where(eq(quizAnswers.questionId, question.id));
         return { ...question, answers };
