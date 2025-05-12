@@ -150,7 +150,7 @@ export const VideoUploader = ({
       setUploadProgress(0);
 
       // Compress the video first
-      const compressedFile = await compressVideo(selectedFile);
+      const compressedFile = selectedFile;
 
       const { data, error } = await getPresignedUrl(lessonId, {
         title: compressedFile.name,
