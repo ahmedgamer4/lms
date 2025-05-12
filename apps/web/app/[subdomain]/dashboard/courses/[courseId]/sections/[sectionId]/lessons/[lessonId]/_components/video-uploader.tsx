@@ -8,12 +8,9 @@ import {
 } from "@/lib/videos";
 import { Button } from "@/components/ui/button";
 import { Upload, X } from "lucide-react";
-import { useState, useCallback, useRef, useEffect } from "react";
+import { useState, useCallback, useRef } from "react";
 import { useDropzone } from "react-dropzone";
 import { toast } from "sonner";
-import { FFmpeg } from "@ffmpeg/ffmpeg";
-import { loadFFmpeg } from "@/lib/load-ffmpeg";
-import { fetchFile } from "@ffmpeg/util";
 import { Progress } from "@/components/ui/progress";
 
 export const VideoUploader = ({
@@ -29,100 +26,6 @@ export const VideoUploader = ({
   const [uploadProgress, setUploadProgress] = useState(0);
   const [compressionProgress, setCompressionProgress] = useState(0);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [loaded, setLoaded] = useState(false);
-  const ffmpegRef = useRef<FFmpeg | null>(null);
-
-  const load = async () => {
-    const ffmpeg_response: FFmpeg = await loadFFmpeg();
-    ffmpegRef.current = ffmpeg_response;
-    setLoaded(true);
-  };
-
-  useEffect(() => {
-    load();
-  }, []);
-
-  const compressVideo = async (file: File): Promise<File> => {
-    if (!ffmpegRef.current) {
-      toast.error("Compression tools not loaded");
-      throw new Error("FFmpeg not loaded");
-    }
-
-    try {
-      setIsCompressing(true);
-      setCompressionProgress(0);
-
-      // Write the input file to FFmpeg's virtual filesystem
-      await ffmpegRef.current.writeFile("input.mp4", await fetchFile(file));
-
-      // Set up progress monitoring
-      ffmpegRef.current.on("progress", ({ progress }) => {
-        setCompressionProgress(Math.round(progress * 100));
-      });
-
-      // Run FFmpeg command to compress the video
-      await ffmpegRef.current.exec([
-        "-i",
-        "input.mp4",
-        "-c:v",
-        "libx264",
-        "-preset",
-        "ultrafast",
-        "-crf",
-        "32",
-        "-maxrate",
-        "2M",
-        "-bufsize",
-        "2M",
-        "-movflags",
-        "+faststart",
-        "-threads",
-        "4",
-        "-c:a",
-        "aac",
-        "-b:a",
-        "96k",
-        "output.mp4",
-      ]);
-
-      try {
-        const data = await ffmpegRef.current.readFile("output.mp4");
-
-        if (!data || data.length === 0) {
-          throw new Error("Compression resulted in empty file");
-        }
-
-        const compressedBlob = new Blob([data], { type: "video/mp4" });
-
-        if (compressedBlob.size === 0) {
-          throw new Error("Compression resulted in empty file");
-        }
-
-        if (compressedBlob.size >= file.size) {
-          console.warn(
-            "Compressed file is larger than original, using original file",
-          );
-          return file;
-        }
-
-        return new File(
-          [compressedBlob],
-          file.name.replace(/\.[^/.]+$/, "") + "_compressed.mp4",
-          {
-            type: "video/mp4",
-          },
-        );
-      } catch (readError) {
-        console.error("Error reading compressed file:", readError);
-        throw new Error("Failed to read compressed video");
-      }
-    } catch (error) {
-      console.error("Compression error:", error);
-      throw new Error("Failed to compress video");
-    } finally {
-      setIsCompressing(false);
-    }
-  };
 
   const onDrop = useCallback((files: File[]) => {
     const file = files[0];
@@ -140,7 +43,7 @@ export const VideoUploader = ({
     onDrop,
     accept: { "video/*": [".mp4", ".mov", ".avi", ".wmv"] },
     maxFiles: 1,
-    disabled: isUploading || isCompressing || !loaded,
+    disabled: isUploading || isCompressing,
   });
 
   const handleUpload = async () => {
@@ -199,11 +102,6 @@ export const VideoUploader = ({
           <p className="text-muted-foreground text-xs">
             Supported: MP4, MOV, AVI, WMV (max 500MB)
           </p>
-          {!loaded && (
-            <p className="text-muted-foreground text-xs">
-              Loading video compression tools...
-            </p>
-          )}
         </div>
       </div>
 
@@ -241,11 +139,7 @@ export const VideoUploader = ({
               </p>
             </div>
           ) : (
-            <Button
-              onClick={handleUpload}
-              className="w-full"
-              disabled={!loaded}
-            >
+            <Button onClick={handleUpload} className="w-full">
               Upload Video
             </Button>
           )}
