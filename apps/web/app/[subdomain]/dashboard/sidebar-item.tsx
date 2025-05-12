@@ -29,17 +29,16 @@ export const SidebarItems = () => {
     <>
       {items.map((item) => (
         <SidebarMenuItem key={item.title} className="list-none">
-          <SidebarMenuButton asChild>
-            <Link
-              className={
-                item.url === path
-                  ? `text-primary-foreground hover:text-primary/90 bg-primary hover:bg-primary/90`
-                  : ``
-              }
-              replace={true}
-              href={item.url}
-            >
-              <item.icon />
+          <SidebarMenuButton
+            className={
+              item.url === path
+                ? `text-primary-foreground hover:text-primary-foreground bg-primary hover:bg-primary`
+                : `hover:text-primary/90 hover:bg-accent`
+            }
+            asChild
+          >
+            <Link replace={true} href={item.url}>
+              <item.icon className="h-5 w-5 opacity-90" />
               <span className="text-md">{item.title}</span>
             </Link>
           </SidebarMenuButton>
