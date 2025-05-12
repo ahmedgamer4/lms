@@ -18,6 +18,14 @@ export class LessonsService {
           videos: {
             columns: {
               lessonId: false,
+              createdAt: false,
+            },
+          },
+          quizzes: {
+            columns: {
+              lessonId: false,
+              createdAt: false,
+              updatedAt: false,
             },
           },
         },
@@ -43,7 +51,6 @@ export class LessonsService {
   async update(lessonId: number, dto: UpdateLessonDto) {
     try {
       await db.transaction(async (tx) => {
-        // Update lesson
         await tx
           .update(lessons)
           .set({
