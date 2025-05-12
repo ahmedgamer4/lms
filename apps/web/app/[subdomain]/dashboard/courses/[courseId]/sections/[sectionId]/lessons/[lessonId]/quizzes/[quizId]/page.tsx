@@ -270,7 +270,7 @@ export default function QuizEditPage() {
         </BreadcrumbList>
       </Breadcrumb>
 
-      <div className="mb-6 flex items-center justify-between">
+      <div className="mb-6 items-center justify-between md:flex">
         <div className="flex items-center gap-4">
           <Button
             variant="ghost"

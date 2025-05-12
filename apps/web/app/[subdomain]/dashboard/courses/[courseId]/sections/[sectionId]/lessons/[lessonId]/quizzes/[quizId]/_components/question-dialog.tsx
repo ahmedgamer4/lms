@@ -90,14 +90,16 @@ export const QuestionDialog = ({
 
   return (
     <Dialog>
-      <DialogTrigger asChild>
-        {trigger || (
-          <Button className="gap-2">
-            <Plus className="h-4 w-4" />
-            Add Question
-          </Button>
-        )}
-      </DialogTrigger>
+      <div className="flex w-full justify-end">
+        <DialogTrigger asChild>
+          {trigger || (
+            <Button className="mt-2 gap-2 md:mt-0">
+              <Plus className="h-4 w-4" />
+              Add Question
+            </Button>
+          )}
+        </DialogTrigger>
+      </div>
       <DialogContent className="max-w-2xl">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
