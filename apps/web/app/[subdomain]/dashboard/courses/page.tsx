@@ -48,11 +48,11 @@ export default function CoursesPage() {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <div className="w-full pr-8">
+      <div className="container mx-auto pr-8">
         <div className="flex w-full justify-between">
           <h2 className="text-2xl font-bold">All Courses</h2>
           <DialogTrigger asChild>
-            <Button>
+            <Button variant={"video"}>
               <Plus />
               New Course
             </Button>
@@ -76,7 +76,9 @@ export default function CoursesPage() {
               Unpublished
             </Button>
           </div>
+
           <Separator />
+
           <div className="mt-4 grid grid-cols-[repeat(auto-fill,_minmax(350px,_1fr))] gap-6">
             {courses.length === 0 ? (
               <div>No Courses</div>
