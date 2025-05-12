@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { classValidatorResolver } from "@hookform/resolvers/class-validator";
 import { Input } from "@/components/ui/input";
@@ -16,6 +16,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { loginUser } from "@/lib/auth";
+import { Loader2 } from "lucide-react";
 
 export function LoginForm({
   subdomain,
@@ -39,11 +40,11 @@ export function LoginForm({
     mode: "onChange",
   });
 
+  const { isSubmitting, isValid } = form.formState;
+
   async function onSubmit(data: LoginUserDto) {
     data.subdomain = subdomain;
-    console.log(subdomain);
     const res = await loginUser(data);
-    console.log(res);
     if (res?.status !== 200)
       form.setError("root", { message: res?.data.message });
     else {
@@ -91,8 +92,19 @@ export function LoginForm({
             </FormItem>
           )}
         />
-        <Button type="submit" className="w-full">
-          Sign In
+        <Button
+          type="submit"
+          className="w-full"
+          disabled={isSubmitting || !isValid}
+        >
+          {isSubmitting ? (
+            <span className="flex items-center justify-center">
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Signing In...
+            </span>
+          ) : (
+            "Sign In"
+          )}
         </Button>
       </form>
     </Form>
