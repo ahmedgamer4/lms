@@ -22,7 +22,10 @@ export function CourseCard({ course }: { course: SelectCourse }) {
           className="h-48 w-full object-cover transition-transform duration-300 group-hover:scale-105"
         />
         <div className="absolute top-2 right-2">
-          <Badge variant="secondary" className="bg-white/90 backdrop-blur-sm">
+          <Badge
+            variant="secondary"
+            className="border-border border backdrop-blur-sm"
+          >
             ${course.price}
           </Badge>
         </div>
