@@ -8,7 +8,7 @@ import {
   timestamp,
   varchar,
 } from "drizzle-orm/pg-core";
-import { teachers } from "./user";
+import { teachers, students } from "./user";
 import { InferSelectModel, relations, sql } from "drizzle-orm";
 import { videos } from "./video";
 import { quizzes } from "./quiz";
@@ -42,6 +42,23 @@ export const courseSections = pgTable("course_sections", {
   orderIndex: integer("order_index").notNull(),
 });
 
+export const enrollments = pgTable("enrollments", {
+  id: serial("id").primaryKey(),
+  studentId: integer("student_id")
+    .notNull()
+    .references(() => students.id, {
+      onDelete: "cascade",
+    }),
+  courseId: integer("course_id")
+    .notNull()
+    .references(() => courses.id, {
+      onDelete: "cascade",
+    }),
+  enrolledAt: timestamp("enrolled_at", { withTimezone: true }).defaultNow(),
+  status: varchar("status", { length: 20 }).notNull().default("active"),
+  progress: integer("progress").notNull().default(0),
+});
+
 export const lessons = pgTable("lessons", {
   id: serial("id").primaryKey(),
   title: varchar("title", { length: 255 }).notNull(),
@@ -60,6 +77,7 @@ export const coursesRelations = relations(courses, ({ one, many }) => ({
     references: [teachers.teacherId],
   }),
   courseSections: many(courseSections),
+  enrollments: many(enrollments),
 }));
 
 export const courseSectionsRelations = relations(
@@ -81,6 +99,17 @@ export const lessonsRelations = relations(lessons, ({ one, many }) => ({
 
   videos: many(videos),
   quizzes: many(quizzes),
+}));
+
+export const enrollmentsRelations = relations(enrollments, ({ one }) => ({
+  student: one(students, {
+    fields: [enrollments.studentId],
+    references: [students.id],
+  }),
+  course: one(courses, {
+    fields: [enrollments.courseId],
+    references: [courses.id],
+  }),
 }));
 
 export type SelectCourse = InferSelectModel<typeof courses>;
