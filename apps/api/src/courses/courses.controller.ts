@@ -24,6 +24,8 @@ import {
   CourseEditDto,
   CreateCourseDto,
   CreateCourseSectionDto,
+  db,
+  students,
   UpdateCourseSectionDto,
 } from '@lms-saas/shared-lib';
 import { Roles } from '@/auth/decorators/roles.decorator';
@@ -31,6 +33,7 @@ import { ApiBearerAuth, ApiBody, ApiConsumes } from '@nestjs/swagger';
 import { RolesGuard } from '@/auth/guards/roles/roles.guard';
 import { File, FileInterceptor } from '@nest-lab/fastify-multer';
 import { CloudinaryService } from '@/cloudinary/cloudinary.service';
+import { eq } from 'drizzle-orm';
 
 @ApiBearerAuth()
 @UseGuards(RolesGuard)
@@ -48,7 +51,7 @@ export class CoursesController {
   }
 
   @Get('/by-teacher-id')
-  getByTeacherId(
+  async getByTeacherId(
     @Req() req,
     @Query('page', ParseIntPipe) page: number,
     @Query('limit', ParseIntPipe) limit: number,
@@ -56,13 +59,32 @@ export class CoursesController {
     @Query('published', ParseBoolPipe) published: boolean,
   ) {
     const offset = (page - 1) * limit;
-    return this.coursesService.getByTeacherId(
-      req.user.id,
-      offset,
-      limit,
-      withTeacher,
-      published,
-    );
+    if (req.user.role === 'teacher')
+      return this.coursesService.getByTeacherId(
+        req.user.id,
+        offset,
+        limit,
+        withTeacher,
+        published,
+      );
+    else {
+      const teacherIdRes = await db.query.students.findFirst({
+        where: eq(students.id, req.user.id),
+        columns: {
+          teacherId: true,
+        },
+      });
+
+      if (!teacherIdRes) throw new NotFoundException('Teacher not found');
+
+      return this.coursesService.getByTeacherId(
+        teacherIdRes.teacherId,
+        offset,
+        limit,
+        withTeacher,
+        published,
+      );
+    }
   }
 
   @Get('/:courseId')
