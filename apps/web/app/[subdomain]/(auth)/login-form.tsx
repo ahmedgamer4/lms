@@ -49,7 +49,7 @@ export function LoginForm({
       form.setError("root", { message: res?.data.message });
     else {
       if (role === "teacher") router.replace("/dashboard/courses");
-      else router.replace("/home");
+      else router.replace("/courses");
     }
   }
 
