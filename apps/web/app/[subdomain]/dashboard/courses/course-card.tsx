@@ -57,8 +57,8 @@ export function CourseCard({ course }: { course: SelectCourse }) {
       <CardFooter className="border-t bg-gray-50/50 p-4">
         <Link href={`/dashboard/courses/${course.id}`} className="w-full">
           <Button
-            variant="outline"
-            className="hover:bg-primary hover:text-primary-foreground w-full gap-2 text-sm transition-colors"
+            variant="default"
+            className="w-full gap-2 text-sm transition-colors"
           >
             <Pen className="h-4 w-4" />
             Edit Course
