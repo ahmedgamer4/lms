@@ -7,7 +7,7 @@ import { useParams } from "next/navigation";
 export default function TeacherLoginPage() {
   const { subdomain } = useParams();
   return (
-    <div className="border-1 flex w-96 flex-col items-center justify-center rounded-lg border bg-white p-6 shadow-sm">
+    <div className="flex w-96 flex-col items-center justify-center rounded-lg border-1 bg-white p-6 shadow-sm">
       <div className="w-full">
         <h1 className="mb-1 text-2xl font-bold">Login</h1>
         <p className="mb-4 text-sm text-gray-700">
