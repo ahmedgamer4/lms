@@ -5,7 +5,7 @@ import {
 } from "@lms-saas/shared-lib/dtos";
 import axios, { AxiosError } from "axios";
 import { BACKEND_URL } from "./constants";
-import { createSession } from "./session";
+import { createSession, deleteSession } from "./session";
 import { asyncWrapper } from "./utils";
 
 const baseUrl = `${BACKEND_URL}/auth`;
@@ -46,13 +46,13 @@ export async function loginUser(input: LoginUserDto) {
 }
 
 export async function refreshToken(
-  oldRefreshToken: string
+  oldRefreshToken: string,
 ): Promise<string | null> {
   try {
     const res = await axios.post(
       "refresh-token",
       { refreshToken: oldRefreshToken },
-      { baseURL: baseUrl }
+      { baseURL: baseUrl },
     );
 
     const { accessToken, refreshToken: newRefreshToken } = res.data;
@@ -76,7 +76,7 @@ export async function refreshToken(
       "Error refreshing token:",
       error instanceof AxiosError
         ? error.response?.data || error.message
-        : error
+        : error,
     );
     return null;
   }
@@ -87,6 +87,10 @@ export async function signupStudent(input: CreateStudentDto) {
     async () =>
       await axios.post(`student/register`, input, {
         baseURL: baseUrl,
-      })
+      }),
   );
+}
+
+export async function logout() {
+  await deleteSession();
 }
