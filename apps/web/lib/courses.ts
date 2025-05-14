@@ -18,19 +18,28 @@ import { Video } from "./videos";
 
 const baseUrl = `${BACKEND_URL}/courses`;
 
+export type CourseWithEnrollments = SelectCourse & {
+  enrollments: {
+    id: number;
+    progress: number;
+    enrolledAt: Date;
+  }[];
+};
+
 export async function getCoursesByTeacherId(
   published: boolean,
   page?: number,
   limit?: number,
   withTeacher = false,
+  withEnrollments = false,
 ) {
   return asyncWrapper(async () => {
-    let url = `${baseUrl}/by-teacher-id?with-teacher=${withTeacher}&published=${published}`;
+    let url = `${baseUrl}/by-teacher-id?with-teacher=${withTeacher}&published=${published}&with-enrollments=${withEnrollments}`;
     if (page && limit) {
       url += `&page=${page}&limit=${limit}`;
     }
     const response = await authFetch<{
-      courses: SelectCourse[];
+      courses: CourseWithEnrollments[];
       count: number;
     }>(url);
     return response.data;
@@ -43,13 +52,36 @@ export async function createCourse(input: CreateCourseDto) {
   });
 }
 
-export async function getCourse(id: number) {
+export async function getCourse(
+  id: number,
+  withSections = false,
+  withEnrollments = false,
+) {
   return asyncWrapper(async () => {
     return await authFetch<
       SelectCourse & {
-        courseSections: { id: number; title: string; orderIndex: number }[];
+        courseSections: {
+          id: number;
+          title: string;
+          orderIndex: number;
+          lessons: {
+            id: number;
+            title: string;
+            orderIndex: number;
+          }[];
+        }[];
+        enrollments?: {
+          id: number;
+          progress: number;
+          enrolledAt: Date;
+        }[];
       }
-    >(`${baseUrl}/${id}`, { method: "GET" });
+    >(
+      `${baseUrl}/${id}?with-enrollments=${withEnrollments}&with-sections=${withSections}`,
+      {
+        method: "GET",
+      },
+    );
   });
 }
 
@@ -207,5 +239,21 @@ export const deleteLesson = (
         method: "DELETE",
       },
     );
+  });
+};
+
+export const enrollInCourse = async (courseId: number) => {
+  return asyncWrapper(async () => {
+    return authFetch<{ message: string }>(`${baseUrl}/${courseId}/enroll`, {
+      method: "POST",
+    });
+  });
+};
+
+export const getEnrolledCourses = async () => {
+  return asyncWrapper(async () => {
+    return authFetch<CourseWithEnrollments[]>(`${baseUrl}/enrolled`, {
+      method: "GET",
+    });
   });
 };
