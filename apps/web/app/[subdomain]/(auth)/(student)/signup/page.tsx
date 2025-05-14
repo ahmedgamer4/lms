@@ -9,21 +9,21 @@ export default async function SignupPage({
 }) {
   const { subdomain } = await params;
   return (
-    <div className="bg-white flex items-center w-full justify-center">
-      <div className="bg-foreground w-1/2 min-h-screen hidden md:flex flex-col justify-between p-12 text-primary-foreground">
+    <div className="flex w-full items-center justify-center">
+      <div className="bg-primary text-primary-foreground hidden min-h-screen w-1/2 flex-col justify-between p-12 md:flex">
         <h3 className="text-2xl font-bold">Next LMS</h3>
-        <p className="w-4/5">
+        <p className="text-muted w-4/5">
           Lorem ipsum dolor sit amet consectetur adipisicing elit. Rerum
           repellat nostrum tenetur maxime earum possimus placeat consequatur
           dolorum voluptate explicabo? Unde deleniti amet tempore alias nobis
           similique cupiditate sint error.
         </p>
       </div>
-      <div className="bg-white w-10/12 md:w-1/2 flex justify-center">
+      <div className="flex w-10/12 justify-center md:w-1/2">
         <div className="w-80">
-          <h1 className="text-center text-2xl font-bold mb-4">Sign In Page</h1>
+          <h1 className="mb-4 text-center text-2xl font-bold">Sign In Page</h1>
           <SignupForm subdomain={subdomain} />
-          <div className="flex justify-between text-sm mt-2">
+          <div className="mt-2 flex justify-between text-sm">
             <p>Already have an account?</p>
             <Link className="underline" href={"/login"}>
               Sign In
