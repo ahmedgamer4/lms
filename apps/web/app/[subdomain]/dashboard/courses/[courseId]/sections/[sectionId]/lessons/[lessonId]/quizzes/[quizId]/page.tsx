@@ -206,8 +206,6 @@ export default function QuizEditPage() {
       orderIndex: index,
     }));
 
-    console.log("updatedQuestions", updatedQuestions);
-
     await updateQuiz(Number(params.lessonId), params.quizId as string, {
       questions: updatedQuestions,
     });
