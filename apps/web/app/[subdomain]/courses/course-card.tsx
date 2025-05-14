@@ -11,6 +11,7 @@ import { Users, Clock, Star, BookOpen } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { useRouter } from "next/navigation";
 import { CourseWithEnrollments } from "@/lib/courses";
+import Image from "next/image";
 
 export function CourseCard({ course }: { course: CourseWithEnrollments }) {
   const router = useRouter();
@@ -20,13 +21,15 @@ export function CourseCard({ course }: { course: CourseWithEnrollments }) {
       <CardHeader className="relative p-0">
         <div className="relative aspect-video">
           {course.imageUrl ? (
-            <img
+            <Image
               src={course.imageUrl}
               alt={course.title}
-              className="h-full w-full object-cover"
+              className="h-48 w-full object-cover"
+              width={600}
+              height={192}
             />
           ) : (
-            <div className="bg-muted flex h-full w-full items-center justify-center">
+            <div className="bg-muted flex h-48 w-full items-center justify-center">
               <BookOpen className="text-muted-foreground h-12 w-12" />
             </div>
           )}
@@ -44,7 +47,7 @@ export function CourseCard({ course }: { course: CourseWithEnrollments }) {
       <CardContent className="flex flex-1 flex-col gap-3 p-4">
         <div className="space-y-1">
           <h3 className="line-clamp-1 text-lg font-semibold">{course.title}</h3>
-          <p className="text-muted-foreground line-clamp-2 text-sm">
+          <p className="text-muted-foreground line-clamp-1 text-sm">
             {course.description || "No description available for this course."}
           </p>
         </div>

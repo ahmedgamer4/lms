@@ -16,6 +16,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
+import Image from "next/image";
 
 export default function CourseEnrollPage() {
   const queryClient = useQueryClient();
@@ -117,13 +118,15 @@ export default function CourseEnrollPage() {
           <CardHeader className="relative p-0">
             <div className="relative aspect-video">
               {course.imageUrl ? (
-                <img
+                <Image
                   src={course.imageUrl}
                   alt={course.title}
-                  className="h-full w-full object-cover"
+                  className="h-72 w-full object-cover"
+                  width={600}
+                  height={192}
                 />
               ) : (
-                <div className="bg-muted flex h-full w-full items-center justify-center">
+                <div className="bg-muted flex h-72 w-full items-center justify-center">
                   <BookOpen className="text-muted-foreground h-12 w-12" />
                 </div>
               )}

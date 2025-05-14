@@ -48,15 +48,17 @@ export default function CoursesPage() {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <div className="container mx-auto pr-8">
-        <div className="flex w-full justify-between">
+      <div className="container mx-auto">
+        <div className="w-full justify-between md:flex">
           <h2 className="text-2xl font-bold">All Courses</h2>
-          <DialogTrigger asChild>
-            <Button variant={"video"}>
-              <Plus />
-              New Course
-            </Button>
-          </DialogTrigger>
+          <div className="flex items-center justify-end gap-2">
+            <DialogTrigger asChild>
+              <Button className="mt-2 md:mt-0" variant={"video"}>
+                <Plus />
+                New Course
+              </Button>
+            </DialogTrigger>
+          </div>
         </div>
 
         <div>
@@ -94,7 +96,7 @@ export default function CoursesPage() {
         <PaginationContent>
           <PaginationItem className={page === 1 ? "hidden" : ""}>
             <PaginationPrevious
-              size={"icon"}
+              size={"sm"}
               onClick={() => handlePageChange(page - 1)}
               aria-disabled={page === 1}
             />
