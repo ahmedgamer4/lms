@@ -10,13 +10,15 @@ import {
   enrollments,
 } from '@lms-saas/shared-lib';
 import { Injectable } from '@nestjs/common';
-import { and, count, eq } from 'drizzle-orm';
+import { and, count, desc, eq } from 'drizzle-orm';
 
 type WithClause = {
   courseSections?: {
+    orderBy?: any;
     columns: { id: true; title: true; orderIndex: true };
     with: {
       lessons: {
+        orderBy?: any;
         columns: { sectionId: false };
         with: {
           videos: { columns: { id: true } };
@@ -70,7 +72,7 @@ export class CoursesService {
           eq(courses.teacherId, teacherId),
           eq(courses.published, published),
         ),
-        orderBy: courses.createdAt,
+        orderBy: [desc(courses.createdAt)],
         columns: {
           createdAt: false,
           updatedAt: false,
@@ -83,7 +85,7 @@ export class CoursesService {
           eq(courses.teacherId, teacherId),
           eq(courses.published, published),
         ),
-        orderBy: courses.createdAt,
+        orderBy: [desc(courses.createdAt)],
         columns: {
           createdAt: false,
           updatedAt: false,
@@ -126,6 +128,7 @@ export class CoursesService {
 
     if (withSections) {
       withClause.courseSections = {
+        orderBy: [courseSections.orderIndex],
         columns: {
           id: true,
           title: true,
@@ -133,6 +136,7 @@ export class CoursesService {
         },
         with: {
           lessons: {
+            orderBy: [lessons.orderIndex],
             columns: {
               sectionId: false,
             },
