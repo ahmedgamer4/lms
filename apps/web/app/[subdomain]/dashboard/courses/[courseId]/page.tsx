@@ -24,7 +24,7 @@ export default function EditCoursePage({}: {}) {
 
   const { isLoading, data } = useQuery({
     queryKey: ["dashboard-course", courseId],
-    queryFn: () => getCourse(courseId),
+    queryFn: () => getCourse(courseId, true),
   });
 
   if (isLoading) return <div>Loading...</div>;
