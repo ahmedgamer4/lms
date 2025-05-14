@@ -18,7 +18,6 @@ import { useRouter } from "next/navigation";
 import { signupStudent } from "@/lib/auth";
 
 export function SignupForm({ subdomain }: { subdomain: string }) {
-  console.log(subdomain);
   const router = useRouter();
   const resolver = useMemo(() => {
     return classValidatorResolver(CreateStudentDto);
@@ -38,7 +37,6 @@ export function SignupForm({ subdomain }: { subdomain: string }) {
 
   async function onSubmit(data: CreateStudentDto) {
     const res = await signupStudent(data);
-    console.log(res);
     if (res.error) {
       form.setError("root", { message: res.error.response.data.message });
     } else {

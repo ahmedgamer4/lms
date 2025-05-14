@@ -49,7 +49,6 @@ export const PriceForm = ({ initialData, courseId }: PriceFormProps) => {
   const { isSubmitting, isValid } = form.formState;
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    console.log(values);
     try {
       await updateCourse(courseId, { price: values.price });
       setPrice(values.price);
