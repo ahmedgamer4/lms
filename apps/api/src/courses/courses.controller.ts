@@ -1,5 +1,6 @@
 import {
   Body,
+  ConflictException,
   Controller,
   Delete,
   FileTypeValidator,
@@ -27,6 +28,7 @@ import {
   db,
   students,
   UpdateCourseSectionDto,
+  enrollments,
 } from '@lms-saas/shared-lib';
 import { Roles } from '@/auth/decorators/roles.decorator';
 import { ApiBearerAuth, ApiBody, ApiConsumes } from '@nestjs/swagger';
@@ -56,6 +58,7 @@ export class CoursesController {
     @Query('page', ParseIntPipe) page: number,
     @Query('limit', ParseIntPipe) limit: number,
     @Query('with-teacher', ParseBoolPipe) withTeacher: boolean,
+    @Query('with-enrollments', ParseBoolPipe) withEnrollments: boolean,
     @Query('published', ParseBoolPipe) published: boolean,
   ) {
     const offset = (page - 1) * limit;
@@ -66,6 +69,7 @@ export class CoursesController {
         limit,
         withTeacher,
         published,
+        withEnrollments,
       );
     else {
       const teacherIdRes = await db.query.students.findFirst({
@@ -83,14 +87,26 @@ export class CoursesController {
         limit,
         withTeacher,
         published,
+        withEnrollments,
+        req.user.id,
       );
     }
   }
 
   @Get('/:courseId')
-  getOne(@Param('courseId', ParseIntPipe) courseId: number) {
+  getOne(
+    @Param('courseId', ParseIntPipe) courseId: number,
+    @Query('with-enrollments', ParseBoolPipe) withEnrollments: boolean,
+    @Query('with-sections', ParseBoolPipe) withSections: boolean,
+    @Req() req,
+  ) {
     try {
-      return this.coursesService.getOne(courseId);
+      return this.coursesService.getOne(
+        courseId,
+        req.user.id,
+        withSections,
+        withEnrollments,
+      );
     } catch (error) {
       throw new InternalServerErrorException('Cannot update course');
     }
@@ -222,5 +238,47 @@ export class CoursesController {
     } catch (error) {
       throw new InternalServerErrorException('Cannot delete course section');
     }
+  }
+
+  @Post('/:courseId/enroll')
+  @Roles('student')
+  async enrollInCourse(
+    @Param('courseId', ParseIntPipe) courseId: number,
+    @Req() req,
+  ) {
+    const studentId = req.user.id;
+
+    let existingEnrollment;
+    try {
+      existingEnrollment = await db.query.enrollments.findFirst({
+        where:
+          eq(enrollments.studentId, studentId) &&
+          eq(enrollments.courseId, courseId),
+      });
+    } catch (error) {
+      throw new InternalServerErrorException('Failed to enroll in the course');
+    }
+
+    if (existingEnrollment) {
+      throw new ConflictException('Student is already enrolled in this course');
+    }
+
+    try {
+      await db.insert(enrollments).values({
+        studentId,
+        courseId,
+        status: 'active',
+      });
+
+      return { message: 'Successfully enrolled in the course' };
+    } catch (error) {
+      throw new InternalServerErrorException('Failed to enroll in the course');
+    }
+  }
+
+  @Get('/enrolled')
+  @Roles('student')
+  getEnrolledCourses(@Req() req) {
+    return this.coursesService.getEnrolledCourses(req.user.id);
   }
 }

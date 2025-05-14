@@ -7,9 +7,32 @@ import {
   db,
   UpdateCourseSectionDto,
   lessons,
+  enrollments,
 } from '@lms-saas/shared-lib';
 import { Injectable } from '@nestjs/common';
 import { and, count, eq } from 'drizzle-orm';
+
+type WithClause = {
+  courseSections?: {
+    columns: { id: true; title: true; orderIndex: true };
+    with: {
+      lessons: {
+        columns: { sectionId: false };
+        with: {
+          videos: { columns: { id: true } };
+          quizzes: { columns: { id: true } };
+        };
+      };
+    };
+  };
+  enrollments?: {
+    columns: { id: true; progress: true; enrolledAt: true };
+    where: any;
+  };
+  teacher?: {
+    columns: { name: true };
+  };
+};
 
 @Injectable()
 export class CoursesService {
@@ -23,7 +46,23 @@ export class CoursesService {
     limit: number = NaN,
     withTeacher: boolean = false,
     published: boolean = false,
+    withEnrollments?: boolean,
+    studentId?: number,
   ) {
+    const withClause: WithClause = {};
+
+    if (withTeacher) {
+      withClause.teacher = {
+        columns: { name: true },
+      };
+    }
+    if (withEnrollments && studentId) {
+      withClause.enrollments = {
+        columns: { id: true, progress: true, enrolledAt: true },
+        where: eq(enrollments.studentId, studentId),
+      };
+    }
+
     let res;
     if (!offset && !limit)
       res = await db.query.courses.findMany({
@@ -36,15 +75,7 @@ export class CoursesService {
           createdAt: false,
           updatedAt: false,
         },
-        with: withTeacher
-          ? {
-              teacher: {
-                columns: {
-                  name: true,
-                },
-              },
-            }
-          : {},
+        with: withClause,
       });
     else {
       res = await db.query.courses.findMany({
@@ -57,15 +88,7 @@ export class CoursesService {
           createdAt: false,
           updatedAt: false,
         },
-        with: withTeacher
-          ? {
-              teacher: {
-                columns: {
-                  name: true,
-                },
-              },
-            }
-          : {},
+        with: withClause,
         limit,
         offset,
       });
@@ -93,19 +116,60 @@ export class CoursesService {
     await db.update(courses).set(input).where(eq(courses.id, courseId));
   }
 
-  async getOne(courseId: number) {
-    return await db.query.courses.findFirst({
-      where: eq(courses.id, courseId),
-      with: {
-        courseSections: {
-          columns: {
-            id: true,
-            title: true,
-            orderIndex: true,
+  async getOne(
+    courseId: number,
+    studentId?: number,
+    withSections = false,
+    withEnrollments = false,
+  ) {
+    const withClause: WithClause = {};
+
+    if (withSections) {
+      withClause.courseSections = {
+        columns: {
+          id: true,
+          title: true,
+          orderIndex: true,
+        },
+        with: {
+          lessons: {
+            columns: {
+              sectionId: false,
+            },
+            with: {
+              videos: {
+                columns: {
+                  id: true,
+                },
+              },
+              quizzes: {
+                columns: {
+                  id: true,
+                },
+              },
+            },
           },
         },
-      },
+      };
+    }
+
+    if (withEnrollments && studentId) {
+      withClause.enrollments = {
+        columns: {
+          id: true,
+          progress: true,
+          enrolledAt: true,
+        },
+        where: eq(enrollments.studentId, studentId),
+      };
+    }
+
+    const data = await db.query.courses.findFirst({
+      where: eq(courses.id, courseId),
+      with: withClause,
     });
+
+    return data;
   }
 
   async delete(courseId: number) {
@@ -196,5 +260,46 @@ export class CoursesService {
         },
       },
     });
+  }
+
+  async getEnrolledCourses(studentId: number) {
+    const res = await db.query.enrollments.findMany({
+      where: and(
+        eq(enrollments.studentId, studentId),
+        eq(enrollments.status, 'active'),
+      ),
+      with: {
+        course: {
+          columns: {
+            id: true,
+            title: true,
+            description: true,
+            imageUrl: true,
+            price: true,
+            published: true,
+            teacherId: true,
+          },
+        },
+      },
+      columns: {
+        id: true,
+        progress: true,
+        enrolledAt: true,
+      },
+    });
+
+    const courses = res.map((en) => {
+      return {
+        ...en.course,
+        enrollments: [
+          {
+            id: en.id,
+            progress: en.progress,
+            enrolledAt: en.enrolledAt,
+          },
+        ],
+      };
+    });
+    return courses;
   }
 }
