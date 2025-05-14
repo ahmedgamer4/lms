@@ -31,7 +31,7 @@ export const SidebarItems = () => {
         <SidebarMenuItem key={item.title} className="list-none">
           <SidebarMenuButton
             className={
-              item.url === path
+              path.includes(item.url)
                 ? `text-primary-foreground hover:text-primary-foreground bg-primary hover:bg-primary`
                 : `hover:text-primary/90 hover:bg-accent`
             }
