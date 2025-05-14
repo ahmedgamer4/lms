@@ -12,6 +12,7 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
+import { Loader2 } from "lucide-react";
 
 export default function EditCoursePage({}: {}) {
   const params = useParams();
@@ -27,7 +28,12 @@ export default function EditCoursePage({}: {}) {
     queryFn: () => getCourse(courseId, true),
   });
 
-  if (isLoading) return <div>Loading...</div>;
+  if (isLoading)
+    return (
+      <div className="flex h-[calc(100vh-200px)] items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin" />
+      </div>
+    );
 
   const course = data?.data?.data;
   if (!course) redirect("/dashboard/courses");

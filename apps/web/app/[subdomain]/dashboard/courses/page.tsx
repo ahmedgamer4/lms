@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { getCoursesByTeacherId } from "@/lib/courses";
 import { useQuery } from "@tanstack/react-query";
-import { Plus } from "lucide-react";
+import { Loader2, Plus } from "lucide-react";
 import { CourseCard } from "./course-card";
 import {
   Dialog,
@@ -34,7 +34,12 @@ export default function CoursesPage() {
     queryFn: async () => await getCoursesByTeacherId(published, page, 8, false),
   });
 
-  if (isLoading || !data || !data.data) return <div>Loading...</div>;
+  if (isLoading || !data || !data.data)
+    return (
+      <div className="flex h-[calc(100vh-200px)] items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin" />
+      </div>
+    );
 
   const courses = data.data.courses;
   const count = data.data.count || 0;

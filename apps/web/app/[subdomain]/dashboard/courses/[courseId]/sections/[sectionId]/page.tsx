@@ -147,7 +147,11 @@ export default function SectionPage() {
   }
 
   if (!course?.data?.data || !section?.data?.data) {
-    return <div>Loading...</div>;
+    return (
+      <div className="flex h-[calc(100vh-200px)] items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin" />
+      </div>
+    );
   }
 
   return (
