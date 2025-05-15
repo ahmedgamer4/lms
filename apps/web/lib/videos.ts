@@ -1,40 +1,47 @@
-import { UploadVideoDto } from "@lms-saas/shared-lib";
+import { CreateVideoDto, UploadDto } from "@lms-saas/shared-lib";
 import { authFetch } from "./auth-fetch";
 import { BACKEND_URL } from "./constants";
 import { asyncWrapper } from "./utils";
 import axios from "axios";
 
-const baseUrl = `${BACKEND_URL}/lessons/1/videos`;
+const baseUrl = `${BACKEND_URL}/lessons`;
 
 export interface Video {
   id: string;
   title: string;
-  s3Key: string;
+  manifestKey: string;
+  segmentsKey: string;
 }
+
+export type Fields = {
+  key: string;
+  expiresIn: string;
+  bucket: string;
+  "X-Amz-Algorithm": string;
+  "X-Amz-Credential": string;
+  "X-Amz-Date": string;
+  Policy: string;
+  "X-Amz-Signature": string;
+};
 
 export type SignedUrlResponse = {
   url: string;
-  videoDetails: {
-    id: string;
-    title: string;
-    s3Key: string;
-  };
-  fields: {
-    key: string;
-    expiresIn: string;
-    bucket: string;
-    "X-Amz-Algorithm": string;
-    "X-Amz-Credential": string;
-    "X-Amz-Date": string;
-    Policy: string;
-    "X-Amz-Signature": string;
-  };
+  fields: Fields;
 };
 
-export const getPresignedUrl = (lessonId: number, data: UploadVideoDto) => {
+export const createVideo = (lessonId: number, data: CreateVideoDto) => {
+  return asyncWrapper(async () => {
+    return authFetch<Video>(`${baseUrl}/${lessonId}/videos`, {
+      method: "POST",
+      data,
+    });
+  });
+};
+
+export const getUploadPresignedUrl = (lessonId: number, data: UploadDto) => {
   return asyncWrapper(async () => {
     return authFetch<SignedUrlResponse>(
-      `${BACKEND_URL}/lessons/${lessonId}/videos/upload`,
+      `${BACKEND_URL}/s3/generate-presigned-url`,
       {
         method: "POST",
         data,
@@ -50,36 +57,56 @@ export const uploadVideo = async (
 ) => {
   const { url, fields } = presignedPostInput;
 
-  const data: Record<string, any> = {
-    ...fields,
-    "Content-Type": file.type,
-    file,
-  };
-
   const formData = new FormData();
-  for (const name in data) formData.append(name, data[name]);
 
-  await axios.post(url, formData, {
-    headers: {
-      "Content-Type": "multipart/form-data",
-    },
-    onUploadProgress: (progress) =>
-      setProgress((progress.loaded / (progress.total || 1)) * 100),
+  // Add all fields from the presigned URL first
+  Object.entries(fields).forEach(([key, value]) => {
+    formData.append(key, value as string);
   });
+
+  // Add the file last
+  formData.append("file", file);
+
+  try {
+    const response = await axios.post(url, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+      onUploadProgress: (progress) =>
+        setProgress((progress.loaded / (progress.total || 1)) * 100),
+    });
+    return response;
+  } catch (error) {
+    console.error("Upload failed:", error);
+    if (axios.isAxiosError(error)) {
+      console.error("Response data:", error.response?.data);
+    }
+    throw error;
+  }
 };
 
-export const deleteVideo = (id: string) => {
+export const deleteVideo = (lessonId: number, id: string) => {
   return asyncWrapper(() => {
-    return authFetch(`${baseUrl}/${id}`, {
+    return authFetch(`${baseUrl}/${lessonId}/videos/${id}`, {
       method: "DELETE",
     });
   });
 };
 
-export const getVideo = (id: string) => {
+export const getVideo = (lessonId: number, id: string) => {
   return asyncWrapper(async () => {
-    return authFetch<{ videoId: number; url: string }>(`${baseUrl}/${id}`, {
+    const response = await authFetch<{
+      videoId: string;
+      manifestUrl: string;
+      segmentsBaseUrl: string;
+    }>(`${baseUrl}/${lessonId}/videos/${id}`, {
       method: "GET",
     });
+
+    if (!response.data) {
+      throw new Error("Failed to fetch video data");
+    }
+
+    return response;
   });
 };
