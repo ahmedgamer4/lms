@@ -60,15 +60,27 @@ export default function LessonPage() {
 
   const { data: lessonData, isLoading: isLessonLoading } = useQuery({
     queryKey: ["lesson", params.lessonId],
-    queryFn: () =>
-      findLesson(
+    queryFn: async () => {
+      const res = await findLesson(
         Number(params.courseId),
         Number(params.sectionId),
         Number(params.lessonId),
-      ),
+      );
+
+      if (res.error) {
+        toast.error("Failed to fetch lesson");
+      }
+
+      if (res.data?.data) {
+        setTitle(res.data.data.title);
+      }
+
+      return res;
+    },
   });
 
-  async function handleUpdateTitle() {
+  async function handleUpdateTitle(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
     if (!title.trim()) {
       toast.error("Title cannot be empty");
       return;
@@ -219,7 +231,7 @@ export default function LessonPage() {
           </CardHeader>
           <CardContent className="pt-6">
             <div className="grid gap-4">
-              <div className="grid gap-2">
+              <form onSubmit={handleUpdateTitle} className="grid gap-2">
                 <Label htmlFor="title">Title</Label>
                 <div className="flex gap-2">
                   <Input
@@ -229,11 +241,7 @@ export default function LessonPage() {
                     placeholder="Enter lesson title"
                     className="flex-1"
                   />
-                  <Button
-                    onClick={handleUpdateTitle}
-                    disabled={isLoading}
-                    className="w-[100px]"
-                  >
+                  <Button disabled={isLoading} className="w-[100px]">
                     {isLoading ? (
                       <Loader2 className="h-4 w-4 animate-spin" />
                     ) : (
@@ -241,7 +249,7 @@ export default function LessonPage() {
                     )}
                   </Button>
                 </div>
-              </div>
+              </form>
             </div>
           </CardContent>
         </Card>
