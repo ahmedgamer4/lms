@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
 import Hls from "hls.js";
+import { cn } from "@/lib/utils";
 
 interface SecureVideoPlayerProps {
   src: string;
@@ -112,7 +113,7 @@ export const SecureVideoPlayer = ({
         controls
         controlsList="nodownload"
         disablePictureInPicture
-        className={className}
+        className={cn(className, "aspect-video")}
         onContextMenu={(e) => e.preventDefault()}
       />
     </div>
