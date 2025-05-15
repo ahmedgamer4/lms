@@ -38,8 +38,6 @@ export const VideoPreview = ({
 
   const video = videoData.data;
 
-  console.log(video);
-
   return (
     <div className="space-y-4">
       <div className="relative aspect-video w-full overflow-hidden rounded-lg border bg-black">
