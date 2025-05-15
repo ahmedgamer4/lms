@@ -16,9 +16,4 @@ export class UpdateVideoDto {
   @MinLength(3)
   @MaxLength(255)
   title?: string;
-
-  @IsString()
-  @IsOptional()
-  @MinLength(1)
-  s3Key?: string;
 }
