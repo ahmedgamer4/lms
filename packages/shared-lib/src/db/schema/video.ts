@@ -17,7 +17,8 @@ export const videos = pgTable("videos", {
       onDelete: "cascade",
     }),
   title: varchar("title", { length: 255 }).notNull(),
-  s3Key: varchar("s3_key", { length: 255 }).notNull(),
+  manifestKey: varchar("manifest_key", { length: 255 }).notNull(),
+  segmentsKey: varchar("segments_key", { length: 255 }).notNull(),
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
 });
 
