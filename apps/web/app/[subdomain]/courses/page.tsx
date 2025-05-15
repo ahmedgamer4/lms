@@ -66,7 +66,7 @@ export default function StudentHomePage() {
   };
 
   return (
-    <div className="mx-auto gap-8 space-y-4">
+    <div className="container mx-auto gap-8 space-y-4 px-4 py-8">
       <div className="mb-4">
         <h1 className="text-3xl font-bold">Available Courses</h1>
         <p className="text-muted-foreground mt-2">
@@ -93,7 +93,7 @@ export default function StudentHomePage() {
 
       <Separator />
 
-      <div className="grid grid-cols-[repeat(auto-fill,_minmax(350px,_1fr))] gap-6">
+      <div className="grid grid-cols-[repeat(auto-fill,_minmax(320px,_1fr))] gap-6">
         {courses && courses.length === 0 ? (
           <div className="text-muted-foreground col-span-full text-center">
             No courses available at the moment

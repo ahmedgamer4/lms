@@ -15,7 +15,7 @@ export default async function HomeLayout({
   return (
     <div>
       <Topbar />
-      <div className="container mx-auto px-4 py-8">{children}</div>
+      <div className="mx-auto">{children}</div>
     </div>
   );
 }
