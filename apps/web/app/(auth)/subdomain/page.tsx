@@ -1,10 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
+import { Loader2 } from "lucide-react";
 
-export default function SubdomainPage() {
+function SubdomainContent() {
   const searchParams = useSearchParams();
   const querySubdomain = searchParams?.get("subdomain") || "";
   const [subdomain] = useState(querySubdomain);
@@ -28,5 +29,19 @@ export default function SubdomainPage() {
         Go to my platform
       </Button>
     </div>
+  );
+}
+
+export default function SubdomainPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex min-h-screen flex-col items-center justify-center p-4">
+          <Loader2 className="size-10 animate-spin" />
+        </div>
+      }
+    >
+      <SubdomainContent />
+    </Suspense>
   );
 }
