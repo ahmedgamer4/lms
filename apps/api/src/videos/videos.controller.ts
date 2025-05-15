@@ -1,12 +1,13 @@
 import { Roles } from '@/auth/decorators/roles.decorator';
 import { S3Service } from '@/s3/s3.service';
 import { User } from '@/users/decorators/user.decorator';
-import { UploadVideoDto } from '@lms-saas/shared-lib';
+import { CreateVideoDto, UploadDto } from '@lms-saas/shared-lib';
 import {
   Body,
   Controller,
   Delete,
   Get,
+  NotFoundException,
   Param,
   ParseIntPipe,
   Post,
@@ -23,31 +24,56 @@ export class VideosController {
     private videosService: VideosService,
   ) {}
 
-  @Post('upload')
-  @Roles('teacher')
-  async uploadVideo(
-    @User() teacher: any,
-    @Param('lessonId', ParseIntPipe) lessonId: number,
-    @Body() dto: UploadVideoDto,
-  ) {
-    const key = `videos/${teacher.id}/${lessonId}/${crypto.randomUUID()}-${dto.title}`;
-    const s3Res = await this.s3Service.uploadVideo(key, 'video/mp4');
-
-    const res = await this.videosService.create(lessonId, key, dto);
-    return { ...s3Res, videoDetails: res };
-  }
-
   @Delete('/:id')
   @Roles('teacher')
-  delete(@Param('id') id: string) {
+  async delete(@Param('id') id: string) {
+    const video = await this.videosService.getVideo(id);
+    if (video.length > 0) {
+      // Delete all files in the video directory
+      const basePath = video[0].manifestKey.split('/').slice(0, -1).join('/');
+      await this.s3Service.deleteDirectory(basePath);
+    }
     return this.videosService.delete(id);
   }
 
   @Get('/:id')
   @Roles('teacher', 'student')
   async getVideoUrl(@Param('id') id: string) {
-    const video = await this.videosService.getVideo(id);
-    const url = await this.s3Service.getSignedUrl(video[0].s3Key);
-    return { videoId: video[0].id, url };
+    const [video] = await this.videosService.getVideo(id);
+    if (!video) {
+      throw new NotFoundException('Video not found');
+    }
+
+    const manifestUrl = await this.s3Service.getSignedUrl(video.manifestKey);
+
+    // For segments, we return the base URL without a signed URL
+    // since individual segment files will be requested as needed
+    const segmentsBaseUrl = video.segmentsKey;
+
+    return {
+      videoId: video.id,
+      manifestUrl,
+      segmentsBaseUrl,
+    };
+  }
+
+  @Post('/')
+  @Roles('teacher')
+  async create(
+    @User() teacher: any,
+    @Param('lessonId', ParseIntPipe) lessonId: number,
+    @Body() dto: CreateVideoDto,
+  ) {
+    const videoId = crypto.randomUUID();
+
+    const basePath = `videos/${teacher.id}/${lessonId}/${videoId}`;
+    const manifestKey = `${basePath}/playlist.m3u8`;
+    const segmentsKey = `${basePath}`;
+
+    return this.videosService.create(lessonId, {
+      manifestKey,
+      segmentsKey,
+      title: dto.title,
+    });
   }
 }

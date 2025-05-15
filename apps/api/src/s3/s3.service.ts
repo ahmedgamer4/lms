@@ -1,5 +1,10 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { S3Client, GetObjectCommand } from '@aws-sdk/client-s3';
+import {
+  S3Client,
+  GetObjectCommand,
+  ListObjectsV2Command,
+  DeleteObjectsCommand,
+} from '@aws-sdk/client-s3';
 import { ConfigType } from '@nestjs/config';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import s3Config from './config/s3.config';
@@ -14,28 +19,55 @@ export class S3Service {
     this.s3Client = new S3Client({
       region: 'us-east-1',
       endpoint: this._s3Config.endpoint!,
+      forcePathStyle: true,
       credentials: {
         accessKeyId: this._s3Config.accessKeyId!,
         secretAccessKey: this._s3Config.secretAccessKey!,
       },
     });
   }
-  async uploadVideo(
+
+  async deleteDirectory(prefix: string) {
+    const listCommand = new ListObjectsV2Command({
+      Bucket: this._s3Config.bucket!,
+      Prefix: prefix,
+    });
+
+    const listedObjects = await this.s3Client.send(listCommand);
+
+    if (listedObjects.Contents?.length) {
+      const deleteCommand = new DeleteObjectsCommand({
+        Bucket: this._s3Config.bucket!,
+        Delete: {
+          Objects: listedObjects.Contents.map(({ Key }) => ({ Key })),
+        },
+      });
+
+      await this.s3Client.send(deleteCommand);
+    }
+  }
+
+  async generateUploadUrl(
     key: string,
     contentType: string,
-    expiresIn: Date = new Date(Date.now() + 60 * 60 * 1000),
+    expiresIn: number = 60 * 60 * 1000,
   ) {
+    const isSegment = key.endsWith('.ts');
+    console.log('isSegment', isSegment);
+    const actualContentType = isSegment ? 'video/mp2t' : contentType;
+
     return createPresignedPost(this.s3Client, {
       Bucket: this._s3Config.bucket!,
       Key: key,
       Fields: {
         key,
-        expiresIn: expiresIn.toISOString(),
+        'Content-Type': actualContentType,
       },
       Conditions: [
-        ['starts-with', '$Content-Type', contentType],
-        // ['content-length-range', 0, UPLOAD_MAX_FILE_SIZE],
+        ['eq', '$Content-Type', actualContentType],
+        ['content-length-range', 0, 500 * 1024 * 1024], // 500MB max
       ],
+      Expires: expiresIn,
     });
   }
 
