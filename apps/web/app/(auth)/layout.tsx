@@ -1,8 +1,11 @@
+"use client";
+
 import React, { PropsWithChildren } from "react";
+import "reflect-metadata";
 
 export default function AuthLayout({ children }: PropsWithChildren) {
   return (
-    <div className="min-h-screen flex justify-center items-center">
+    <div className="flex min-h-screen items-center justify-center">
       {children}
     </div>
   );
