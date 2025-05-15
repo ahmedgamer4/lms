@@ -2,13 +2,15 @@
 
 import { useQueryClient } from "@tanstack/react-query";
 import {
-  getPresignedUrl,
+  createVideo,
+  getUploadPresignedUrl,
   uploadVideo,
   Video as VideoInterface,
 } from "@/lib/videos";
+import { transcodeToHLS } from "@/lib/transcode-video";
 import { Button } from "@/components/ui/button";
 import { Upload, X } from "lucide-react";
-import { useState, useCallback, useRef } from "react";
+import { useState, useCallback } from "react";
 import { useDropzone } from "react-dropzone";
 import { toast } from "sonner";
 import { Progress } from "@/components/ui/progress";
@@ -22,9 +24,9 @@ export const VideoUploader = ({
 }) => {
   const queryClient = useQueryClient();
   const [isUploading, setIsUploading] = useState(false);
-  const [isCompressing, setIsCompressing] = useState(false);
+  const [isTranscoding, setIsTranscoding] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
-  const [compressionProgress, setCompressionProgress] = useState(0);
+  const [transcodingProgress, setTranscodingProgress] = useState(0);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
   const onDrop = useCallback((files: File[]) => {
@@ -43,30 +45,85 @@ export const VideoUploader = ({
     onDrop,
     accept: { "video/*": [".mp4", ".mov", ".avi", ".wmv"] },
     maxFiles: 1,
-    disabled: isUploading || isCompressing,
+    disabled: isUploading || isTranscoding,
   });
 
   const handleUpload = async () => {
     if (!selectedFile) return;
     try {
+      setIsTranscoding(true);
+      setTranscodingProgress(0);
+
+      // Transcode the video to HLS
+      let manifest: File;
+      let segments: File[];
+      try {
+        const { manifest: manifestFile, segments: segmentsFiles } =
+          await transcodeToHLS(selectedFile, setTranscodingProgress);
+        manifest = manifestFile;
+        segments = segmentsFiles;
+      } catch (error) {
+        console.error(error);
+        toast.error("Failed to transcode video");
+        setIsTranscoding(false);
+        return;
+      }
+
+      setIsTranscoding(false);
       setIsUploading(true);
       setUploadProgress(0);
 
-      // Compress the video first
-      const compressedFile = selectedFile;
-
-      const { data, error } = await getPresignedUrl(lessonId, {
-        title: compressedFile.name,
+      const videoDetails = await createVideo(lessonId, {
+        title: manifest.name,
       });
-      if (error || !data) throw new Error("Failed to get upload URL");
 
-      await uploadVideo(compressedFile, data.data, setUploadProgress);
+      if (videoDetails.error || !videoDetails.data)
+        throw new Error("Failed to create video");
 
-      const details = data.data.videoDetails;
+      const { data: manifestUploadData, error: manifestUploadError } =
+        await getUploadPresignedUrl(lessonId, {
+          key: videoDetails.data.data.manifestKey,
+          contentType: manifest.type,
+          expiresIn: 60 * 60 * 1000,
+        });
+
+      if (manifestUploadError || !manifestUploadData)
+        throw new Error("Failed to get upload URL");
+
+      // Upload manifest
+      await uploadVideo(manifest, manifestUploadData.data, setUploadProgress);
+
+      // Upload segments
+      const segmentPromises = segments.map(async (segment, index) => {
+        // Create a new File object with the correct content type
+        const segmentFile = new File([segment], segment.name, {
+          type: "video/mp2t",
+        });
+
+        const { data: segmentUploadData, error: segmentUploadError } =
+          await getUploadPresignedUrl(lessonId, {
+            key: `${videoDetails.data.data.segmentsKey}/${segment.name}`,
+            contentType: "video/mp2t",
+            expiresIn: 60 * 60 * 1000,
+          });
+
+        if (segmentUploadError || !segmentUploadData)
+          throw new Error("Failed to get segment upload URL");
+
+        await uploadVideo(segmentFile, segmentUploadData.data, () => {
+          const segmentProgress = ((index + 1) / segments.length) * 100;
+          setUploadProgress(segmentProgress);
+        });
+      });
+
+      await Promise.all(segmentPromises);
+
+      const details = videoDetails.data.data;
       onUploadComplete({
         id: details.id,
         title: details.title,
-        s3Key: details.s3Key,
+        manifestKey: details.manifestKey,
+        segmentsKey: details.segmentsKey,
       });
 
       queryClient.invalidateQueries({ queryKey: ["video-url", details.id] });
@@ -78,6 +135,7 @@ export const VideoUploader = ({
       toast.error("Failed to upload video");
     } finally {
       setIsUploading(false);
+      setIsTranscoding(false);
     }
   };
 
@@ -118,17 +176,17 @@ export const VideoUploader = ({
               variant="ghost"
               size="icon"
               onClick={() => setSelectedFile(null)}
-              disabled={isUploading || isCompressing}
+              disabled={isUploading || isTranscoding}
             >
               <X className="h-4 w-4" />
             </Button>
           </div>
 
-          {isCompressing ? (
+          {isTranscoding ? (
             <div className="space-y-2">
-              <Progress value={compressionProgress} />
+              <Progress value={transcodingProgress} />
               <p className="text-muted-foreground text-center text-xs">
-                Compressing... {compressionProgress}%
+                Transcoding... {transcodingProgress}%
               </p>
             </div>
           ) : isUploading ? (

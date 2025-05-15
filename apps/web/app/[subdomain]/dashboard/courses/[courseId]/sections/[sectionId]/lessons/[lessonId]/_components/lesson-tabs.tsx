@@ -46,7 +46,7 @@ export const LessonTabs = ({ lesson }: LessonTabsProps) => {
   };
 
   const handleVideoDelete = async (videoIndex: number, id: string) => {
-    const videoQuery = await deleteVideo(id);
+    const videoQuery = await deleteVideo(lesson.id, id);
     if (videoQuery.error) {
       toast.error("Cannot remove video");
       return;
@@ -69,7 +69,6 @@ export const LessonTabs = ({ lesson }: LessonTabsProps) => {
   };
 
   const handleQuizCreated = (quiz: Quiz) => {
-    console.log(quiz);
     setLessonQuizzes([...lessonQuizzes, quiz]);
   };
 
@@ -94,6 +93,7 @@ export const LessonTabs = ({ lesson }: LessonTabsProps) => {
           {lessonVideos.map((video, videoIndex) => (
             <VideoPreview
               key={`video-${video.id}`}
+              lessonId={lesson.id}
               videoId={video.id}
               title={video.title}
               onDelete={() => handleVideoDelete(videoIndex, video.id)}

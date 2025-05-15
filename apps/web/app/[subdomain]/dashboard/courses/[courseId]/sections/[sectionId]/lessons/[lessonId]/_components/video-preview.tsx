@@ -5,38 +5,46 @@ import { getVideo } from "@/lib/videos";
 import { SecureVideoPlayer } from "./secure-video-player";
 
 interface VideoPreviewProps {
+  lessonId: number;
   videoId: string;
   title: string;
   onDelete?: () => void;
 }
 
 export const VideoPreview = ({
-  videoId: s3Key,
+  videoId,
   title,
   onDelete,
+  lessonId,
 }: VideoPreviewProps) => {
   const {
-    data: url,
+    data: videoData,
     isLoading,
     isError,
   } = useQuery({
-    queryKey: ["video-url", s3Key],
-    queryFn: () =>
-      getVideo(s3Key).then((res) => {
-        if (res.error || !res.data) throw new Error("Cannot fetch video URL");
-        return res.data.data.url;
-      }),
+    queryKey: ["video-url", videoId],
+    queryFn: async () => {
+      const response = await getVideo(lessonId, videoId);
+      if (!response.data) {
+        throw new Error("Failed to fetch video URL");
+      }
+      return response.data;
+    },
   });
 
   if (isLoading) return <div>Loading...</div>;
   if (isError) return <div>Error loading video</div>;
-  if (!url) return <div>No video URL available</div>;
+  if (!videoData) return <div>No video data available</div>;
+
+  const video = videoData.data;
+
+  console.log(video);
 
   return (
     <div className="space-y-4">
       <div className="relative aspect-video w-full overflow-hidden rounded-lg border bg-black">
         <SecureVideoPlayer
-          src={url}
+          src={video.manifestUrl}
           poster="/video-placeholder.png"
           className="h-full w-full"
         />
