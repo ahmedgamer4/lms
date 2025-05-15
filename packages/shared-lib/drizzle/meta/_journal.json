@@ -43,6 +43,13 @@
       "when": 1747132438894,
       "tag": "0005_fine_ender_wiggin",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1747249656149,
+      "tag": "0006_red_mindworm",
+      "breakpoints": true
     }
   ]
 }
