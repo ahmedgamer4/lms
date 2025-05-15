@@ -38,7 +38,7 @@ export default function CoursePage() {
 
   if (!course.enrollments?.[0]) {
     return (
-      <div className="flex h-[calc(100vh-200px)] flex-col items-center justify-center gap-4">
+      <div className="flex h-[calc(100vh-200px)] flex-col items-center justify-center gap-4 px-4">
         <h1 className="text-2xl font-bold">
           You are not enrolled in this course
         </h1>
@@ -50,7 +50,7 @@ export default function CoursePage() {
   }
 
   return (
-    <div className="mx-auto max-w-7xl space-y-8">
+    <div className="container mx-auto max-w-7xl space-y-8 px-4 py-8">
       <div className="flex flex-col gap-4 md:flex-row md:items-start">
         <div className="flex flex-1 flex-col gap-4">
           <div>

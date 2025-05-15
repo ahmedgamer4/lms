@@ -56,7 +56,7 @@ export default function CourseEnrollPage() {
   }
 
   return (
-    <div className="mx-auto flex max-w-7xl flex-col justify-between gap-8 md:flex-row md:items-start">
+    <div className="container mx-auto flex flex-col justify-between gap-8 px-4 py-8 md:flex-row md:items-start">
       <div className="flex-1">
         <h1 className="mb-2 text-3xl font-bold">{course.title}</h1>
         <p className="text-muted-foreground mb-6 max-w-xl">
