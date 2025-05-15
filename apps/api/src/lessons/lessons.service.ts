@@ -61,14 +61,12 @@ export class LessonsService {
 
         // Update videos
         if (dto.videos && dto.videos.length > 0) {
-          await tx.delete(videos).where(eq(videos.lessonId, lessonId));
-          await tx.insert(videos).values(
-            dto.videos.map((video) => ({
-              lessonId,
-              title: video.title!,
-              s3Key: video.s3Key!,
-            })),
-          );
+          await tx
+            .update(videos)
+            .set({
+              title: dto.videos[0].title,
+            })
+            .where(eq(videos.lessonId, lessonId));
         }
       });
 
