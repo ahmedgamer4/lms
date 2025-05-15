@@ -2,7 +2,7 @@ import { Video, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useQuery } from "@tanstack/react-query";
 import { getVideo } from "@/lib/videos";
-import { SecureVideoPlayer } from "./secure-video-player";
+import { SecureVideoPlayer } from "@/components/secure-video-player";
 
 interface VideoPreviewProps {
   lessonId: number;

@@ -47,7 +47,7 @@ export const SecureVideoPlayer = ({
       hls.attachMedia(video);
 
       hls.on(Hls.Events.MANIFEST_PARSED, () => {
-        video.play().catch((e) => console.log("Playback failed:", e));
+        // Video is ready to play, but we won't auto-play it
       });
 
       hls.on(Hls.Events.ERROR, (event, data) => {
@@ -111,6 +111,7 @@ export const SecureVideoPlayer = ({
         ref={videoRef}
         poster={poster}
         controls
+        autoPlay={false}
         controlsList="nodownload"
         disablePictureInPicture
         className={cn(className, "aspect-video")}
