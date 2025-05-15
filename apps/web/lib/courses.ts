@@ -26,6 +26,24 @@ export type CourseWithEnrollments = SelectCourse & {
   }[];
 };
 
+export type CourseWithSectionsAndEnrollments = SelectCourse & {
+  courseSections: {
+    id: number;
+    title: string;
+    orderIndex: number;
+    lessons: {
+      id: number;
+      title: string;
+      orderIndex: number;
+    }[];
+  }[];
+  enrollments?: {
+    id: number;
+    progress: number;
+    enrolledAt: Date;
+  }[];
+};
+
 export async function getCoursesByTeacherId(
   published: boolean,
   page?: number,
@@ -58,25 +76,7 @@ export async function getCourse(
   withEnrollments = false,
 ) {
   return asyncWrapper(async () => {
-    return await authFetch<
-      SelectCourse & {
-        courseSections: {
-          id: number;
-          title: string;
-          orderIndex: number;
-          lessons: {
-            id: number;
-            title: string;
-            orderIndex: number;
-          }[];
-        }[];
-        enrollments?: {
-          id: number;
-          progress: number;
-          enrolledAt: Date;
-        }[];
-      }
-    >(
+    return await authFetch<CourseWithSectionsAndEnrollments>(
       `${baseUrl}/${id}?with-enrollments=${withEnrollments}&with-sections=${withSections}`,
       {
         method: "GET",
