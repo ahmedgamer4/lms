@@ -53,10 +53,12 @@ export default function CoursePage() {
     <div className="container mx-auto max-w-7xl space-y-8 px-4 py-8">
       <div className="flex flex-col gap-4 md:flex-row md:items-start">
         <div className="flex flex-1 flex-col gap-4">
-          <div>
+          <div className="space-y-4">
             <div>
               <h1 className="text-3xl font-bold">{course.title}</h1>
-              <p className="text-muted-foreground mt-2">{course.description}</p>
+              <p className="text-muted-foreground mt-2">
+                {course.description || "No description provided."}
+              </p>
             </div>
 
             <div className="flex flex-wrap gap-4 text-sm text-gray-500">
