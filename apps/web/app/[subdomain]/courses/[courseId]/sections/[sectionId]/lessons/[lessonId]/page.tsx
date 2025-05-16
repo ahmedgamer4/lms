@@ -2,10 +2,9 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { getCourse, findLesson } from "@/lib/courses";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import {
   Loader2,
-  PlayCircle,
   ArrowLeft,
   ArrowRight,
   Menu,
@@ -19,6 +18,7 @@ import { Sheet, SheetTrigger } from "@/components/ui/sheet";
 import { MobileSidebar } from "./_components/mobile-sidebar";
 import { SidebarContent } from "./_components/sidebar-content";
 import { VideoPlayer } from "./_components/video-player";
+import { lexicalToHtml } from "@/lib/lexical-to-html";
 
 export default function LessonPage() {
   const params = useParams();
@@ -64,8 +64,8 @@ export default function LessonPage() {
 
   return (
     <Sheet>
-      <div className="flex h-[calc(100vh-65px)] w-full">
-        <aside className="bg-muted hidden h-full w-64 overflow-y-auto border-r p-6 md:block">
+      <div className="flex h-full min-h-screen w-full">
+        <aside className="bg-muted sticky top-0 hidden h-full w-64 overflow-y-auto border-r p-6 md:block">
           <h2 className="mb-4 text-xl font-semibold">Course Content</h2>
           <SidebarContent
             course={course}
@@ -74,7 +74,7 @@ export default function LessonPage() {
           />
         </aside>
 
-        <div className="flex max-h-[calc(100vh-70px)] w-full flex-col items-center justify-center px-4 py-2 md:flex-1 md:p-8">
+        <div className="flex w-full flex-col items-center justify-center px-4 py-2 md:flex-1 md:p-8">
           <div className="mb-2 w-full md:hidden">
             <SheetTrigger asChild>
               <Button variant="outline" className="h-8 w-8" size="icon">
@@ -101,10 +101,13 @@ export default function LessonPage() {
             )}
           </div>
           <div className="w-full max-w-6xl">
-            <h1 className="mb-2 text-3xl font-bold">{lesson?.title}</h1>
-            <p className="text-muted-foreground mb-8 text-lg">
-              {"No description provided."}
-            </p>
+            <h1 className="mb-4 text-3xl font-bold">{lesson?.title}</h1>
+            <p
+              className="mb-8 text-lg"
+              dangerouslySetInnerHTML={{
+                __html: lexicalToHtml(JSON.parse(lesson.description)),
+              }}
+            />
           </div>
 
           <div className="mt-auto flex w-full max-w-6xl justify-end gap-4">

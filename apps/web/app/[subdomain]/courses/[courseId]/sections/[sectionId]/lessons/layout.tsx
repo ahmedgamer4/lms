@@ -7,8 +7,8 @@ export default function CourseLessonLayout({
 }) {
   return (
     <div className="flex flex-col">
-      <div className="flex flex-1 overflow-hidden">
-        <main className="flex-1 overflow-y-auto">{children}</main>
+      <div className="flex flex-1">
+        <main className="flex-1">{children}</main>
       </div>
     </div>
   );
