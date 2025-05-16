@@ -17,6 +17,11 @@ export class UpdateLessonDto {
   @MaxLength(255)
   title?: string;
 
+  @IsString()
+  @IsOptional()
+  @MinLength(3)
+  description?: string;
+
   @IsNumber()
   @IsOptional()
   @Min(1)
