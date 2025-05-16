@@ -69,6 +69,7 @@ export default function SectionPage() {
           orderIndex: lesson.orderIndex,
           videos: lesson.videos,
           quizzes: lesson.quizzes,
+          description: lesson.description,
         })),
       });
     }
@@ -138,6 +139,7 @@ export default function SectionPage() {
       orderIndex: lessons.length,
       videos: [],
       quizzes: [],
+      description: "",
     });
 
     setSectionData({
