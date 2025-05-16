@@ -179,6 +179,7 @@ export interface Lesson {
   orderIndex: number;
   videos: Video[];
   quizzes: Quiz[];
+  description: string;
 }
 
 export const createLesson = (
