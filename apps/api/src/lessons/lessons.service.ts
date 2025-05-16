@@ -39,10 +39,12 @@ export class LessonsService {
 
   async create(sectionId: number, dto: CreateLessonDto) {
     try {
-      return await db
+      const [lesson] = await db
         .insert(lessons)
         .values({ ...dto, sectionId })
         .returning({ id: lessons.id });
+
+      return lesson;
     } catch (error) {
       throw new InternalServerErrorException(`Cannot find lesson. ${error}`);
     }
@@ -51,13 +53,7 @@ export class LessonsService {
   async update(lessonId: number, dto: UpdateLessonDto) {
     try {
       await db.transaction(async (tx) => {
-        await tx
-          .update(lessons)
-          .set({
-            title: dto.title,
-            orderIndex: dto.orderIndex,
-          })
-          .where(eq(lessons.id, lessonId));
+        await tx.update(lessons).set(dto).where(eq(lessons.id, lessonId));
 
         // Update videos
         if (dto.videos && dto.videos.length > 0) {
