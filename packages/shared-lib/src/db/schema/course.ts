@@ -62,6 +62,7 @@ export const enrollments = pgTable("enrollments", {
 export const lessons = pgTable("lessons", {
   id: serial("id").primaryKey(),
   title: varchar("title", { length: 255 }).notNull(),
+  description: text("description"),
   orderIndex: integer("order_index").notNull(),
   sectionId: integer("section_id")
     .references(() => courseSections.id, {

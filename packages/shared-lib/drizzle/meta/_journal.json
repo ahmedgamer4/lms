@@ -50,6 +50,13 @@
       "when": 1747249656149,
       "tag": "0006_red_mindworm",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1747398640048,
+      "tag": "0007_closed_cammi",
+      "breakpoints": true
     }
   ]
 }
