@@ -8,7 +8,7 @@ const baseUrl = `${BACKEND_URL}`;
 export const generateCourseCodes = (courseId: number, quantity: number) => {
   return asyncWrapper(async () => {
     return authFetch<{ message: string }>(
-      `${baseUrl}/courses/${courseId}/course-codes`,
+      `${baseUrl}/courses/${courseId}/course-codes/generate`,
       {
         method: "POST",
         data: { quantity },
