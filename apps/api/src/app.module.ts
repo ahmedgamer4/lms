@@ -10,6 +10,7 @@ import { S3Module } from './s3/s3.module';
 import { VideosModule } from './videos/videos.module';
 import { LessonsModule } from './lessons/lessons.module';
 import { QuizzesModule } from './quizzes/quizzes.module';
+import { CourseCodesModule } from './course-codes/course-codes.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { QuizzesModule } from './quizzes/quizzes.module';
     VideosModule,
     LessonsModule,
     QuizzesModule,
+    CourseCodesModule,
   ],
   controllers: [AppController],
   providers: [AppService],
