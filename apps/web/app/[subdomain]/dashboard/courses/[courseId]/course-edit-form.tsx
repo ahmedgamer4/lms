@@ -39,7 +39,7 @@ export default function CourseEditForm({ course }: { course: any }) {
 
   async function onClickPublish() {
     if (course.published) {
-      setPublishLoading(true);
+      setPublishLoading(false);
       const res = await updateCourse(course.id, { published: false });
       if (res.error) toast("Cannot unpublish course");
     } else {
