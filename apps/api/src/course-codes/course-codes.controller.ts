@@ -48,7 +48,7 @@ export class CourseCodesController {
     );
   }
 
-  @Get('course/:courseId')
+  @Get()
   @Roles('teacher')
   async getCourseCodes(
     @Param('courseId', ParseIntPipe) courseId: number,
