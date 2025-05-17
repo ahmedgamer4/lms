@@ -1,11 +1,10 @@
 "use client";
 
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { enrollInCourse, getCourse } from "@/lib/courses";
+import { getCourse } from "@/lib/courses";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { useParams, useRouter } from "next/navigation";
 import { BookOpen, Clock, Loader2, Star, Users } from "lucide-react";
-import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
 import {
   Card,
@@ -232,23 +231,6 @@ const EnrollDialogContent = ({ courseId }: { courseId: number }) => {
     },
   });
 
-  const { mutate: enrollInCourseMutate, isPending } = useMutation({
-    mutationFn: () => enrollInCourse(courseId),
-    onSuccess: (data) => {
-      if (data.error) {
-        toast.error(data.error.response.data.message);
-      } else {
-        toast.success("Successfully enrolled in the course!");
-        queryClient.invalidateQueries({
-          queryKey: ["student-course", courseId],
-        });
-      }
-    },
-    onError: () => {
-      toast.error("Failed to enroll in the course. Please try again.");
-    },
-  });
-
   async function onSubmit(data: ValidateCodeDto) {
     const response = await validateCourseCode(courseId, data.code);
 
@@ -256,7 +238,6 @@ const EnrollDialogContent = ({ courseId }: { courseId: number }) => {
       toast.error(response.error.response.data.message);
     } else {
       if (response.data?.data.message) {
-        enrollInCourseMutate();
         toast.success("Successfully enrolled in the course!");
         router.push(`/courses/${courseId}`);
       }
@@ -290,8 +271,11 @@ const EnrollDialogContent = ({ courseId }: { courseId: number }) => {
                 </FormItem>
               )}
             />
-            <Button type="submit" disabled={isPending}>
-              {isPending ? "Enrolling..." : "Enroll"}
+            <Button
+              type="submit"
+              disabled={form.formState.isSubmitting || !form.formState.isValid}
+            >
+              {form.formState.isSubmitting ? "Enrolling..." : "Enroll"}
             </Button>
           </form>
         </Form>
