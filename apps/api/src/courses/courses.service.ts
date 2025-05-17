@@ -27,6 +27,9 @@ type WithClause = {
       };
     };
   };
+  courseCodes?: {
+    columns: any;
+  };
   enrollments?: {
     columns: { id: true; progress: true; enrolledAt: true };
     where: any;
@@ -170,7 +173,10 @@ export class CoursesService {
 
     const data = await db.query.courses.findFirst({
       where: eq(courses.id, courseId),
-      with: withClause,
+      with: {
+        ...withClause,
+        courseCodes: { columns: { id: true } },
+      },
     });
 
     return data;
