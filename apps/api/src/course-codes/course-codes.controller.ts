@@ -12,6 +12,7 @@ import { Roles } from '@/auth/decorators/roles.decorator';
 import { RolesGuard } from '@/auth/guards/roles/roles.guard';
 import { CourseCodesService } from './course-codes.service';
 import { ApiBearerAuth } from '@nestjs/swagger';
+import { GenerateCodesDto, ValidateCodeDto } from '@lms-saas/shared-lib';
 
 @ApiBearerAuth()
 @UseGuards(RolesGuard)
@@ -22,7 +23,7 @@ export class CourseCodesController {
   @Post('generate')
   @Roles('teacher')
   async generateCodes(
-    @Body() dto: { quantity: number },
+    @Body() dto: GenerateCodesDto,
     @Param('courseId', ParseIntPipe) courseId: number,
     @Req() req,
   ) {
@@ -36,7 +37,7 @@ export class CourseCodesController {
   @Post('validate')
   @Roles('student')
   async validateCode(
-    @Body() dto: { code: string },
+    @Body() dto: ValidateCodeDto,
     @Param('courseId', ParseIntPipe) courseId: number,
     @Req() req,
   ) {
