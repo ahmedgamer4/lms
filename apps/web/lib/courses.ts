@@ -19,6 +19,9 @@ import { Video } from "./videos";
 const baseUrl = `${BACKEND_URL}/courses`;
 
 export type CourseWithEnrollments = SelectCourse & {
+  courseCodes: {
+    id: number;
+  }[];
   enrollments: {
     id: number;
     progress: number;
@@ -27,6 +30,9 @@ export type CourseWithEnrollments = SelectCourse & {
 };
 
 export type CourseWithSectionsAndEnrollments = SelectCourse & {
+  courseCodes: {
+    id: number;
+  }[];
   courseSections: {
     id: number;
     title: string;
@@ -240,14 +246,6 @@ export const deleteLesson = (
         method: "DELETE",
       },
     );
-  });
-};
-
-export const enrollInCourse = async (courseId: number) => {
-  return asyncWrapper(async () => {
-    return authFetch<{ message: string }>(`${baseUrl}/${courseId}/enroll`, {
-      method: "POST",
-    });
   });
 };
 
