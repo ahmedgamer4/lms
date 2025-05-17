@@ -8,12 +8,15 @@ import {
   ParseIntPipe,
   Post,
   Put,
+  UseGuards,
 } from '@nestjs/common';
 import { ApiBearerAuth } from '@nestjs/swagger';
 import { LessonsService } from './lessons.service';
 import { CreateLessonDto, UpdateLessonDto } from '@lms-saas/shared-lib';
+import { RolesGuard } from '@/auth/guards/roles/roles.guard';
 
 @ApiBearerAuth()
+@UseGuards(RolesGuard)
 @Controller('courses/:courseId/sections/:sectionId/lessons')
 export class LessonsController {
   constructor(private lessonsService: LessonsService) {}

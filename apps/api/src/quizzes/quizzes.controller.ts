@@ -9,6 +9,7 @@ import {
   ParseUUIDPipe,
   Post,
   Put,
+  UseGuards,
 } from '@nestjs/common';
 import { ApiBearerAuth } from '@nestjs/swagger';
 import { QuizzesService } from './quizzes.service';
@@ -20,8 +21,10 @@ import {
   UpdateQuizDto,
   UpdateQuizQuestionDto,
 } from '@lms-saas/shared-lib';
+import { RolesGuard } from '@/auth/guards/roles/roles.guard';
 
 @ApiBearerAuth()
+@UseGuards(RolesGuard)
 @Controller('lessons/:lessonId/quizzes')
 export class QuizzesController {
   constructor(private quizzesService: QuizzesService) {}
