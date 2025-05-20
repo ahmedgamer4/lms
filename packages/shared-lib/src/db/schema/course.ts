@@ -26,6 +26,7 @@ export const courses = pgTable("courses", {
   imageUrl: varchar("image_url"),
   price: numeric("price", { precision: 10, scale: 2 }).notNull(),
   published: boolean("published").notNull().default(false),
+  lessonsCount: integer("lessons_count").notNull().default(0),
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
   updatedAt: timestamp("updated_at", { withTimezone: true })
     .default(sql`CURRENT_TIMESTAMP`)
@@ -100,11 +101,13 @@ export const lessonsRelations = relations(lessons, ({ one, many }) => ({
     references: [courseSections.id],
   }),
 
+  studentLessonCompletions: many(studentLessonCompletions),
+
   videos: many(videos),
   quizzes: many(quizzes),
 }));
 
-export const enrollmentsRelations = relations(enrollments, ({ one }) => ({
+export const enrollmentsRelations = relations(enrollments, ({ one, many }) => ({
   student: one(students, {
     fields: [enrollments.studentId],
     references: [students.id],
@@ -113,8 +116,35 @@ export const enrollmentsRelations = relations(enrollments, ({ one }) => ({
     fields: [enrollments.courseId],
     references: [courses.id],
   }),
+  studentLessonCompletions: many(studentLessonCompletions),
 }));
+
+export const studentLessonCompletions = pgTable("student_lesson_completions", {
+  id: serial("id").primaryKey(),
+  enrollmentId: integer("enrollment_id")
+    .notNull()
+    .references(() => enrollments.id, { onDelete: "cascade" }),
+  lessonId: integer("lesson_id")
+    .notNull()
+    .references(() => lessons.id, { onDelete: "cascade" }),
+  completedAt: timestamp("completed_at", { withTimezone: true }).defaultNow(),
+});
+
+export const studentLessonCompletionsRelations = relations(
+  studentLessonCompletions,
+  ({ one }) => ({
+    enrollment: one(enrollments, {
+      fields: [studentLessonCompletions.enrollmentId],
+      references: [enrollments.id],
+    }),
+    lesson: one(lessons, {
+      fields: [studentLessonCompletions.lessonId],
+      references: [lessons.id],
+    }),
+  }),
+);
 
 export type SelectCourse = InferSelectModel<typeof courses>;
 export type SelectCourseSection = InferSelectModel<typeof courseSections>;
 export type SelectLesson = InferSelectModel<typeof lessons>;
+export type SelectEnrollment = InferSelectModel<typeof enrollments>;
