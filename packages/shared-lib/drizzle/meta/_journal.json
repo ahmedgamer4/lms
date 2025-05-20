@@ -64,6 +64,20 @@
       "when": 1747474073157,
       "tag": "0008_goofy_fallen_one",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1747484954392,
+      "tag": "0009_steady_purple_man",
+      "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1747486400381,
+      "tag": "0010_soft_nekra",
+      "breakpoints": true
     }
   ]
 }

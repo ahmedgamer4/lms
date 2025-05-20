@@ -4,3 +4,5 @@ export * from "./create-section.dto";
 export * from "./edit-section.dto";
 export * from "./create-lesson.dto";
 export * from "./update-lesson.dto";
+export * from "./complete-lesson.dto";
+export * from "./update-progress.dto";
