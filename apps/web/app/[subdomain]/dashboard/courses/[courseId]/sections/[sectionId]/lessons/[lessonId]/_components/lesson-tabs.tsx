@@ -12,6 +12,7 @@ import { CreateQuizDialog } from "./create-quiz-dialog";
 import { useParams, useRouter } from "next/navigation";
 import { param } from "drizzle-orm";
 import { useQuery } from "@tanstack/react-query";
+import { attempt } from "@/lib/utils";
 
 type LessonTabsProps = {
   lesson: Lesson;
@@ -33,11 +34,14 @@ export const LessonTabs = ({ lesson }: LessonTabsProps) => {
       if (!lesson.quizzes[0]?.id) {
         return [];
       }
-      const response = await getQuizQuestions(lesson.quizzes[0]?.id);
-      if (response.error) {
-        toast.error(response.error);
+      const [response, error] = await attempt(
+        getQuizQuestions(lesson.quizzes[0]?.id),
+      );
+      if (error) {
+        toast.error(error.message);
+        return [];
       }
-      return response.data?.data;
+      return response.data;
     },
   });
 
@@ -46,8 +50,8 @@ export const LessonTabs = ({ lesson }: LessonTabsProps) => {
   };
 
   const handleVideoDelete = async (videoIndex: number, id: string) => {
-    const videoQuery = await deleteVideo(lesson.id, id);
-    if (videoQuery.error) {
+    const [, error] = await attempt(deleteVideo(lesson.id, id));
+    if (error) {
       toast.error("Cannot remove video");
       return;
     }
@@ -57,8 +61,8 @@ export const LessonTabs = ({ lesson }: LessonTabsProps) => {
   };
 
   const handleQuizDelete = async (quizIndex: number, id: string) => {
-    const quizQuery = await deleteQuiz(lesson.id, id);
-    if (quizQuery.error) {
+    const [, error] = await attempt(deleteQuiz(lesson.id, id));
+    if (error) {
       toast.error("Cannot remove quiz");
       return;
     }

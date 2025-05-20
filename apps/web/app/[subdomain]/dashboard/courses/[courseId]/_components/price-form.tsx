@@ -17,7 +17,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import { attempt, cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 import { formatPrice } from "@/lib/format-price";
 import { updateCourse } from "@/lib/courses";
@@ -50,11 +50,17 @@ export const PriceForm = ({ initialData, courseId }: PriceFormProps) => {
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      await updateCourse(courseId, { price: values.price });
-      setPrice(values.price);
-      toast.success("Course updated");
-      toggleEdit();
-      router.refresh();
+      const [, error] = await attempt(
+        updateCourse(courseId, { price: values.price }),
+      );
+      if (error) {
+        toast.error("Something went wrong");
+      } else {
+        setPrice(values.price);
+        toast.success("Course updated");
+        toggleEdit();
+        router.refresh();
+      }
     } catch {
       toast.error("Something went wrong");
     }

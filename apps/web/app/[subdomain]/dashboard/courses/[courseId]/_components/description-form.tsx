@@ -20,7 +20,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Textarea } from "@/components/ui/textarea";
 import { updateCourse } from "@/lib/courses";
-
+import { attempt } from "@/lib/utils";
 interface DescriptionFormProps {
   initialData: { description: string };
   courseId: number;
@@ -54,11 +54,17 @@ export const DescriptionForm = ({
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      await updateCourse(courseId, { description: values.description });
-      setDescription(values.description);
-      toast.success("Course updated");
-      toggleEdit();
-      router.refresh();
+      const [, error] = await attempt(
+        updateCourse(courseId, { description: values.description }),
+      );
+      if (error) {
+        toast.error("Something went wrong");
+      } else {
+        setDescription(values.description);
+        toast.success("Course updated");
+        toggleEdit();
+        router.refresh();
+      }
     } catch {
       toast.error("Something went wrong");
     }

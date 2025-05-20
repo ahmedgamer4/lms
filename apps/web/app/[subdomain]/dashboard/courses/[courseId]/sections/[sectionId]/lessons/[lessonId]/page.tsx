@@ -40,6 +40,7 @@ import {
 } from "@/components/ui/breadcrumb";
 import { LessonTabs } from "./_components/lesson-tabs";
 import { Editor } from "@/components/blocks/editor-00/editor";
+import { attempt } from "@/lib/utils";
 
 const initialValue = {
   root: {
@@ -82,34 +83,54 @@ export default function LessonPage() {
 
   const { data: course } = useQuery({
     queryKey: ["course", params.courseId],
-    queryFn: () => getCourse(Number(params.courseId)),
+    queryFn: async () => {
+      const [response, error] = await attempt(
+        getCourse(Number(params.courseId)),
+      );
+      if (error) {
+        toast.error("Error fetching course");
+        return;
+      }
+      return response;
+    },
   });
 
   const { data: section } = useQuery({
     queryKey: ["section", params.sectionId],
-    queryFn: () =>
-      findCourseSection(Number(params.courseId), Number(params.sectionId)),
+    queryFn: async () => {
+      const [response, error] = await attempt(
+        findCourseSection(Number(params.courseId), Number(params.sectionId)),
+      );
+      if (error) {
+        toast.error("Error fetching section");
+        return;
+      }
+      return response;
+    },
   });
 
   const { data: lessonData, isLoading: isLessonLoading } = useQuery({
     queryKey: ["lesson", params.lessonId],
     queryFn: async () => {
-      const res = await findLesson(
-        Number(params.courseId),
-        Number(params.sectionId),
-        Number(params.lessonId),
+      const [response, error] = await attempt(
+        findLesson(
+          Number(params.courseId),
+          Number(params.sectionId),
+          Number(params.lessonId),
+        ),
       );
 
-      if (res.error) {
+      if (error) {
         toast.error("Failed to fetch lesson");
+        return;
       }
 
-      if (res.data?.data) {
-        setTitle(res.data.data.title);
-        setEditorState(JSON.parse(res.data.data.description));
+      if (response?.data) {
+        setTitle(response.data.title);
+        setEditorState(JSON.parse(response.data.description));
       }
 
-      return res;
+      return response;
     },
   });
 
@@ -121,14 +142,16 @@ export default function LessonPage() {
     }
 
     setIsLoading(true);
-    const res = await updateLesson(
-      Number(params.courseId),
-      Number(params.sectionId),
-      Number(params.lessonId),
-      { title },
+    const [, error] = await attempt(
+      updateLesson(
+        Number(params.courseId),
+        Number(params.sectionId),
+        Number(params.lessonId),
+        { title },
+      ),
     );
 
-    if (res.error) {
+    if (error) {
       toast.error("Failed to update lesson title");
     } else {
       toast.success("Lesson title updated");
@@ -150,14 +173,16 @@ export default function LessonPage() {
 
     try {
       setIsLoading(true);
-      const res = await updateLesson(
-        Number(params.courseId),
-        Number(params.sectionId),
-        Number(params.lessonId),
-        { description: data },
+      const [, error] = await attempt(
+        updateLesson(
+          Number(params.courseId),
+          Number(params.sectionId),
+          Number(params.lessonId),
+          { description: data },
+        ),
       );
 
-      if (res.error) {
+      if (error) {
         toast.error("Failed to update lesson description");
       }
 
@@ -171,13 +196,13 @@ export default function LessonPage() {
 
   async function handleDeleteLesson() {
     setIsLoading(true);
-    const res = await updateCourseSection(
-      Number(params.courseId),
-      Number(params.sectionId),
-      { title: `${section?.data?.data.title} (Deleted)` },
+    const [, error] = await attempt(
+      updateCourseSection(Number(params.courseId), Number(params.sectionId), {
+        title: `${section?.data?.title} (Deleted)`,
+      }),
     );
 
-    if (res.error) {
+    if (error) {
       toast.error("Failed to delete lesson");
     } else {
       toast.success("Lesson deleted");
@@ -189,8 +214,8 @@ export default function LessonPage() {
   }
 
   if (
-    !course?.data?.data ||
-    !section?.data?.data ||
+    !course?.data ||
+    !section?.data ||
     !lessonData ||
     !lessonData.data ||
     isLessonLoading
@@ -202,7 +227,7 @@ export default function LessonPage() {
     );
   }
 
-  const lesson = lessonData.data.data;
+  const lesson = lessonData.data;
 
   return (
     <div className="container mx-auto space-y-4">
@@ -213,16 +238,16 @@ export default function LessonPage() {
           </BreadcrumbItem>
           <BreadcrumbSeparator />
           <BreadcrumbItem>
-            <BreadcrumbLink href={`/dashboard/courses/${course.data.data.id}`}>
-              {course.data.data.title}
+            <BreadcrumbLink href={`/dashboard/courses/${course.data.id}`}>
+              {course.data.title}
             </BreadcrumbLink>
           </BreadcrumbItem>
           <BreadcrumbSeparator />
           <BreadcrumbItem>
             <BreadcrumbLink
-              href={`/dashboard/courses/${course.data.data.id}/sections/${params.sectionId}`}
+              href={`/dashboard/courses/${course.data.id}/sections/${params.sectionId}`}
             >
-              {section.data.data.title}
+              {section.data.title}
             </BreadcrumbLink>
           </BreadcrumbItem>
           <BreadcrumbSeparator />
@@ -244,8 +269,7 @@ export default function LessonPage() {
           <div>
             <h1 className="text-2xl font-bold">Edit Lesson</h1>
             <p className="text-muted-foreground">
-              Course: {course.data.data.title} - Section:{" "}
-              {section.data.data.title}
+              Course: {course.data.title} - Section: {section.data.title}
             </p>
           </div>
         </div>

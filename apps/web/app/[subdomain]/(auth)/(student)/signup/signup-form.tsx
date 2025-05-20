@@ -16,6 +16,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { signupStudent } from "@/lib/auth";
+import { attempt } from "@/lib/utils";
 
 export function SignupForm({ subdomain }: { subdomain: string }) {
   const router = useRouter();
@@ -36,9 +37,9 @@ export function SignupForm({ subdomain }: { subdomain: string }) {
   form.setValue("teacherSubdomain", subdomain);
 
   async function onSubmit(data: CreateStudentDto) {
-    const res = await signupStudent(data);
-    if (res.error) {
-      form.setError("root", { message: res.error.response.data.message });
+    const [, error] = await attempt(signupStudent(data));
+    if (error) {
+      form.setError("root", { message: error.message });
     } else {
       router.push("/login");
     }

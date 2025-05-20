@@ -17,15 +17,23 @@ import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { toast } from "sonner";
-
+import { attempt } from "@/lib/utils";
 export default function StudentHomePage() {
   const [page, setPage] = useState(1);
   const [coursesType, setCoursesType] = useState<"enrolled" | "all">("all");
 
   const { data, isLoading } = useQuery({
     queryKey: ["student-courses", page],
-    queryFn: async () =>
-      await getCoursesByTeacherId(true, page, 8, false, true),
+    queryFn: async () => {
+      const [response, error] = await attempt(
+        getCoursesByTeacherId(true, page, 8, false, true),
+      );
+      if (error) {
+        toast.error("Error fetching courses");
+        return;
+      }
+      return response;
+    },
   });
 
   const {
@@ -34,16 +42,17 @@ export default function StudentHomePage() {
     isError: enrolledCoursesError,
   } = useQuery({
     queryKey: ["student-enrolled-courses"],
-    queryFn: async () => await getEnrolledCourses(),
+    queryFn: async () => {
+      const [response, error] = await attempt(getEnrolledCourses());
+      if (error) {
+        toast.error("Error fetching enrolled courses");
+        return;
+      }
+      return response;
+    },
   });
 
-  if (
-    isLoading ||
-    !data ||
-    !data.data ||
-    enrolledCoursesLoading ||
-    !enrolledCourses
-  )
+  if (isLoading || !data || enrolledCoursesLoading || !enrolledCourses)
     return (
       <div className="flex h-[calc(100vh-200px)] items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin" />
@@ -54,9 +63,8 @@ export default function StudentHomePage() {
     toast.error("Error fetching enrolled courses");
   }
 
-  const courses =
-    coursesType === "all" ? data.data.courses : enrolledCourses.data?.data;
-  const count = data.data.count || 0;
+  const courses = coursesType === "all" ? data.courses : enrolledCourses.data;
+  const count = data.count || 0;
 
   const totalPages = Math.ceil(count / 8);
   const handlePageChange = (newPage: number) => {

@@ -24,25 +24,35 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
-
+import { attempt } from "@/lib/utils";
+import { toast } from "sonner";
 export default function CoursesPage() {
   const [open, setOpen] = useState(false);
   const [page, setPage] = useState(1);
   const [published, setPublished] = useState(true);
   const { data, isLoading } = useQuery({
     queryKey: ["dashboard-courses", page, published],
-    queryFn: async () => await getCoursesByTeacherId(published, page, 8, false),
+    queryFn: async () => {
+      const [response, error] = await attempt(
+        getCoursesByTeacherId(published, page, 8, false),
+      );
+      if (error) {
+        toast.error("Error fetching courses");
+        return;
+      }
+      return response;
+    },
   });
 
-  if (isLoading || !data || !data.data)
+  if (isLoading || !data)
     return (
       <div className="flex h-[calc(100vh-200px)] items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin" />
       </div>
     );
 
-  const courses = data.data.courses;
-  const count = data.data.count || 0;
+  const courses = data?.courses;
+  const count = data?.count || 0;
 
   const totalPages = Math.ceil(count / 8);
   const handlePageChange = (newPage: number) => {

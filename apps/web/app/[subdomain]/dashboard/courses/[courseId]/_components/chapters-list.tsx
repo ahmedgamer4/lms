@@ -24,7 +24,8 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { useQueryClient } from "@tanstack/react-query";
-
+import { attempt } from "@/lib/utils";
+import { toast } from "sonner";
 export const ChaptersList = ({ course }: { course: any }) => {
   const queryClient = useQueryClient();
   const [sections, setSections] = useState<Omit<CourseSection, "courseId">[]>(
@@ -37,11 +38,13 @@ export const ChaptersList = ({ course }: { course: any }) => {
       orderIndex: sections.length,
     };
 
-    const res = await createCourseSection(course.id, newSection);
-    if (res.error) {
-      console.log(res.error);
+    const [res, error] = await attempt(
+      createCourseSection(course.id, newSection),
+    );
+    if (error) {
+      console.log(error);
     } else {
-      setSections([...sections, res.data?.data[0]!]);
+      setSections([...sections, res.data[0]!]);
       queryClient.invalidateQueries({
         queryKey: ["dashboard-course", course.id],
       });
@@ -58,7 +61,12 @@ export const ChaptersList = ({ course }: { course: any }) => {
     });
 
     setSections(updatedSections);
-    await deleteCourseSection(course.id, sections[index]!.id);
+    const [, error] = await attempt(
+      deleteCourseSection(course.id, sections[index]!.id),
+    );
+    if (error) {
+      toast.error("Something went wrong");
+    }
   }
 
   function handleDragEnd(result: any) {
@@ -73,9 +81,14 @@ export const ChaptersList = ({ course }: { course: any }) => {
 
       reorderedSections.forEach(async (section, idx) => {
         section.orderIndex = idx;
-        await updateCourseSection(course.id, section.id, {
-          orderIndex: idx,
-        });
+        const [, error] = await attempt(
+          updateCourseSection(course.id, section.id, {
+            orderIndex: idx,
+          }),
+        );
+        if (error) {
+          toast.error("Something went wrong");
+        }
       });
 
       setSections(reorderedSections);

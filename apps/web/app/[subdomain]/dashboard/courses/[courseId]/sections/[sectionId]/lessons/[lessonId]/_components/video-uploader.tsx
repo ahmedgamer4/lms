@@ -14,6 +14,7 @@ import { useState, useCallback } from "react";
 import { useDropzone } from "react-dropzone";
 import { toast } from "sonner";
 import { Progress } from "@/components/ui/progress";
+import { attempt } from "@/lib/utils";
 
 export const VideoUploader = ({
   lessonId,
@@ -73,25 +74,38 @@ export const VideoUploader = ({
       setIsUploading(true);
       setUploadProgress(0);
 
-      const videoDetails = await createVideo(lessonId, {
-        title: manifest.name,
-      });
+      const [videoDetails, videoDetailsError] = await attempt(
+        createVideo(lessonId, {
+          title: manifest.name,
+        }),
+      );
 
-      if (videoDetails.error || !videoDetails.data)
-        throw new Error("Failed to create video");
+      if (videoDetailsError || !videoDetails) {
+        toast.error("Failed to create video");
+        return;
+      }
 
-      const { data: manifestUploadData, error: manifestUploadError } =
-        await getUploadPresignedUrl(lessonId, {
-          key: videoDetails.data.data.manifestKey,
+      const [manifestUploadData, manifestUploadError] = await attempt(
+        getUploadPresignedUrl(lessonId, {
+          key: videoDetails.data.manifestKey,
           contentType: manifest.type,
           expiresIn: 60 * 60 * 1000,
-        });
+        }),
+      );
 
-      if (manifestUploadError || !manifestUploadData)
-        throw new Error("Failed to get upload URL");
+      if (manifestUploadError || !manifestUploadData) {
+        toast.error("Failed to get upload URL");
+        return;
+      }
 
       // Upload manifest
-      await uploadVideo(manifest, manifestUploadData.data, setUploadProgress);
+      const [, error] = await attempt(
+        uploadVideo(manifest, manifestUploadData.data, setUploadProgress),
+      );
+      if (error) {
+        toast.error("Failed to upload manifest");
+        return;
+      }
 
       // Upload segments
       const segmentPromises = segments.map(async (segment, index) => {
@@ -100,25 +114,34 @@ export const VideoUploader = ({
           type: "video/mp2t",
         });
 
-        const { data: segmentUploadData, error: segmentUploadError } =
-          await getUploadPresignedUrl(lessonId, {
-            key: `${videoDetails.data.data.segmentsKey}/${segment.name}`,
+        const [segmentUploadData, segmentUploadError] = await attempt(
+          getUploadPresignedUrl(lessonId, {
+            key: `${videoDetails.data.segmentsKey}/${segment.name}`,
             contentType: "video/mp2t",
             expiresIn: 60 * 60 * 1000,
-          });
+          }),
+        );
 
-        if (segmentUploadError || !segmentUploadData)
-          throw new Error("Failed to get segment upload URL");
+        if (segmentUploadError || !segmentUploadData) {
+          toast.error("Failed to get segment upload URL");
+          return;
+        }
 
-        await uploadVideo(segmentFile, segmentUploadData.data, () => {
-          const segmentProgress = ((index + 1) / segments.length) * 100;
-          setUploadProgress(segmentProgress);
-        });
+        const [, error] = await attempt(
+          uploadVideo(segmentFile, segmentUploadData.data, () => {
+            const segmentProgress = ((index + 1) / segments.length) * 100;
+            setUploadProgress(segmentProgress);
+          }),
+        );
+        if (error) {
+          toast.error("Failed to upload segment");
+          return;
+        }
       });
 
       await Promise.all(segmentPromises);
 
-      const details = videoDetails.data.data;
+      const details = videoDetails.data;
       onUploadComplete({
         id: details.id,
         title: details.title,

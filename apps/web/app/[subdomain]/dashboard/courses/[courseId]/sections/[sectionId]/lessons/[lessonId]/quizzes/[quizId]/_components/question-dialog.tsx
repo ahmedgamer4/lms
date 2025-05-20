@@ -15,12 +15,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Plus, Trash2 } from "lucide-react";
 import { Dispatch, SetStateAction, useMemo } from "react";
 import { toast } from "sonner";
-import {
-  QuizAnswer,
-  QuizQuestion,
-  createQuestion,
-  updateQuestion,
-} from "@/lib/quizzes";
+import { QuizQuestion, createQuestion } from "@/lib/quizzes";
 import { CreateQuizQuestionDto } from "@lms-saas/shared-lib/dtos";
 import { useForm, useFieldArray } from "react-hook-form";
 import { classValidatorResolver } from "@hookform/resolvers/class-validator";
@@ -32,7 +27,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-
+import { attempt } from "@/lib/utils";
 type QuestionDialogProps = {
   quizId: string;
   questionLength: number;
@@ -72,14 +67,14 @@ export const QuestionDialog = ({
 
   const onSubmit = async (data: CreateQuizQuestionDto) => {
     try {
-      const response = await createQuestion(quizId, data);
-      if (response.error) {
+      const [response, error] = await attempt(createQuestion(quizId, data));
+      if (error) {
         toast.error("Failed to create question");
         return;
       }
       setQuestions((questions: QuizQuestion[]) => [
         ...questions,
-        response.data?.data!,
+        response.data!,
       ]);
       toast.success("Question created successfully");
       form.reset();

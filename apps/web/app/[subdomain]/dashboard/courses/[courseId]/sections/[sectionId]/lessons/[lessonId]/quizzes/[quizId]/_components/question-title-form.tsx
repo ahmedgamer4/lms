@@ -18,6 +18,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { updateQuestion } from "@/lib/quizzes";
+import { attempt } from "@/lib/utils";
 
 interface QuestionTitleFormProps {
   initialData: {
@@ -52,7 +53,13 @@ export const QuestionTitleForm = ({
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      await updateQuestion(questionId, { questionText: values.questionText });
+      const [, error] = await attempt(
+        updateQuestion(questionId, { questionText: values.questionText }),
+      );
+      if (error) {
+        toast.error(error.message);
+        return;
+      }
       setQuestionText(values.questionText);
       toast.success("Quiz updated");
       toggleEdit();

@@ -17,7 +17,8 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { updateAnswer, updateQuestion, updateQuiz } from "@/lib/quizzes";
+import { updateAnswer } from "@/lib/quizzes";
+import { attempt } from "@/lib/utils";
 
 interface AnswerEditFormProps {
   initialData: {
@@ -52,7 +53,13 @@ export const AnswerEditForm = ({
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      await updateAnswer(answerId, { answerText: values.answerText });
+      const [, error] = await attempt(
+        updateAnswer(answerId, { answerText: values.answerText }),
+      );
+      if (error) {
+        toast.error(error.message);
+        return;
+      }
       setAnswerText(values.answerText);
       toast.success("Answer updated");
       toggleEdit();

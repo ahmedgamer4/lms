@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { createQuiz, createQuizSchema, Quiz } from "@/lib/quizzes";
+import { attempt } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CreateQuizDto } from "@lms-saas/shared-lib/dtos";
 import { Loader, Plus } from "lucide-react";
@@ -50,13 +51,13 @@ export const CreateQuizDialog = ({
 
   const handleSubmit = async (data: CreateQuizDto) => {
     try {
-      const response = await createQuiz(lessonId, data);
-      if (response.error || !response.data?.data) {
+      const [response, error] = await attempt(createQuiz(lessonId, data));
+      if (error) {
         toast.error("Failed to create quiz");
         return;
       }
 
-      onQuizCreated(response.data?.data!);
+      onQuizCreated(response.data);
       setOpen(false);
       toast.success("Quiz created successfully");
     } catch (error) {

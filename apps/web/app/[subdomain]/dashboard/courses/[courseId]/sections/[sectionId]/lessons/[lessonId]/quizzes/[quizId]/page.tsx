@@ -46,6 +46,7 @@ import { QuizAnswer } from "@/lib/quizzes";
 import { UpdateQuizQuestionDto } from "@lms-saas/shared-lib/dtos";
 import { QuestionTitleForm } from "./_components/question-title-form";
 import { AnswerEditForm } from "./_components/answer-edit-form";
+import { attempt } from "@/lib/utils";
 
 export default function QuizEditPage() {
   const [isLoading, setIsLoading] = useState(false);
@@ -55,13 +56,30 @@ export default function QuizEditPage() {
 
   const { data: course } = useQuery({
     queryKey: ["course", params.courseId],
-    queryFn: () => getCourse(Number(params.courseId)),
+    queryFn: async () => {
+      const [response, error] = await attempt(
+        getCourse(Number(params.courseId)),
+      );
+      if (error) {
+        toast.error("Error fetching course");
+        return;
+      }
+      return response;
+    },
   });
 
   const { data: section } = useQuery({
     queryKey: ["section", params.sectionId],
-    queryFn: () =>
-      findCourseSection(Number(params.courseId), Number(params.sectionId)),
+    queryFn: async () => {
+      const [response, error] = await attempt(
+        findCourseSection(Number(params.courseId), Number(params.sectionId)),
+      );
+      if (error) {
+        toast.error("Error fetching section");
+        return;
+      }
+      return response;
+    },
   });
 
   const {
@@ -70,31 +88,41 @@ export default function QuizEditPage() {
     isError: isLessonError,
   } = useQuery({
     queryKey: ["lesson", params.lessonId],
-    queryFn: () =>
-      findLesson(
-        Number(params.courseId),
-        Number(params.sectionId),
-        Number(params.lessonId),
-      ),
+    queryFn: async () => {
+      const [response, error] = await attempt(
+        findLesson(
+          Number(params.courseId),
+          Number(params.sectionId),
+          Number(params.lessonId),
+        ),
+      );
+      if (error) {
+        toast.error("Error fetching lesson");
+        return;
+      }
+      return response;
+    },
   });
 
   const { isLoading: isQuizLoading, isError: isQuizError } = useQuery({
     queryKey: ["quiz", params.quizId],
     queryFn: async () => {
-      const response = await getQuizQuestions(params.quizId as string);
-      if (response.error) {
-        toast.error(response.error);
+      const [response, error] = await attempt(
+        getQuizQuestions(params.quizId as string),
+      );
+      if (error) {
+        toast.error("Failed to fetch quiz questions");
       }
-      setQuestions(response.data?.data || []);
-      return response.data?.data;
+      setQuestions(response?.data || []);
+      return response?.data;
     },
   });
 
   const handleDeleteQuestion = async (questionId: number) => {
     try {
-      const response = await deleteQuestion(questionId);
-      if (response.error) {
-        toast.error(response.error);
+      const [, error] = await attempt(deleteQuestion(questionId));
+      if (error) {
+        toast.error("Failed to delete question");
         return;
       }
       setQuestions((prev) => prev.filter((q) => q.id !== questionId));
@@ -109,13 +137,13 @@ export default function QuizEditPage() {
     data: UpdateQuizQuestionDto,
   ) => {
     try {
-      const response = await updateQuestion(questionId, data);
-      if (response.error) {
-        toast.error(response.error);
+      const [response, error] = await attempt(updateQuestion(questionId, data));
+      if (error) {
+        toast.error("Failed to update question");
         return;
       }
       setQuestions((prev) =>
-        prev.map((q) => (q.id === questionId ? response.data?.data! : q)),
+        prev.map((q) => (q.id === questionId ? response.data! : q)),
       );
     } catch (error) {
       toast.error("Failed to update question");
@@ -123,12 +151,14 @@ export default function QuizEditPage() {
   };
 
   const handleAddAnswer = async (questionId: number) => {
-    const response = await addAnswer(questionId, {
-      answerText: "Answer text",
-      isCorrect: false,
-    });
-    if (response.error) {
-      toast.error(response.error);
+    const [response, error] = await attempt(
+      addAnswer(questionId, {
+        answerText: "Answer text",
+        isCorrect: false,
+      }),
+    );
+    if (error) {
+      toast.error("Failed to add answer");
       return;
     }
 
@@ -137,7 +167,7 @@ export default function QuizEditPage() {
         if (q.id === questionId) {
           return {
             ...q,
-            answers: [...q.answers, response.data?.data!],
+            answers: [...q.answers, response.data!],
           };
         }
         return q;
@@ -146,9 +176,9 @@ export default function QuizEditPage() {
   };
 
   const handleDeleteAnswer = async (questionId: number, answerId: number) => {
-    const response = await deleteAnswer(answerId);
-    if (response.error) {
-      toast.error(response.error);
+    const [, error] = await attempt(deleteAnswer(answerId));
+    if (error) {
+      toast.error("Failed to delete answer");
       return;
     }
 
@@ -170,9 +200,9 @@ export default function QuizEditPage() {
     answerId: number,
     data: Partial<QuizAnswer>,
   ) => {
-    const response = await updateAnswer(answerId, data);
-    if (response.error) {
-      toast.error(response.error);
+    const [, error] = await attempt(updateAnswer(answerId, data));
+    if (error) {
+      toast.error("Failed to update answer");
       return;
     }
 
@@ -206,20 +236,28 @@ export default function QuizEditPage() {
       orderIndex: index,
     }));
 
-    await updateQuiz(Number(params.lessonId), params.quizId as string, {
-      questions: updatedQuestions,
-    });
+    const [, error] = await attempt(
+      updateQuiz(Number(params.lessonId), params.quizId as string, {
+        questions: updatedQuestions,
+      }),
+    );
+    if (error) {
+      toast.error("Failed to update question order");
+      return;
+    }
 
     setQuestions(updatedQuestions);
-
+    toast.success("Question order updated");
     // Update the order in the backend
     try {
       setIsLoading(true);
-      const response = await updateQuestion(reorderedItem.id, {
-        orderIndex: result.destination.index,
-      });
-      if (response.error) {
-        toast.error(response.error);
+      const [, error] = await attempt(
+        updateQuestion(reorderedItem.id, {
+          orderIndex: result.destination.index,
+        }),
+      );
+      if (error) {
+        toast.error("Failed to update question order");
         return;
       }
       toast.success("Question order updated");
@@ -247,7 +285,7 @@ export default function QuizEditPage() {
           <BreadcrumbSeparator />
           <BreadcrumbItem>
             <BreadcrumbLink href={`/dashboard/courses/${params.courseId}`}>
-              {course?.data?.data?.title}
+              {course?.data?.title}
             </BreadcrumbLink>
           </BreadcrumbItem>
           <BreadcrumbSeparator />
@@ -255,7 +293,7 @@ export default function QuizEditPage() {
             <BreadcrumbLink
               href={`/dashboard/courses/${params.courseId}/sections/${params.sectionId}`}
             >
-              {section?.data?.data?.title}
+              {section?.data?.title}
             </BreadcrumbLink>
           </BreadcrumbItem>
           <BreadcrumbSeparator />
@@ -263,7 +301,7 @@ export default function QuizEditPage() {
             <BreadcrumbLink
               href={`/dashboard/courses/${params.courseId}/sections/${params.sectionId}/lessons/${params.lessonId}`}
             >
-              {lessonData?.data?.data?.title}
+              {lessonData?.data?.title}
             </BreadcrumbLink>
           </BreadcrumbItem>
           <BreadcrumbSeparator />

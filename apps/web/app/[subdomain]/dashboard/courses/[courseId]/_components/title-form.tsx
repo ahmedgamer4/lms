@@ -18,7 +18,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { updateCourse } from "@/lib/courses";
-
+import { attempt } from "@/lib/utils";
 interface TitleFormProps {
   initialData: {
     title: string;
@@ -49,11 +49,17 @@ export const TitleForm = ({ initialData, courseId }: TitleFormProps) => {
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      await updateCourse(courseId, { title: values.title });
-      setTitle(values.title);
-      toast.success("Course updated");
-      toggleEdit();
-      router.refresh();
+      const [, error] = await attempt(
+        updateCourse(courseId, { title: values.title }),
+      );
+      if (error) {
+        toast.error("Something went wrong");
+      } else {
+        setTitle(values.title);
+        toast.success("Course updated");
+        toggleEdit();
+        router.refresh();
+      }
     } catch {
       toast.error("Something went wrong");
     }

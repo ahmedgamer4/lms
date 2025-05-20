@@ -1,6 +1,6 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { deleteCourse, updateCourse } from "@/lib/courses";
 import { useQueryClient } from "@tanstack/react-query";
@@ -12,6 +12,8 @@ import {
   Eye,
   EyeOff,
   List,
+  QrCode,
+  Settings2,
 } from "lucide-react";
 import { TitleForm } from "./_components/title-form";
 import { DescriptionForm } from "./_components/description-form";
@@ -31,8 +33,10 @@ import { useState } from "react";
 import { ChaptersList } from "./_components/chapters-list";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import Link from "next/link";
+import { attempt } from "@/lib/utils";
 
-export default function CourseEditForm({ course }: { course: any }) {
+export default function CourseEdit({ course }: { course: any }) {
   const router = useRouter();
   const [publishLoading, setPublishLoading] = useState(false);
   const queryClient = useQueryClient();
@@ -40,12 +44,16 @@ export default function CourseEditForm({ course }: { course: any }) {
   async function onClickPublish() {
     if (course.published) {
       setPublishLoading(false);
-      const res = await updateCourse(course.id, { published: false });
-      if (res.error) toast("Cannot unpublish course");
+      const [, error] = await attempt(
+        updateCourse(course.id, { published: false }),
+      );
+      if (error) toast("Cannot unpublish course");
     } else {
       setPublishLoading(true);
-      const res = await updateCourse(course.id, { published: true });
-      if (res.error) toast("Cannot publish course");
+      const [, error] = await attempt(
+        updateCourse(course.id, { published: true }),
+      );
+      if (error) toast("Cannot publish course");
     }
     queryClient.invalidateQueries({
       queryKey: ["dashboard-course", course.id],
@@ -55,8 +63,8 @@ export default function CourseEditForm({ course }: { course: any }) {
 
   async function onClickDelete() {
     setPublishLoading(true);
-    const res = await deleteCourse(course.id);
-    if (res.error) toast("Cannot delete course");
+    const [, error] = await attempt(deleteCourse(course.id));
+    if (error) toast("Cannot delete course");
     setPublishLoading(false);
     router.replace("/dashboard/courses");
   }
@@ -160,23 +168,57 @@ export default function CourseEditForm({ course }: { course: any }) {
         </Card>
 
         <div className="space-y-6">
-          <div className="flex items-center justify-between">
+          <div className="space-y-6">
             <div className="space-y-1">
               <div className="flex items-center gap-3">
                 <div className="bg-primary/10 flex h-10 w-10 items-center justify-center rounded-full">
-                  <List className="text-primary" />
+                  <QrCode className="text-primary" />
                 </div>
-                <h2 className="text-xl font-semibold">Course Content</h2>
+                <div>
+                  <h2 className="text-xl font-semibold">Course Codes</h2>
+                  <p className="text-muted-foreground text-sm">
+                    Manage your course codes
+                  </p>
+                </div>
               </div>
-              <p className="text-muted-foreground text-sm">
-                Manage your course chapters and lessons
-              </p>
             </div>
-            <Badge variant="secondary" className="font-medium">
-              {course.courseSections?.length || 0} Chapters
-            </Badge>
+            <div className="bg-primary/5 flex w-full items-center justify-between rounded-lg border p-4">
+              <p className="text-sm">
+                {course.courseCodes?.length || 0} codes generated
+              </p>
+              <Link
+                href={`/dashboard/courses/${course.id}/codes`}
+                className={buttonVariants({ variant: "outline" })}
+              >
+                <Settings2 className="mr-1 h-4 w-4" />
+                Manage Codes
+              </Link>
+            </div>
           </div>
-          <ChaptersList course={course} />
+
+          <Separator />
+
+          <div className="space-y-6">
+            <div className="flex items-center justify-between">
+              <div className="space-y-1">
+                <div className="flex items-center gap-3">
+                  <div className="bg-primary/10 flex h-10 w-10 items-center justify-center rounded-full">
+                    <List className="text-primary" />
+                  </div>
+                  <div>
+                    <h2 className="text-xl font-semibold">Course Content</h2>
+                    <p className="text-muted-foreground text-sm">
+                      Manage your course chapters and lessons
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <Badge variant="secondary" className="font-medium">
+                {course.courseSections?.length || 0} Chapters
+              </Badge>
+            </div>
+            <ChaptersList course={course} />
+          </div>
         </div>
       </div>
     </div>

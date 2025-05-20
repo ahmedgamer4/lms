@@ -13,12 +13,15 @@ import {
 import Link from "next/link";
 import { useMemo } from "react";
 import { Button, buttonVariants } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import { attempt, cn } from "@/lib/utils";
 import { Sheet, SheetTrigger } from "@/components/ui/sheet";
 import { MobileSidebar } from "./_components/mobile-sidebar";
 import { SidebarContent } from "./_components/sidebar-content";
 import { VideoPlayer } from "./_components/video-player";
 import { lexicalToHtml } from "@/lib/lexical-to-html";
+import purify from "dompurify";
+import { Separator } from "@/components/ui/separator";
+import { toast } from "sonner";
 
 export default function LessonPage() {
   const params = useParams();
@@ -28,16 +31,32 @@ export default function LessonPage() {
 
   const { data: courseResponse, isLoading: courseLoading } = useQuery({
     queryKey: ["student-course", courseId],
-    queryFn: () => getCourse(courseId, true, true),
+    queryFn: async () => {
+      const [response, error] = await attempt(getCourse(courseId, true, true));
+      if (error) {
+        toast.error("Failed to fetch course");
+        return;
+      }
+      return response;
+    },
   });
 
   const { data: lessonResponse, isLoading: lessonLoading } = useQuery({
     queryKey: ["lesson", courseId, sectionId, lessonId],
-    queryFn: () => findLesson(courseId, sectionId, lessonId),
+    queryFn: async () => {
+      const [response, error] = await attempt(
+        findLesson(courseId, sectionId, lessonId),
+      );
+      if (error) {
+        toast.error("Failed to fetch lesson");
+        return;
+      }
+      return response;
+    },
   });
 
-  const course = courseResponse?.data?.data;
-  const lesson = lessonResponse?.data?.data;
+  const course = courseResponse?.data;
+  const lesson = lessonResponse?.data;
 
   const nav = useMemo(() => {
     if (!course) return { prev: null, next: null };
@@ -75,15 +94,14 @@ export default function LessonPage() {
         </aside>
 
         <div className="flex w-full flex-col items-center justify-center px-4 py-2 md:flex-1 md:p-8">
-          <div className="mb-2 w-full md:hidden">
-            <SheetTrigger asChild>
-              <Button variant="outline" className="h-8 w-8" size="icon">
-                <Menu size={24} />
-              </Button>
-            </SheetTrigger>
-          </div>
-
-          <div className="mb-8 flex w-full max-w-6xl md:mt-4">
+          <div className="mb-2 flex w-full max-w-6xl items-center gap-2">
+            <div className="md:hidden">
+              <SheetTrigger asChild>
+                <Button variant="outline" className="" size="icon">
+                  <Menu size={24} />
+                </Button>
+              </SheetTrigger>
+            </div>
             <Link
               href={`/courses`}
               className={cn(buttonVariants({ variant: "outline" }))}
@@ -100,14 +118,21 @@ export default function LessonPage() {
               <VideoOffIcon className="text-muted-foreground h-24 w-24" />
             )}
           </div>
-          <div className="w-full max-w-6xl">
+          <div className="border-border mb-8 w-full max-w-6xl rounded-lg border p-4">
             <h1 className="mb-4 text-3xl font-bold">{lesson?.title}</h1>
-            <p
-              className="mb-8 text-lg"
-              dangerouslySetInnerHTML={{
-                __html: lexicalToHtml(JSON.parse(lesson.description)),
-              }}
-            />
+            {lesson.description && (
+              <>
+                <Separator className="my-4" />
+                <p
+                  className="text-lg"
+                  dangerouslySetInnerHTML={{
+                    __html: purify.sanitize(
+                      lexicalToHtml(JSON.parse(lesson.description)),
+                    ),
+                  }}
+                />
+              </>
+            )}
           </div>
 
           <div className="mt-auto flex w-full max-w-6xl justify-end gap-4">

@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
-import { cn } from "@/lib/utils";
+import { attempt, cn } from "@/lib/utils";
 import Image from "next/image";
 import {
   Dialog,
@@ -46,10 +46,17 @@ export default function CourseEnrollPage() {
 
   const { data: courseResponse, isLoading } = useQuery({
     queryKey: ["student-course", courseId],
-    queryFn: () => getCourse(courseId, true, true),
+    queryFn: async () => {
+      const [response, error] = await attempt(getCourse(courseId, true, true));
+      if (error) {
+        toast.error("Error fetching course");
+        return;
+      }
+      return response;
+    },
   });
 
-  const course = courseResponse?.data?.data;
+  const course = courseResponse?.data;
 
   if (isLoading || !course) {
     return (
@@ -232,12 +239,14 @@ const EnrollDialogContent = ({ courseId }: { courseId: number }) => {
   });
 
   async function onSubmit(data: ValidateCodeDto) {
-    const response = await validateCourseCode(courseId, data.code);
+    const [response, error] = await attempt(
+      validateCourseCode(courseId, data.code),
+    );
 
-    if (response.error) {
-      toast.error(response.error.response.data.message);
+    if (error) {
+      toast.error("Invalid course code");
     } else {
-      if (response.data?.data.message) {
+      if (response.data?.message) {
         toast.success("Successfully enrolled in the course!");
         router.push(`/courses/${courseId}`);
       }

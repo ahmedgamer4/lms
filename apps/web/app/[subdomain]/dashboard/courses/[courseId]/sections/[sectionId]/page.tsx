@@ -38,7 +38,7 @@ import {
 } from "@/components/ui/breadcrumb";
 import Link from "next/link";
 import { LessonsList } from "./_components/lesson-list";
-
+import { attempt } from "@/lib/utils";
 export default function SectionPage() {
   const params = useParams();
   const router = useRouter();
@@ -49,21 +49,36 @@ export default function SectionPage() {
 
   const { data: course } = useQuery({
     queryKey: ["course", params.courseId],
-    queryFn: () => getCourse(Number(params.courseId)),
+    queryFn: async () => {
+      const [data, error] = await attempt(getCourse(Number(params.courseId)));
+      if (error) {
+        toast.error("Failed to fetch course");
+        return;
+      }
+      return data;
+    },
   });
 
   const { data: section } = useQuery({
     queryKey: ["section", params.sectionId],
-    queryFn: () =>
-      findCourseSection(Number(params.courseId), Number(params.sectionId)),
+    queryFn: async () => {
+      const [data, error] = await attempt(
+        findCourseSection(Number(params.courseId), Number(params.sectionId)),
+      );
+      if (error) {
+        toast.error("Failed to fetch section");
+        return;
+      }
+      return data;
+    },
   });
 
   useEffect(() => {
-    if (section?.data?.data) {
-      setTitle(section.data.data.title);
+    if (section?.data) {
+      setTitle(section.data.title);
       setSectionData({
-        ...section.data.data,
-        lessons: (section.data.data.lessons || []).map((lesson) => ({
+        ...section.data,
+        lessons: (section.data.lessons || []).map((lesson) => ({
           id: lesson.id,
           title: lesson.title,
           orderIndex: lesson.orderIndex,
@@ -73,7 +88,7 @@ export default function SectionPage() {
         })),
       });
     }
-  }, [section?.data?.data]);
+  }, [section?.data]);
 
   async function handleUpdateTitle() {
     if (!title.trim()) {
@@ -82,13 +97,13 @@ export default function SectionPage() {
     }
 
     setIsLoading(true);
-    const res = await updateCourseSection(
-      Number(params.courseId),
-      Number(params.sectionId),
-      { title },
+    const [, error] = await attempt(
+      updateCourseSection(Number(params.courseId), Number(params.sectionId), {
+        title,
+      }),
     );
 
-    if (res.error) {
+    if (error) {
       toast.error("Failed to update section title");
     } else {
       toast.success("Section title updated");
@@ -101,13 +116,13 @@ export default function SectionPage() {
 
   async function handleDeleteSection() {
     setIsLoading(true);
-    const res = await updateCourseSection(
-      Number(params.courseId),
-      Number(params.sectionId),
-      { title: `${section?.data?.data.title} (Deleted)` },
+    const [, error] = await attempt(
+      updateCourseSection(Number(params.courseId), Number(params.sectionId), {
+        title: `${section?.data?.title} (Deleted)`,
+      }),
     );
 
-    if (res.error) {
+    if (error) {
       toast.error("Failed to delete section");
     } else {
       toast.success("Section deleted");
@@ -120,21 +135,19 @@ export default function SectionPage() {
     if (!sectionData) return;
     const lessons = [...sectionData.lessons];
 
-    const lessonQuery = await createLesson(
-      course?.data?.data.id!,
-      section?.data?.data.id!,
-      {
+    const [lessonQuery, error] = await attempt(
+      createLesson(course?.data?.id!, section?.data?.id!, {
         title: `Lesson ${lessons.length + 1}`,
         orderIndex: lessons.length,
-      },
+      }),
     );
-    if (lessonQuery.error) {
+    if (error) {
       toast.error("Cannot create lesson");
       return;
     }
 
     lessons.push({
-      id: lessonQuery.data!.data.id,
+      id: lessonQuery.data.id,
       title: `Lesson ${lessons.length + 1}`,
       orderIndex: lessons.length,
       videos: [],
@@ -148,7 +161,7 @@ export default function SectionPage() {
     });
   }
 
-  if (!course?.data?.data || !section?.data?.data) {
+  if (!course?.data || !section?.data) {
     return (
       <div className="flex h-[calc(100vh-200px)] items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin" />
@@ -165,13 +178,13 @@ export default function SectionPage() {
           </BreadcrumbItem>
           <BreadcrumbSeparator />
           <BreadcrumbItem>
-            <BreadcrumbLink href={`/dashboard/courses/${course.data.data.id}`}>
-              {course.data.data.title}
+            <BreadcrumbLink href={`/dashboard/courses/${course.data.id}`}>
+              {course.data.title}
             </BreadcrumbLink>
           </BreadcrumbItem>
           <BreadcrumbSeparator />
           <BreadcrumbItem>
-            <BreadcrumbPage>{section.data.data.title}</BreadcrumbPage>
+            <BreadcrumbPage>{section.data.title}</BreadcrumbPage>
           </BreadcrumbItem>
         </BreadcrumbList>
       </Breadcrumb>
@@ -185,9 +198,7 @@ export default function SectionPage() {
           </Link>
           <div>
             <h1 className="text-2xl font-bold">Edit Section</h1>
-            <p className="text-muted-foreground">
-              Course: {course.data.data.title}
-            </p>
+            <p className="text-muted-foreground">Course: {course.data.title}</p>
           </div>
         </div>
         <AlertDialog>

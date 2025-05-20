@@ -1,7 +1,7 @@
 "use client";
 
 import { notFound, redirect, useParams } from "next/navigation";
-import CourseEditForm from "./course-edit-form";
+import CourseEdit from "./course-edit";
 import { useQuery } from "@tanstack/react-query";
 import { getCourse } from "@/lib/courses";
 import {
@@ -13,6 +13,8 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { Loader2 } from "lucide-react";
+import { attempt } from "@/lib/utils";
+import { toast } from "sonner";
 
 export default function EditCoursePage({}: {}) {
   const params = useParams();
@@ -25,7 +27,14 @@ export default function EditCoursePage({}: {}) {
 
   const { isLoading, data } = useQuery({
     queryKey: ["dashboard-course", courseId],
-    queryFn: () => getCourse(courseId, true),
+    queryFn: async () => {
+      const [response, error] = await attempt(getCourse(courseId, true));
+      if (error) {
+        toast.error("Error fetching course");
+        return;
+      }
+      return response;
+    },
   });
 
   if (isLoading)
@@ -35,7 +44,7 @@ export default function EditCoursePage({}: {}) {
       </div>
     );
 
-  const course = data?.data?.data;
+  const course = data?.data;
   if (!course) redirect("/dashboard/courses");
 
   return (
@@ -52,7 +61,7 @@ export default function EditCoursePage({}: {}) {
         </BreadcrumbList>
       </Breadcrumb>
 
-      <CourseEditForm course={course} />
+      <CourseEdit course={course} />
     </div>
   );
 }

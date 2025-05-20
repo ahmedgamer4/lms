@@ -19,7 +19,7 @@ import {
 } from "@/components/ui/form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-
+import { attempt } from "@/lib/utils";
 interface ImageFormProps {
   initialData: {
     imageUrl: string;
@@ -50,13 +50,19 @@ export const ImageForm = ({ initialData, courseId }: ImageFormProps) => {
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      await uploadCoverImage(courseId, values.coverImage);
-      queryClient.invalidateQueries({
-        queryKey: ["dashboard-course", courseId],
-      });
-      toast.success("Course updated");
-      toggleEdit();
-      router.refresh();
+      const [, error] = await attempt(
+        uploadCoverImage(courseId, values.coverImage),
+      );
+      if (error) {
+        toast.error("Something went wrong");
+      } else {
+        queryClient.invalidateQueries({
+          queryKey: ["dashboard-course", courseId],
+        });
+        toast.success("Course updated");
+        toggleEdit();
+        router.refresh();
+      }
     } catch {
       toast.error("Something went wrong");
     }

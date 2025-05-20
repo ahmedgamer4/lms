@@ -7,6 +7,7 @@ import {
   deleteLesson,
   CourseSection,
 } from "@/lib/courses";
+import { attempt } from "@/lib/utils";
 import { Droppable, Draggable, DragDropContext } from "@hello-pangea/dnd";
 import { useQueryClient } from "@tanstack/react-query";
 import { GripVertical, Pencil, Trash2 } from "lucide-react";
@@ -52,20 +53,22 @@ export const LessonsList = ({
 
         try {
           setIsLoading(true);
-          const res = await updateCourseSection(
-            Number(params.courseId),
-            Number(params.sectionId),
-            {
-              title: sectionData.title,
-              lessons: lessons.map((lesson) => ({
-                id: lesson.id,
-                title: lesson.title,
-                orderIndex: lesson.orderIndex,
-              })),
-            },
+          const [, error] = await attempt(
+            updateCourseSection(
+              Number(params.courseId),
+              Number(params.sectionId),
+              {
+                title: sectionData.title,
+                lessons: lessons.map((lesson) => ({
+                  id: lesson.id,
+                  title: lesson.title,
+                  orderIndex: lesson.orderIndex,
+                })),
+              },
+            ),
           );
 
-          if (res.error) {
+          if (error) {
             toast.error("Failed to update lesson order");
             // Revert changes on error
             setSectionData({
@@ -97,13 +100,15 @@ export const LessonsList = ({
 
     try {
       setIsLoading(true);
-      const lessonQuery = await deleteLesson(
-        course!.data!.data.id,
-        sectionData.id,
-        lessonId,
+      const [, error] = await attempt(
+        deleteLesson(
+          Number(params.courseId),
+          Number(params.sectionId),
+          lessonId,
+        ),
       );
 
-      if (lessonQuery.error) {
+      if (error) {
         toast.error("Failed to remove lesson");
         return;
       }

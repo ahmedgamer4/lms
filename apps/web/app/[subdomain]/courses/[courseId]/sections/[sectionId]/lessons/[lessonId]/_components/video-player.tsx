@@ -3,11 +3,25 @@ import { getVideo } from "@/lib/videos";
 import { Lesson } from "@/lib/courses";
 import { SecureVideoPlayer } from "@/components/secure-video-player";
 import { Loader2 } from "lucide-react";
-
+import { attempt } from "@/lib/utils";
+import { toast } from "sonner";
 export const VideoPlayer = ({ lesson }: { lesson: Lesson }) => {
-  const { data: videoResponse, isLoading: videoLoading } = useQuery({
+  const {
+    data: videoResponse,
+    isLoading: videoLoading,
+    isError,
+  } = useQuery({
     queryKey: ["video", lesson.id, lesson?.videos[0]?.id],
-    queryFn: () => getVideo(lesson.id, lesson?.videos[0]?.id || ""),
+    queryFn: async () => {
+      const [response, error] = await attempt(
+        getVideo(lesson.id, lesson?.videos[0]?.id || ""),
+      );
+      if (error) {
+        toast.error("Failed to fetch video URL");
+        return;
+      }
+      return response;
+    },
   });
 
   if (videoLoading)
@@ -17,13 +31,13 @@ export const VideoPlayer = ({ lesson }: { lesson: Lesson }) => {
       </div>
     );
 
-  if (videoResponse?.error) return <div>Error loading video</div>;
+  if (isError) return <div>Error loading video</div>;
 
   return (
     <div className="relative w-full">
       <SecureVideoPlayer
         className="h-full w-full"
-        src={videoResponse?.data?.data?.manifestUrl || ""}
+        src={videoResponse?.data.manifestUrl || ""}
       />
     </div>
   );

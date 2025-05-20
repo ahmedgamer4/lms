@@ -2,7 +2,9 @@ import { Video, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useQuery } from "@tanstack/react-query";
 import { getVideo } from "@/lib/videos";
-import { SecureVideoPlayer } from "@/components/secure-video-player";
+import { VideoJsPlayer } from "@/components/video-js-player";
+import { attempt } from "@/lib/utils";
+import { toast } from "sonner";
 
 interface VideoPreviewProps {
   lessonId: number;
@@ -24,11 +26,12 @@ export const VideoPreview = ({
   } = useQuery({
     queryKey: ["video-url", videoId],
     queryFn: async () => {
-      const response = await getVideo(lessonId, videoId);
-      if (!response.data) {
-        throw new Error("Failed to fetch video URL");
+      const [response, error] = await attempt(getVideo(lessonId, videoId));
+      if (error) {
+        toast.error("Failed to fetch video URL");
+        return;
       }
-      return response.data;
+      return response;
     },
   });
 
@@ -41,7 +44,12 @@ export const VideoPreview = ({
   return (
     <div className="space-y-4">
       <div className="relative aspect-video w-full overflow-hidden rounded-lg border bg-black">
-        <SecureVideoPlayer
+        {/* <SecureVideoPlayer
+          src={video.manifestUrl}
+          poster="/video-placeholder.png"
+          className="h-full w-full"
+        /> */}
+        <VideoJsPlayer
           src={video.manifestUrl}
           poster="/video-placeholder.png"
           className="h-full w-full"
