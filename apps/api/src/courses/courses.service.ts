@@ -6,10 +6,11 @@ import {
   CreateCourseSectionDto,
   db,
   UpdateCourseSectionDto,
-  lessons,
   enrollments,
+  lessons,
+  studentLessonCompletions,
 } from '@lms-saas/shared-lib';
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { and, count, desc, eq } from 'drizzle-orm';
 
 type WithClause = {
@@ -311,5 +312,56 @@ export class CoursesService {
       };
     });
     return courses;
+  }
+
+  async updateEnrollmentProgress(enrollmentId: number) {
+    const enrollment = await db.query.enrollments.findFirst({
+      where: eq(enrollments.id, enrollmentId),
+    });
+
+    if (!enrollment) {
+      throw new NotFoundException('Enrollment not found');
+    }
+
+    const courseId = enrollment.courseId;
+
+    const course = await db.query.courses.findFirst({
+      where: eq(courses.id, courseId),
+    });
+
+    if (!course) {
+      throw new NotFoundException('Course not found');
+    }
+
+    const lessonsResult = await db
+      .select({ value: count(lessons.id) })
+      .from(lessons)
+      .innerJoin(courseSections, eq(lessons.sectionId, courseSections.id))
+      .where(eq(courses.id, courseSections.courseId));
+
+    const totalLessons = lessonsResult[0].value;
+
+    if (totalLessons === 0) {
+      await db
+        .update(enrollments)
+        .set({ progress: 0 })
+        .where(eq(enrollments.id, enrollmentId));
+    }
+
+    const completedLessons = await db
+      .select({ value: count(studentLessonCompletions.id) })
+      .from(studentLessonCompletions)
+      .where(eq(studentLessonCompletions.enrollmentId, enrollmentId));
+
+    const completedLessonsCount = completedLessons[0].value;
+
+    const progress = Math.round((completedLessonsCount / totalLessons) * 100);
+
+    await db
+      .update(enrollments)
+      .set({ progress })
+      .where(eq(enrollments.id, enrollmentId));
+
+    return { progress };
   }
 }

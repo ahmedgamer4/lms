@@ -12,6 +12,7 @@ import {
   ParseBoolPipe,
   ParseFilePipe,
   ParseIntPipe,
+  Patch,
   Post,
   Put,
   Query,
@@ -29,6 +30,7 @@ import {
   students,
   UpdateCourseSectionDto,
   enrollments,
+  UpdateEnrollmentProgressDto,
 } from '@lms-saas/shared-lib';
 import { Roles } from '@/auth/decorators/roles.decorator';
 import { ApiBearerAuth, ApiBody, ApiConsumes } from '@nestjs/swagger';
@@ -280,5 +282,11 @@ export class CoursesController {
   @Roles('student')
   getEnrolledCourses(@Req() req) {
     return this.coursesService.getEnrolledCourses(req.user.id);
+  }
+
+  @Patch('/update-progress')
+  @Roles('student')
+  updateProgress(@Body() dto: UpdateEnrollmentProgressDto) {
+    return this.coursesService.updateEnrollmentProgress(dto.enrollmentId);
   }
 }
