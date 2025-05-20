@@ -6,14 +6,15 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export async function asyncWrapper<T>(
-  fn: () => Promise<T>,
-): Promise<AsyncWrapperResponse<T>> {
+type Result<T, E = Error> = [T, null] | [null, E];
+
+export async function attempt<T, E = Error>(
+  promise: Promise<T>,
+): Promise<Result<T, E>> {
   try {
-    const data = await fn();
-    return { error: null, data };
+    const data = await promise;
+    return [data, null];
   } catch (error) {
-    console.error(error);
-    return { error, data: null };
+    return [null, error as E];
   }
 }

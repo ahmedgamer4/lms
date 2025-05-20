@@ -1,7 +1,7 @@
 import { CreateVideoDto, UploadDto } from "@lms-saas/shared-lib";
 import { authFetch } from "./auth-fetch";
 import { BACKEND_URL } from "./constants";
-import { asyncWrapper } from "./utils";
+import { attempt } from "./utils";
 import axios from "axios";
 
 const baseUrl = `${BACKEND_URL}/lessons`;
@@ -30,24 +30,20 @@ export type SignedUrlResponse = {
 };
 
 export const createVideo = (lessonId: number, data: CreateVideoDto) => {
-  return asyncWrapper(async () => {
-    return authFetch<Video>(`${baseUrl}/${lessonId}/videos`, {
-      method: "POST",
-      data,
-    });
+  return authFetch<Video>(`${baseUrl}/${lessonId}/videos`, {
+    method: "POST",
+    data,
   });
 };
 
 export const getUploadPresignedUrl = (lessonId: number, data: UploadDto) => {
-  return asyncWrapper(async () => {
-    return authFetch<SignedUrlResponse>(
-      `${BACKEND_URL}/s3/generate-presigned-url`,
-      {
-        method: "POST",
-        data,
-      },
-    );
-  });
+  return authFetch<SignedUrlResponse>(
+    `${BACKEND_URL}/s3/generate-presigned-url`,
+    {
+      method: "POST",
+      data,
+    },
+  );
 };
 
 export const uploadVideo = async (
@@ -86,27 +82,17 @@ export const uploadVideo = async (
 };
 
 export const deleteVideo = (lessonId: number, id: string) => {
-  return asyncWrapper(() => {
-    return authFetch(`${baseUrl}/${lessonId}/videos/${id}`, {
-      method: "DELETE",
-    });
+  return authFetch(`${baseUrl}/${lessonId}/videos/${id}`, {
+    method: "DELETE",
   });
 };
 
 export const getVideo = (lessonId: number, id: string) => {
-  return asyncWrapper(async () => {
-    const response = await authFetch<{
-      videoId: string;
-      manifestUrl: string;
-      segmentsBaseUrl: string;
-    }>(`${baseUrl}/${lessonId}/videos/${id}`, {
-      method: "GET",
-    });
-
-    if (!response.data) {
-      throw new Error("Failed to fetch video data");
-    }
-
-    return response;
+  return authFetch<{
+    videoId: string;
+    manifestUrl: string;
+    segmentsBaseUrl: string;
+  }>(`${baseUrl}/${lessonId}/videos/${id}`, {
+    method: "GET",
   });
 };

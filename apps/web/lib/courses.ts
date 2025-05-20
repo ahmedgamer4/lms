@@ -4,7 +4,6 @@ import {
   SelectCourse,
   SelectCourseSection,
 } from "@lms-saas/shared-lib/db/schema";
-import { asyncWrapper } from "./utils";
 import {
   CourseEditDto,
   CreateCourseDto,
@@ -57,23 +56,19 @@ export async function getCoursesByTeacherId(
   withTeacher = false,
   withEnrollments = false,
 ) {
-  return asyncWrapper(async () => {
-    let url = `${baseUrl}/by-teacher-id?with-teacher=${withTeacher}&published=${published}&with-enrollments=${withEnrollments}`;
-    if (page && limit) {
-      url += `&page=${page}&limit=${limit}`;
-    }
-    const response = await authFetch<{
-      courses: CourseWithEnrollments[];
-      count: number;
-    }>(url);
-    return response.data;
-  });
+  let url = `${baseUrl}/by-teacher-id?with-teacher=${withTeacher}&published=${published}&with-enrollments=${withEnrollments}`;
+  if (page && limit) {
+    url += `&page=${page}&limit=${limit}`;
+  }
+  const response = await authFetch<{
+    courses: CourseWithEnrollments[];
+    count: number;
+  }>(url);
+  return response.data;
 }
 
 export async function createCourse(input: CreateCourseDto) {
-  return asyncWrapper(async () => {
-    await authFetch<void>(baseUrl, { method: "POST", data: input });
-  });
+  await authFetch<void>(baseUrl, { method: "POST", data: input });
 }
 
 export async function getCourse(
@@ -81,26 +76,20 @@ export async function getCourse(
   withSections = false,
   withEnrollments = false,
 ) {
-  return asyncWrapper(async () => {
-    return await authFetch<CourseWithSectionsAndEnrollments>(
-      `${baseUrl}/${id}?with-enrollments=${withEnrollments}&with-sections=${withSections}`,
-      {
-        method: "GET",
-      },
-    );
-  });
+  return authFetch<CourseWithSectionsAndEnrollments>(
+    `${baseUrl}/${id}?with-enrollments=${withEnrollments}&with-sections=${withSections}`,
+    {
+      method: "GET",
+    },
+  );
 }
 
 export async function updateCourse(id: number, input: CourseEditDto) {
-  return asyncWrapper(async () => {
-    await authFetch<void>(`${baseUrl}/${id}`, { method: "PUT", data: input });
-  });
+  await authFetch<void>(`${baseUrl}/${id}`, { method: "PUT", data: input });
 }
 
 export function deleteCourse(id: number) {
-  return asyncWrapper(async () => {
-    await authFetch(`${baseUrl}/${id}`, { method: "DELETE" });
-  });
+  return authFetch(`${baseUrl}/${id}`, { method: "DELETE" });
 }
 
 export type CourseSection = {
@@ -115,15 +104,13 @@ export const createCourseSection = (
   courseId: number,
   input: CreateCourseSectionDto,
 ) => {
-  return asyncWrapper(async () => {
-    return await authFetch<Omit<CourseSection, "courseId">[]>(
-      `${baseUrl}/${courseId}/sections`,
-      {
-        method: "POST",
-        data: input,
-      },
-    );
-  });
+  return authFetch<Omit<CourseSection, "courseId">[]>(
+    `${baseUrl}/${courseId}/sections`,
+    {
+      method: "POST",
+      data: input,
+    },
+  );
 };
 
 export const updateCourseSection = (
@@ -131,37 +118,28 @@ export const updateCourseSection = (
   sectionId: number,
   input: UpdateCourseSectionDto,
 ) => {
-  return asyncWrapper(async () => {
-    await authFetch<void>(`${baseUrl}/${courseId}/sections/${sectionId}`, {
-      method: "PUT",
-      data: input,
-    });
+  return authFetch<void>(`${baseUrl}/${courseId}/sections/${sectionId}`, {
+    method: "PUT",
+    data: input,
   });
 };
 
 export const getCourseSections = (courseId: number) => {
-  return asyncWrapper(async () => {
-    return await authFetch<SelectCourseSection[]>(
-      `${baseUrl}/${courseId}/sections`,
-      { method: "GET" },
-    );
+  return authFetch<SelectCourseSection[]>(`${baseUrl}/${courseId}/sections`, {
+    method: "GET",
   });
 };
 
 export const findCourseSection = (courseId: number, sectionId: number) => {
-  return asyncWrapper(async () => {
-    return await authFetch<CourseSection>(
-      `${baseUrl}/${courseId}/sections/${sectionId}`,
-      { method: "GET" },
-    );
-  });
+  return authFetch<CourseSection>(
+    `${baseUrl}/${courseId}/sections/${sectionId}`,
+    { method: "GET" },
+  );
 };
 
 export const deleteCourseSection = (courseId: number, sectionId: number) => {
-  return asyncWrapper(async () => {
-    await authFetch<void>(`${baseUrl}/${courseId}/sections/${sectionId}`, {
-      method: "DELETE",
-    });
+  return authFetch<void>(`${baseUrl}/${courseId}/sections/${sectionId}`, {
+    method: "DELETE",
   });
 };
 
@@ -169,12 +147,10 @@ export const uploadCoverImage = async (courseId: number, file: File) => {
   const formData = new FormData();
   formData.append("coverImage", file);
 
-  return asyncWrapper(async () => {
-    await authFetch<void>(`${baseUrl}/${courseId}/upload-cover-image`, {
-      method: "PUT",
-      data: formData,
-      headers: { "Content-Type": "multipart/form-data" },
-    });
+  await authFetch<void>(`${baseUrl}/${courseId}/upload-cover-image`, {
+    method: "PUT",
+    data: formData,
+    headers: { "Content-Type": "multipart/form-data" },
   });
 };
 
@@ -193,15 +169,13 @@ export const createLesson = (
   sectionId: number,
   input: CreateLessonDto,
 ) => {
-  return asyncWrapper(async () => {
-    return authFetch<{ id: number }>(
-      `${baseUrl}/${courseId}/sections/${sectionId}/lessons`,
-      {
-        method: "POST",
-        data: input,
-      },
-    );
-  });
+  return authFetch<{ id: number }>(
+    `${baseUrl}/${courseId}/sections/${sectionId}/lessons`,
+    {
+      method: "POST",
+      data: input,
+    },
+  );
 };
 
 export const updateLesson = (
@@ -210,15 +184,13 @@ export const updateLesson = (
   lessonId: number,
   input: UpdateLessonDto,
 ) => {
-  return asyncWrapper(async () => {
-    return authFetch<{ id: number }>(
-      `${baseUrl}/${courseId}/sections/${sectionId}/lessons/${lessonId}`,
-      {
-        method: "PUT",
-        data: input,
-      },
-    );
-  });
+  return authFetch<{ id: number }>(
+    `${baseUrl}/${courseId}/sections/${sectionId}/lessons/${lessonId}`,
+    {
+      method: "PUT",
+      data: input,
+    },
+  );
 };
 
 export const findLesson = (
@@ -226,12 +198,10 @@ export const findLesson = (
   sectionId: number,
   lessonId: number,
 ) => {
-  return asyncWrapper(async () => {
-    return await authFetch<Lesson>(
-      `${baseUrl}/${courseId}/sections/${sectionId}/lessons/${lessonId}`,
-      { method: "GET" },
-    );
-  });
+  return authFetch<Lesson>(
+    `${baseUrl}/${courseId}/sections/${sectionId}/lessons/${lessonId}`,
+    { method: "GET" },
+  );
 };
 
 export const deleteLesson = (
@@ -239,20 +209,31 @@ export const deleteLesson = (
   sectionId: number,
   lessonId: number,
 ) => {
-  return asyncWrapper(async () => {
-    return authFetch<{ id: number }>(
-      `${baseUrl}/${courseId}/sections/${sectionId}/lessons/${lessonId}`,
-      {
-        method: "DELETE",
-      },
-    );
-  });
+  return authFetch<{ id: number }>(
+    `${baseUrl}/${courseId}/sections/${sectionId}/lessons/${lessonId}`,
+    {
+      method: "DELETE",
+    },
+  );
 };
 
 export const getEnrolledCourses = async () => {
-  return asyncWrapper(async () => {
-    return authFetch<CourseWithEnrollments[]>(`${baseUrl}/enrolled`, {
-      method: "GET",
-    });
+  return authFetch<CourseWithEnrollments[]>(`${baseUrl}/enrolled`, {
+    method: "GET",
   });
+};
+
+export const completeLesson = async (
+  courseId: number,
+  sectionId: number,
+  lessonId: number,
+  enrollmentId: number,
+) => {
+  return authFetch<{ progress: number }>(
+    `${baseUrl}/${courseId}/sections/${sectionId}/lessons/${lessonId}/complete`,
+    {
+      method: "POST",
+      data: { enrollmentId },
+    },
+  );
 };

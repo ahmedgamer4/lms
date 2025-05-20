@@ -6,7 +6,7 @@ import {
 import axios, { AxiosError } from "axios";
 import { BACKEND_URL } from "./constants";
 import { createSession, deleteSession } from "./session";
-import { asyncWrapper } from "./utils";
+import { attempt } from "./utils";
 
 const baseUrl = `${BACKEND_URL}/auth`;
 
@@ -83,12 +83,9 @@ export async function refreshToken(
 }
 
 export async function signupStudent(input: CreateStudentDto) {
-  return asyncWrapper(
-    async () =>
-      await axios.post(`student/register`, input, {
-        baseURL: baseUrl,
-      }),
-  );
+  return axios.post(`student/register`, input, {
+    baseURL: baseUrl,
+  });
 }
 
 export async function logout() {

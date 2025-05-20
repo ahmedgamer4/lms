@@ -1,6 +1,5 @@
 import { BACKEND_URL } from "./constants";
 import { authFetch } from "./auth-fetch";
-import { asyncWrapper } from "./utils";
 import {
   CreateQuizAnswerDto,
   CreateQuizDto,
@@ -42,11 +41,9 @@ export const createQuizSchema = z.object({
 });
 
 export const createQuiz = (lessonId: number, input: CreateQuizDto) => {
-  return asyncWrapper(async () => {
-    return authFetch<Quiz>(`${baseUrl}/${lessonId}/quizzes`, {
-      method: "POST",
-      data: input,
-    });
+  return authFetch<Quiz>(`${baseUrl}/${lessonId}/quizzes`, {
+    method: "POST",
+    data: input,
   });
 };
 
@@ -55,33 +52,21 @@ export const updateQuiz = (
   quizId: string,
   input: UpdateQuizDto,
 ) => {
-  return asyncWrapper(async () => {
-    return authFetch<Quiz>(`${baseUrl}/${lessonId}/quizzes/${quizId}`, {
-      method: "PUT",
-      data: input,
-    });
+  return authFetch<Quiz>(`${baseUrl}/${lessonId}/quizzes/${quizId}`, {
+    method: "PUT",
+    data: input,
   });
 };
 
 export const deleteQuiz = (lessonId: number, quizId: string) => {
-  return asyncWrapper(async () => {
-    return authFetch<{ id: number }>(
-      `${baseUrl}/${lessonId}/quizzes/${quizId}`,
-      {
-        method: "DELETE",
-      },
-    );
+  return authFetch<{ id: number }>(`${baseUrl}/${lessonId}/quizzes/${quizId}`, {
+    method: "DELETE",
   });
 };
 
 export const getQuizQuestions = (quizId: string) => {
-  return asyncWrapper(async () => {
-    return authFetch<QuizQuestion[]>(
-      `${baseUrl}/1/quizzes/${quizId}/questions`,
-      {
-        method: "GET",
-      },
-    );
+  return authFetch<QuizQuestion[]>(`${baseUrl}/1/quizzes/${quizId}/questions`, {
+    method: "GET",
   });
 };
 
@@ -89,11 +74,9 @@ export const createQuestion = async (
   quizId: string,
   data: CreateQuizQuestionDto,
 ) => {
-  return asyncWrapper(async () => {
-    return authFetch<QuizQuestion>(`${baseUrl}/1/quizzes/${quizId}/questions`, {
-      method: "POST",
-      data,
-    });
+  return authFetch<QuizQuestion>(`${baseUrl}/1/quizzes/${quizId}/questions`, {
+    method: "POST",
+    data,
   });
 };
 
@@ -101,65 +84,55 @@ export const updateQuestion = async (
   questionId: number,
   data: UpdateQuizQuestionDto,
 ) => {
-  return asyncWrapper(async () => {
-    return authFetch<QuizQuestion>(
-      `${baseUrl}/1/quizzes/${crypto.randomUUID()}/questions/${questionId}`,
-      {
-        method: "PUT",
-        data,
-      },
-    );
-  });
+  return authFetch<QuizQuestion>(
+    `${baseUrl}/1/quizzes/${crypto.randomUUID()}/questions/${questionId}`,
+    {
+      method: "PUT",
+      data,
+    },
+  );
 };
 
 export const deleteQuestion = async (questionId: number) => {
-  return asyncWrapper(async () => {
-    return authFetch(
-      `${baseUrl}/1/quizzes/${crypto.randomUUID()}/questions/${questionId}`,
-      {
-        method: "DELETE",
-      },
-    );
-  });
+  return authFetch(
+    `${baseUrl}/1/quizzes/${crypto.randomUUID()}/questions/${questionId}`,
+    {
+      method: "DELETE",
+    },
+  );
 };
 
 export const addAnswer = async (
   questionId: number,
   data: CreateQuizAnswerDto,
 ) => {
-  return asyncWrapper(async () => {
-    return authFetch<QuizAnswer>(
-      `${baseUrl}/1/quizzes/${crypto.randomUUID()}/questions/${questionId}/answers`,
-      {
-        method: "POST",
-        data,
-      },
-    );
-  });
+  return authFetch<QuizAnswer>(
+    `${baseUrl}/1/quizzes/${crypto.randomUUID()}/questions/${questionId}/answers`,
+    {
+      method: "POST",
+      data,
+    },
+  );
 };
 
 export const updateAnswer = async (
   answerId: number,
   data: UpdateQuizAnswerDto,
 ) => {
-  return asyncWrapper(async () => {
-    return authFetch<{ id: number }>(
-      `${baseUrl}/1/quizzes/${crypto.randomUUID()}/questions/1/answers/${answerId}`,
-      {
-        method: "PUT",
-        data,
-      },
-    );
-  });
+  return authFetch<{ id: number }>(
+    `${baseUrl}/1/quizzes/${crypto.randomUUID()}/questions/1/answers/${answerId}`,
+    {
+      method: "PUT",
+      data,
+    },
+  );
 };
 
 export const deleteAnswer = async (answerId: number) => {
-  return asyncWrapper(async () => {
-    return authFetch<{ id: number }>(
-      `${baseUrl}/1/quizzes/${crypto.randomUUID()}/questions/1/answers/${answerId}`,
-      {
-        method: "DELETE",
-      },
-    );
-  });
+  return authFetch<{ id: number }>(
+    `${baseUrl}/1/quizzes/${crypto.randomUUID()}/questions/1/answers/${answerId}`,
+    {
+      method: "DELETE",
+    },
+  );
 };
