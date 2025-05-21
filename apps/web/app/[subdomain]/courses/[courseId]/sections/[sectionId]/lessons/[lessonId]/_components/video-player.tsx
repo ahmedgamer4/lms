@@ -1,10 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
 import { getVideo } from "@/lib/videos";
 import { Lesson } from "@/lib/courses";
-import { SecureVideoPlayer } from "@/components/secure-video-player";
 import { Loader2 } from "lucide-react";
 import { attempt } from "@/lib/utils";
 import { toast } from "sonner";
+import { VideoJsPlayer } from "@/components/video-js-player";
 export const VideoPlayer = ({ lesson }: { lesson: Lesson }) => {
   const {
     data: videoResponse,
@@ -35,7 +35,7 @@ export const VideoPlayer = ({ lesson }: { lesson: Lesson }) => {
 
   return (
     <div className="relative w-full">
-      <SecureVideoPlayer
+      <VideoJsPlayer
         className="h-full w-full"
         src={videoResponse?.data.manifestUrl || ""}
       />
