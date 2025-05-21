@@ -56,19 +56,17 @@ export const VideoUploader = ({
       setTranscodingProgress(0);
 
       // Transcode the video to HLS
-      let manifest: File;
-      let segments: File[];
-      try {
-        const { manifest: manifestFile, segments: segmentsFiles } =
-          await transcodeToHLS(selectedFile, setTranscodingProgress);
-        manifest = manifestFile;
-        segments = segmentsFiles;
-      } catch (error) {
-        console.error(error);
+      const [transcodeData, transcodeError] = await attempt(
+        transcodeToHLS(selectedFile, setTranscodingProgress),
+      );
+
+      if (transcodeError) {
         toast.error("Failed to transcode video");
         setIsTranscoding(false);
         return;
       }
+
+      const { manifest, segments } = transcodeData;
 
       setIsTranscoding(false);
       setIsUploading(true);
