@@ -5,7 +5,7 @@ import {
 } from "@lms-saas/shared-lib/dtos";
 import axios, { AxiosError } from "axios";
 import { BACKEND_URL } from "./constants";
-import { createSession, deleteSession } from "./session";
+import { createSession, deleteSession, updateTokens } from "./session";
 import { attempt } from "./utils";
 
 const baseUrl = `${BACKEND_URL}/auth`;
@@ -57,14 +57,13 @@ export async function refreshToken(
 
     const { accessToken, refreshToken: newRefreshToken } = res.data;
 
-    // Update tokens on the server
-    const updateRes = await fetch("http://localhost:3000/api/auth/update", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ accessToken, refreshToken: newRefreshToken }),
-    });
-
-    if (!updateRes.ok) {
+    const [_, error] = await attempt(
+      updateTokens({
+        accessToken,
+        refreshToken: newRefreshToken,
+      }),
+    );
+    if (error) {
       console.error("Failed to update tokens on the server");
       return null;
     }
