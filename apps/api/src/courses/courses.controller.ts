@@ -100,6 +100,7 @@ export class CoursesController {
     @Param('courseId', ParseIntPipe) courseId: number,
     @Query('with-enrollments', ParseBoolPipe) withEnrollments: boolean,
     @Query('with-sections', ParseBoolPipe) withSections: boolean,
+    @Query('with-course-codes', ParseBoolPipe) withCourseCodes: boolean,
     @Req() req,
   ) {
     try {
@@ -108,6 +109,7 @@ export class CoursesController {
         req.user.id,
         withSections,
         withEnrollments,
+        withCourseCodes,
       );
     } catch (error) {
       throw new InternalServerErrorException('Cannot update course');

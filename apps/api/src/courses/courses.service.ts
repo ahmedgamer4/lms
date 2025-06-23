@@ -127,6 +127,7 @@ export class CoursesService {
     studentId?: number,
     withSections = false,
     withEnrollments = false,
+    withCourseCodes = false,
   ) {
     const withClause: WithClause = {};
 
@@ -172,11 +173,16 @@ export class CoursesService {
       };
     }
 
+    if (withCourseCodes) {
+      withClause.courseCodes = {
+        columns: { id: true },
+      };
+    }
+
     const data = await db.query.courses.findFirst({
       where: eq(courses.id, courseId),
       with: {
         ...withClause,
-        courseCodes: { columns: { id: true } },
       },
     });
 
