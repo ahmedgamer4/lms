@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   ConflictException,
   Injectable,
   InternalServerErrorException,
@@ -11,10 +12,13 @@ import {
   enrollments,
   lessons,
   studentLessonCompletions,
+  studentQuizCompletions,
+  studentVideoCompletions,
   UpdateLessonDto,
   videos,
 } from '@lms-saas/shared-lib';
-import { count, eq, sql } from 'drizzle-orm';
+import { and, count, eq, sql } from 'drizzle-orm';
+import { attempt } from '@/utils/error-handling';
 
 @Injectable()
 export class LessonsService {
@@ -99,67 +103,136 @@ export class LessonsService {
   }
 
   async complete(courseId: number, lessonId: number, enrollmentId: number) {
-    try {
-      const lesson = await this.findOne(lessonId);
+    const [lesson, lessonError] = await attempt(
+      db.query.lessons.findFirst({
+        columns: {
+          id: true,
+        },
+        where: eq(lessons.id, lessonId),
+        with: {
+          studentVideoCompletions: {
+            where: eq(studentVideoCompletions.enrollmentId, enrollmentId),
+            columns: {
+              id: true,
+            },
+          },
+          studentQuizCompletions: {
+            where: eq(studentQuizCompletions.enrollmentId, enrollmentId),
+            columns: {
+              id: true,
+            },
+          },
+        },
+      }),
+    );
 
-      if (!lesson) {
-        throw new NotFoundException('Lesson not found');
-      }
+    if (lessonError) {
+      throw lessonError;
+    }
 
-      const enrollment = await db.query.enrollments.findFirst({
-        where: eq(enrollments.id, enrollmentId),
-      });
+    if (!lesson) {
+      throw new NotFoundException('Lesson not found');
+    }
 
-      if (!enrollment) {
-        throw new NotFoundException('Enrollment not found');
-      }
+    if (lesson.studentVideoCompletions?.length < 0) {
+      throw new BadRequestException('Video lesson not completed');
+    }
 
-      const studentLessonCompletion =
-        await db.query.studentLessonCompletions.findFirst({
-          where: eq(studentLessonCompletions.lessonId, lessonId),
+    if (lesson.studentQuizCompletions?.length < 0) {
+      throw new BadRequestException('Quiz lesson not completed');
+    }
+
+    const [result, error] = await attempt(
+      db.transaction(async (tx) => {
+        const lesson = await this.findOne(lessonId);
+
+        if (!lesson) {
+          throw new NotFoundException('Lesson not found');
+        }
+
+        const enrollment = await tx.query.enrollments.findFirst({
+          where: eq(enrollments.id, enrollmentId),
         });
 
-      if (studentLessonCompletion) {
-        throw new ConflictException('Lesson already completed');
-      }
+        if (!enrollment) {
+          throw new NotFoundException('Enrollment not found');
+        }
 
-      await db.insert(studentLessonCompletions).values({
-        lessonId,
-        enrollmentId,
-      });
+        const studentLessonCompletion =
+          await tx.query.studentLessonCompletions.findFirst({
+            where: and(
+              eq(studentLessonCompletions.lessonId, lessonId),
+              eq(studentLessonCompletions.enrollmentId, enrollmentId),
+            ),
+          });
 
-      const totalLessons = await db.query.courses.findFirst({
-        where: eq(courses.id, courseId),
-        columns: {
-          lessonsCount: true,
-        },
-      });
+        if (studentLessonCompletion) {
+          throw new ConflictException('Lesson already completed');
+        }
 
-      if (!totalLessons) {
-        throw new NotFoundException('Course not found');
-      }
+        await tx.insert(studentLessonCompletions).values({
+          lessonId,
+          enrollmentId,
+        });
 
-      const completedLessons = await db
-        .select({
-          count: count(studentLessonCompletions.lessonId),
-        })
-        .from(studentLessonCompletions)
-        .where(eq(studentLessonCompletions.enrollmentId, enrollmentId));
+        const totalLessons = await tx.query.courses.findFirst({
+          where: eq(courses.id, courseId),
+          columns: {
+            lessonsCount: true,
+          },
+        });
 
-      const progress = Math.round(
-        (completedLessons[0].count || 0 / totalLessons.lessonsCount || 1) * 100,
-      );
+        if (!totalLessons) {
+          throw new NotFoundException('Course not found');
+        }
 
-      await db
-        .update(enrollments)
-        .set({ progress })
-        .where(eq(enrollments.id, enrollmentId));
+        const completedLessons = await tx
+          .select({
+            count: count(studentLessonCompletions.lessonId),
+          })
+          .from(studentLessonCompletions)
+          .where(eq(studentLessonCompletions.enrollmentId, enrollmentId));
 
-      return { message: 'Lesson completed' };
-    } catch (error) {
-      throw new InternalServerErrorException(
-        `Cannot complete lesson. ${error}`,
-      );
+        console.log(completedLessons[0].count);
+        console.log(totalLessons.lessonsCount);
+
+        const progress = Math.round(
+          ((completedLessons[0].count || 0) / totalLessons.lessonsCount) * 100,
+        );
+        console.log(progress);
+
+        await tx
+          .update(enrollments)
+          .set({ progress })
+          .where(eq(enrollments.id, enrollmentId));
+
+        return { message: 'Lesson completed' };
+      }),
+    );
+
+    if (error) {
+      throw error;
     }
+
+    return result;
+  }
+
+  async checkIfCompleted(lessonId: number, enrollmentId: number) {
+    const [result, error] = await attempt(
+      db.query.studentLessonCompletions.findFirst({
+        where: and(
+          eq(studentLessonCompletions.lessonId, lessonId),
+          eq(studentLessonCompletions.enrollmentId, enrollmentId),
+        ),
+      }),
+    );
+
+    if (error) {
+      throw error;
+    }
+
+    return {
+      completed: !!result,
+    };
   }
 }

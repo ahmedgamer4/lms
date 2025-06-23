@@ -8,6 +8,7 @@ import {
   ParseIntPipe,
   Post,
   Put,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { ApiBearerAuth } from '@nestjs/swagger';
@@ -68,5 +69,14 @@ export class LessonsController {
       lessonId,
       dto.enrollmentId,
     );
+  }
+
+  @Get('/:lessonId/completed')
+  @Roles('student')
+  async checkIfCompleted(
+    @Param('lessonId', ParseIntPipe) lessonId: number,
+    @Query('enrollmentId', ParseIntPipe) enrollmentId: number,
+  ) {
+    return await this.lessonsService.checkIfCompleted(lessonId, enrollmentId);
   }
 }
