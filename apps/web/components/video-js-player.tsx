@@ -9,12 +9,14 @@ interface VideoJsPlayerProps {
   src: string;
   poster?: string;
   className?: string;
+  onComplete?: () => void;
 }
 
 export const VideoJsPlayer = ({
   src,
   poster,
   className,
+  onComplete,
 }: VideoJsPlayerProps) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const playerRef = useRef<any>(null);
@@ -60,6 +62,11 @@ export const VideoJsPlayer = ({
         type: "application/x-mpegURL", // For HLS streams
       });
 
+      // Handle video end
+      player.on("ended", async () => {
+        onComplete?.();
+      });
+
       // Prevent right-click context menu
       const preventDownload = (e: MouseEvent) => {
         e.preventDefault();
@@ -102,14 +109,14 @@ export const VideoJsPlayer = ({
     return () => {
       clearTimeout(timer);
     };
-  }, [src, poster]);
+  }, [src, poster, onComplete]);
 
   return (
     <div className={cn("relative", className)}>
-      <div data-vjs-player>
+      <div className="h-full" data-vjs-player>
         <video
           ref={videoRef}
-          className="video-js vjs-big-play-centered aspect-video"
+          className="video-js vjs-big-play-centered h-full w-full"
           onContextMenu={(e) => e.preventDefault()}
         />
       </div>
