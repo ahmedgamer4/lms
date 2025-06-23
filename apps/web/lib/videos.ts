@@ -109,3 +109,14 @@ export const checkIfVideoCompleted = async (
     },
   );
 };
+
+export const completeVideo = (
+  lessonId: number,
+  videoId: string,
+  enrollmentId: number,
+) => {
+  return authFetch(`${baseUrl}/${lessonId}/videos/${videoId}/complete`, {
+    method: "POST",
+    data: { enrollmentId },
+  });
+};
