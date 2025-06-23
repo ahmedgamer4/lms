@@ -6,6 +6,7 @@ import {
 } from "@/components/ui/accordion";
 import Link from "next/link";
 import {
+  checkIfLessonCompleted,
   CourseWithSectionsAndEnrollments,
   findLesson,
   Lesson,
@@ -28,6 +29,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { checkIfVideoCompleted } from "@/lib/videos";
 import { checkIfQuizCompleted } from "@/lib/quizzes";
 import { useParams } from "next/navigation";
+import { toast } from "sonner";
 
 interface SidebarContentProps {
   course: CourseWithSectionsAndEnrollments;
@@ -36,16 +38,11 @@ interface SidebarContentProps {
 }
 
 interface LessonItemProps {
-  lesson: {
-    id: number;
-    title: string;
-    orderIndex: number;
-  };
+  lesson: Omit<Lesson, "description">;
   courseId: number;
   sectionId: number;
   lessonId: number;
   enrollmentId: number;
-  lessonData: { data: Lesson } | null;
 }
 
 interface SectionAccordionProps {
@@ -53,16 +50,12 @@ interface SectionAccordionProps {
     id: number;
     title: string;
     orderIndex: number;
-    lessons: {
-      id: number;
-      title: string;
-      orderIndex: number;
-    }[];
+    courseId: number;
+    lessons: Omit<Lesson, "description">[];
   };
   courseId: number;
   lessonId: number;
   enrollmentId: number;
-  lessonData: { data: Lesson } | null;
 }
 
 const generateLessonUrl = (
@@ -71,11 +64,8 @@ const generateLessonUrl = (
   lessonId: number,
 ) => `/courses/${courseId}/sections/${sectionId}/lessons/${lessonId}`;
 
-const generateQuizUrl = (
-  courseId: number,
-  sectionId: number,
-  lessonId: number,
-) => `/courses/${courseId}/sections/${sectionId}/lessons/${lessonId}/quiz`;
+const generateQuizUrl = (courseId: number, quizId: string) =>
+  `/courses/${courseId}/quiz/${quizId}`;
 
 function LoadingSpinner() {
   return (
@@ -91,29 +81,28 @@ function LoadingSpinner() {
 }
 
 function LessonResources({
-  lessonData,
+  lesson,
   courseId,
   enrollmentId,
   sectionId,
   lessonId,
 }: {
-  lessonData: { data: Lesson } | null;
+  lesson: Omit<Lesson, "description">;
   courseId: number;
   enrollmentId: number;
   sectionId: number;
   lessonId: number;
 }) {
-  const hasVideos =
-    lessonData?.data?.videos && lessonData.data.videos.length > 0;
-  const hasQuizzes =
-    lessonData?.data?.quizzes && lessonData.data.quizzes.length > 0;
+  const hasVideos = lesson.videos && lesson.videos.length > 0;
+  const hasQuizzes = lesson.quizzes && lesson.quizzes.length > 0;
 
-  const videoId = lessonData?.data?.videos?.[0]?.id;
+  const videoId = lesson.videos?.[0]?.id;
+  const quizId = lesson.quizzes?.[0]?.id;
 
   if (!hasVideos && !hasQuizzes) return null;
 
   const { data: isVideoCompleted, isLoading: isVideoLoading } = useQuery({
-    queryKey: ["video-completed", lessonId],
+    queryKey: ["video-completed", lesson.id],
     queryFn: async () => {
       if (!videoId) return { completed: false };
 
@@ -128,10 +117,12 @@ function LessonResources({
   });
 
   const { data: isQuizCompleted, isLoading: isQuizLoading } = useQuery({
-    queryKey: ["quiz-completed", lessonId],
+    queryKey: ["quiz-completed", lesson.id],
     queryFn: async () => {
+      if (!quizId) return { completed: false };
+
       const [response, error] = await attempt(
-        checkIfQuizCompleted(lessonData?.data?.quizzes?.[0]?.id!, enrollmentId),
+        checkIfQuizCompleted(quizId, enrollmentId),
       );
       if (error || !response) {
         throw error || new Error("Failed to check if lesson is completed");
@@ -167,7 +158,7 @@ function LessonResources({
             )}
             <span>Watch Video</span>
             <Badge variant="secondary" className="ml-auto text-xs">
-              {lessonData?.data?.videos?.length || 0}
+              {lesson.videos?.length || 0}
             </Badge>
           </Button>
         )}
@@ -179,7 +170,7 @@ function LessonResources({
               !!isQuizCompleted?.completed &&
                 "border-green-600 bg-green-100 hover:bg-green-200/80",
             )}
-            href={generateQuizUrl(courseId, sectionId, lessonId)}
+            href={generateQuizUrl(courseId, quizId!)}
           >
             {isQuizCompleted?.completed ? (
               <CheckCircle className="h-3 w-3 text-green-600" />
@@ -188,7 +179,7 @@ function LessonResources({
             )}
             <span>Take Quiz</span>
             <Badge variant="secondary" className="ml-auto text-xs">
-              {lessonData?.data?.quizzes?.length || 0}
+              {lesson.quizzes?.length || 0}
             </Badge>
           </Link>
         )}
@@ -201,12 +192,32 @@ function LessonItem({
   lesson,
   courseId,
   sectionId,
-  lessonId,
   enrollmentId,
-  lessonData,
 }: LessonItemProps) {
-  const isActive = lesson.id === lessonId;
+  const { lessonId } = useParams();
+  const isActive = lesson.id === Number(lessonId);
   const lessonUrl = generateLessonUrl(courseId, sectionId, lesson.id);
+
+  const { data: isLessonCompleted, isLoading: isLessonCompletedLoading } =
+    useQuery({
+      queryKey: ["lesson-completed", lesson.id],
+      queryFn: async () => {
+        const [response, error] = await attempt(
+          checkIfLessonCompleted(courseId, sectionId, lesson.id, enrollmentId),
+        );
+
+        if (error || !response) {
+          toast.error("Failed to check if lesson is completed");
+          return { completed: false };
+        }
+
+        return response.data;
+      },
+    });
+
+  if (isLessonCompletedLoading || !lesson) {
+    return <LoadingSpinner />;
+  }
 
   return (
     <li key={lesson.id} className="relative">
@@ -220,7 +231,9 @@ function LessonItem({
         )}
       >
         <div className="bg-muted/50 group-hover:bg-primary/10 flex h-6 w-6 items-center justify-center rounded-full transition-colors">
-          {isActive ? (
+          {isLessonCompleted?.completed ? (
+            <CheckCircle className="h-3 w-3 text-green-600" />
+          ) : isActive ? (
             <PlayCircle className="text-primary h-3 w-3" />
           ) : (
             <Circle className="text-muted-foreground group-hover:text-primary h-3 w-3 transition-colors" />
@@ -231,7 +244,7 @@ function LessonItem({
           <div className="mt-1 flex items-center gap-2">
             <div className="text-muted-foreground flex items-center gap-1 text-xs">
               <Clock className="h-3 w-3" />
-              <span>Lesson {lesson.orderIndex}</span>
+              <span>Lesson {lesson.orderIndex + 1}</span>
             </div>
           </div>
         </div>
@@ -240,11 +253,11 @@ function LessonItem({
       {isActive && (
         <div className="mt-2 ml-9">
           <LessonResources
-            lessonData={lessonData}
+            lesson={lesson}
             courseId={courseId}
             enrollmentId={enrollmentId}
             sectionId={sectionId}
-            lessonId={lessonId}
+            lessonId={Number(lessonId)}
           />
         </div>
       )}
@@ -256,7 +269,6 @@ function SectionAccordion({
   section,
   courseId,
   lessonId,
-  lessonData,
   enrollmentId,
 }: SectionAccordionProps) {
   const { sectionId } = useParams();
@@ -300,23 +312,22 @@ function SectionAccordion({
                 </div>
               </div>
               {hasActiveLesson && (
-                <Badge variant="default" className="text-xs">
+                <Badge variant="default" className="mr-1.5 text-xs">
                   Current
                 </Badge>
               )}
             </div>
           </AccordionTrigger>
           <AccordionContent className="px-4 pb-4">
-            <div className="list-none space-y-1">
+            <div className="list-none space-y-3">
               {section.lessons?.map((lesson) => (
                 <LessonItem
                   key={lesson.id}
                   lesson={lesson}
                   courseId={courseId}
                   sectionId={section.id}
-                  lessonId={lessonId}
+                  lessonId={lesson.id}
                   enrollmentId={enrollmentId}
-                  lessonData={lessonData}
                 />
               ))}
             </div>
@@ -392,10 +403,9 @@ export function SidebarContent({
           <SectionAccordion
             key={section.id}
             enrollmentId={course.enrollments?.[0]?.id!}
-            section={section}
+            section={{ ...section, courseId: course.id }}
             courseId={course.id}
             lessonId={lessonId}
-            lessonData={lessonData!}
           />
         ))}
       </div>

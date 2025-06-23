@@ -40,6 +40,8 @@ export type CourseWithSectionsAndEnrollments = SelectCourse & {
       id: number;
       title: string;
       orderIndex: number;
+      videos: Video[];
+      quizzes: Quiz[];
     }[];
   }[];
   enrollments?: {

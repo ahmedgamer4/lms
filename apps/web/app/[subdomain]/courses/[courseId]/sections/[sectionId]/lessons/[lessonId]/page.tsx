@@ -9,6 +9,8 @@ import {
   ArrowRight,
   Menu,
   VideoOffIcon,
+  CheckCircle,
+  Video,
 } from "lucide-react";
 import Link from "next/link";
 import { useMemo } from "react";
@@ -22,7 +24,7 @@ import { lexicalToHtml } from "@/lib/lexical-to-html";
 import purify from "dompurify";
 import { Separator } from "@/components/ui/separator";
 import { toast } from "sonner";
-import { completeVideo } from "@/lib/videos";
+import { checkIfVideoCompleted, completeVideo } from "@/lib/videos";
 
 export default function LessonPage() {
   const queryClient = useQueryClient();
@@ -60,11 +62,31 @@ export default function LessonPage() {
   const course = courseResponse?.data;
   const lesson = lessonResponse?.data;
 
+  const { data: isVideoCompleted, isLoading: isVideoLoading } = useQuery({
+    queryKey: ["video-completed", lessonId],
+    queryFn: async () => {
+      if (!lesson?.videos?.[0]?.id) return { completed: false };
+
+      const [response, error] = await attempt(
+        checkIfVideoCompleted(
+          lessonId,
+          lesson?.videos?.[0]?.id!,
+          course?.enrollments?.[0]?.id!,
+        ),
+      );
+      if (error) {
+        toast.error("Failed to check if video is completed");
+        return;
+      }
+      return response?.data;
+    },
+  });
+
   const handleCompleteVideo = async () => {
     const enrollmentId = course?.enrollments?.[0]?.id;
     if (!enrollmentId) return;
 
-    const [response, error] = await attempt(
+    const [, error] = await attempt(
       completeVideo(lessonId, lesson?.videos?.[0]?.id!, enrollmentId),
     );
 
@@ -95,7 +117,7 @@ export default function LessonPage() {
     return { prev, next };
   }, [course, lessonId]);
 
-  if (courseLoading || lessonLoading || !course || !lesson) {
+  if (courseLoading || lessonLoading || isVideoLoading || !course || !lesson) {
     return (
       <div className="flex h-full items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin" />
@@ -106,7 +128,7 @@ export default function LessonPage() {
   return (
     <Sheet>
       <div className="flex h-full min-h-screen w-full">
-        <aside className="bg-muted sticky top-0 hidden h-full overflow-y-auto border-r p-6 md:block">
+        <aside className="bg-muted/60 sticky top-0 hidden h-full overflow-y-auto border-r p-6 md:block">
           <h2 className="text-primary mb-4 text-xl font-semibold">
             {course.title}
           </h2>
@@ -160,7 +182,19 @@ export default function LessonPage() {
           </div>
 
           <div className="mt-auto flex w-full max-w-6xl justify-end gap-4">
-            <Button onClick={handleCompleteVideo}>Complete Video</Button>
+            {lesson.videos?.[0] && (
+              <Button
+                onClick={handleCompleteVideo}
+                disabled={isVideoCompleted?.completed}
+              >
+                {isVideoCompleted?.completed ? (
+                  <CheckCircle className="text-primary-foreground h-3 w-3" />
+                ) : (
+                  <Video className="h-3 w-3" />
+                )}
+                {isVideoCompleted?.completed ? "Completed" : "Mark Completed"}
+              </Button>
+            )}
             {nav.prev && (
               <Link
                 href={`/courses/${courseId}/sections/${nav.prev.sectionId}/lessons/${nav.prev.lessonId}`}
