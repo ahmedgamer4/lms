@@ -1,7 +1,11 @@
 import { Roles } from '@/auth/decorators/roles.decorator';
 import { S3Service } from '@/s3/s3.service';
 import { User } from '@/users/decorators/user.decorator';
-import { CreateVideoDto, UploadDto } from '@lms-saas/shared-lib';
+import {
+  CompleteVideoDto,
+  CreateVideoDto,
+  UploadDto,
+} from '@lms-saas/shared-lib';
 import {
   Body,
   Controller,
@@ -10,7 +14,9 @@ import {
   NotFoundException,
   Param,
   ParseIntPipe,
+  ParseUUIDPipe,
   Post,
+  Query,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { VideosService } from './videos.service';
@@ -75,5 +81,23 @@ export class VideosController {
       segmentsKey,
       title: dto.title,
     });
+  }
+
+  @Post(':videoId/complete')
+  @Roles('student')
+  completeVideo(
+    @Param('videoId', ParseUUIDPipe) videoId: string,
+    @Body() dto: CompleteVideoDto,
+  ) {
+    return this.videosService.completeVideo(videoId, dto.enrollmentId);
+  }
+
+  @Get(':videoId/completed')
+  @Roles('student')
+  checkIfCompleted(
+    @Param('videoId', ParseUUIDPipe) videoId: string,
+    @Query('enrollmentId', ParseIntPipe) enrollmentId: number,
+  ) {
+    return this.videosService.checkIfCompleted(videoId, enrollmentId);
   }
 }
