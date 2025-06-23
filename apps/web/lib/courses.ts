@@ -75,9 +75,10 @@ export async function getCourse(
   id: number,
   withSections = false,
   withEnrollments = false,
+  withCourseCodes = false,
 ) {
   return authFetch<CourseWithSectionsAndEnrollments>(
-    `${baseUrl}/${id}?with-enrollments=${withEnrollments}&with-sections=${withSections}`,
+    `${baseUrl}/${id}?with-enrollments=${withEnrollments}&with-sections=${withSections}&with-course-codes=${withCourseCodes}`,
     {
       method: "GET",
     },
@@ -235,5 +236,17 @@ export const completeLesson = async (
       method: "POST",
       data: { enrollmentId },
     },
+  );
+};
+
+export const checkIfLessonCompleted = async (
+  courseId: number,
+  sectionId: number,
+  lessonId: number,
+  enrollmentId: number,
+) => {
+  return authFetch<{ completed: boolean }>(
+    `${baseUrl}/${courseId}/sections/${sectionId}/lessons/${lessonId}/completed?enrollmentId=${enrollmentId}`,
+    { method: "GET" },
   );
 };
