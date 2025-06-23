@@ -61,7 +61,7 @@ export class QuizzesController {
     return this.quizzesService.delete(quizId);
   }
 
-  @Post('/:quizId/complete')
+  @Post('/:quizId/submit')
   @Roles('student')
   async completeQuiz(
     @Param('quizId', ParseUUIDPipe) quizId: string,
