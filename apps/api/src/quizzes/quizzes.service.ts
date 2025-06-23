@@ -1,4 +1,9 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import {
   CreateQuizAnswerDto,
   CreateQuizDto,
@@ -8,11 +13,13 @@ import {
   quizQuestions,
   quizzes,
   SelectQuizAnswer,
+  studentQuizCompletions,
   UpdateQuizAnswerDto,
   UpdateQuizDto,
   UpdateQuizQuestionDto,
 } from '@lms-saas/shared-lib';
-import { eq } from 'drizzle-orm';
+import { and, eq } from 'drizzle-orm';
+import { attempt } from '@/utils/error-handling';
 
 @Injectable()
 export class QuizzesService {
@@ -33,7 +40,28 @@ export class QuizzesService {
   }
 
   async findOne(id: string) {
-    const [quiz] = await db.select().from(quizzes).where(eq(quizzes.id, id));
+    const quiz = await db.query.quizzes.findFirst({
+      where: eq(quizzes.id, id),
+      columns: {
+        createdAt: false,
+        updatedAt: false,
+        lessonId: false,
+      },
+      with: {
+        questions: {
+          columns: {
+            quizId: false,
+          },
+          with: {
+            answers: {
+              columns: {
+                questionId: false,
+              },
+            },
+          },
+        },
+      },
+    });
 
     return quiz;
   }
@@ -264,5 +292,70 @@ export class QuizzesService {
         `Failed to create answer. ${error}`,
       );
     }
+  }
+
+  async completeQuiz(quizId: string, enrollmentId: number) {
+    // Check if quiz exists
+    const [quiz, quizError] = await attempt(
+      db.query.quizzes.findFirst({
+        where: eq(quizzes.id, quizId),
+        columns: {
+          id: true,
+        },
+      }),
+    );
+
+    if (quizError) {
+      throw quizError;
+    }
+
+    if (!quiz) {
+      throw new NotFoundException('Quiz not found');
+    }
+
+    const [, error] = await attempt(
+      db.transaction(async (tx) => {
+        // Check if quiz is already completed
+        const completion = await tx.query.studentQuizCompletions.findFirst({
+          where: and(
+            eq(studentQuizCompletions.enrollmentId, enrollmentId),
+            eq(studentQuizCompletions.quizId, quizId),
+          ),
+        });
+
+        if (completion) {
+          throw new ConflictException('Quiz already completed');
+        }
+
+        // Create completion
+        await tx.insert(studentQuizCompletions).values({
+          enrollmentId,
+          quizId,
+        });
+      }),
+    );
+
+    if (error) {
+      throw error;
+    }
+  }
+
+  async checkIfCompleted(quizId: string, enrollmentId: number) {
+    const [result, error] = await attempt(
+      db.query.studentQuizCompletions.findFirst({
+        where: and(
+          eq(studentQuizCompletions.quizId, quizId),
+          eq(studentQuizCompletions.enrollmentId, enrollmentId),
+        ),
+      }),
+    );
+
+    if (error) {
+      throw error;
+    }
+
+    return {
+      completed: !!result,
+    };
   }
 }

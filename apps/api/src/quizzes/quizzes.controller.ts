@@ -9,11 +9,13 @@ import {
   ParseUUIDPipe,
   Post,
   Put,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { ApiBearerAuth } from '@nestjs/swagger';
 import { QuizzesService } from './quizzes.service';
 import {
+  CompleteQuizDto,
   CreateQuizAnswerDto,
   CreateQuizDto,
   CreateQuizQuestionDto,
@@ -57,6 +59,24 @@ export class QuizzesController {
   @Roles('teacher')
   async delete(@Param('quizId', ParseUUIDPipe) quizId: string) {
     return this.quizzesService.delete(quizId);
+  }
+
+  @Post('/:quizId/complete')
+  @Roles('student')
+  async completeQuiz(
+    @Param('quizId', ParseUUIDPipe) quizId: string,
+    @Body() dto: CompleteQuizDto,
+  ) {
+    return this.quizzesService.completeQuiz(quizId, dto.enrollmentId);
+  }
+
+  @Get('/:quizId/completed')
+  @Roles('student')
+  async checkIfCompleted(
+    @Param('quizId', ParseUUIDPipe) quizId: string,
+    @Query('enrollmentId', ParseIntPipe) enrollmentId: number,
+  ) {
+    return this.quizzesService.checkIfCompleted(quizId, enrollmentId);
   }
 
   @Get('/:quizId/questions')
