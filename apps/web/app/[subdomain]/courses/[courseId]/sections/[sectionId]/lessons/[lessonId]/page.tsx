@@ -1,6 +1,6 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { getCourse, findLesson } from "@/lib/courses";
 import { useParams } from "next/navigation";
 import {
@@ -22,8 +22,10 @@ import { lexicalToHtml } from "@/lib/lexical-to-html";
 import purify from "dompurify";
 import { Separator } from "@/components/ui/separator";
 import { toast } from "sonner";
+import { completeVideo } from "@/lib/videos";
 
 export default function LessonPage() {
+  const queryClient = useQueryClient();
   const params = useParams();
   const courseId = Number(params.courseId);
   const sectionId = Number(params.sectionId);
@@ -58,6 +60,26 @@ export default function LessonPage() {
   const course = courseResponse?.data;
   const lesson = lessonResponse?.data;
 
+  const handleCompleteVideo = async () => {
+    const enrollmentId = course?.enrollments?.[0]?.id;
+    if (!enrollmentId) return;
+
+    const [response, error] = await attempt(
+      completeVideo(lessonId, lesson?.videos?.[0]?.id!, enrollmentId),
+    );
+
+    if (error) {
+      toast.error("Failed to complete video");
+      return;
+    }
+
+    queryClient.invalidateQueries({
+      queryKey: ["video-completed", lessonId],
+    });
+
+    toast.success("Video completed");
+  };
+
   const nav = useMemo(() => {
     if (!course) return { prev: null, next: null };
     let prev = null,
@@ -84,8 +106,10 @@ export default function LessonPage() {
   return (
     <Sheet>
       <div className="flex h-full min-h-screen w-full">
-        <aside className="bg-muted sticky top-0 hidden h-full w-64 overflow-y-auto border-r p-6 md:block">
-          <h2 className="mb-4 text-xl font-semibold">Course Content</h2>
+        <aside className="bg-muted sticky top-0 hidden h-full overflow-y-auto border-r p-6 md:block">
+          <h2 className="text-primary mb-4 text-xl font-semibold">
+            {course.title}
+          </h2>
           <SidebarContent
             course={course}
             sectionId={sectionId}
@@ -136,6 +160,7 @@ export default function LessonPage() {
           </div>
 
           <div className="mt-auto flex w-full max-w-6xl justify-end gap-4">
+            <Button onClick={handleCompleteVideo}>Complete Video</Button>
             {nav.prev && (
               <Link
                 href={`/courses/${courseId}/sections/${nav.prev.sectionId}/lessons/${nav.prev.lessonId}`}
