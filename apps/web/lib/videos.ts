@@ -96,3 +96,16 @@ export const getVideo = (lessonId: number, id: string) => {
     method: "GET",
   });
 };
+
+export const checkIfVideoCompleted = async (
+  lessonId: number,
+  videoId: string,
+  enrollmentId: number,
+) => {
+  return authFetch<{ completed: boolean }>(
+    `${baseUrl}/${lessonId}/videos/${videoId}/completed?enrollmentId=${enrollmentId}`,
+    {
+      method: "GET",
+    },
+  );
+};
