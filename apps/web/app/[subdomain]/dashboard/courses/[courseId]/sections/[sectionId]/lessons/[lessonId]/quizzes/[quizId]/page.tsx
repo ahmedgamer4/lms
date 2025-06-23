@@ -7,7 +7,7 @@ import { Separator } from "@/components/ui/separator";
 import {
   addAnswer,
   deleteAnswer,
-  getQuizQuestions,
+  findQuiz,
   QuizQuestion,
   updateAnswer,
   updateQuiz,
@@ -108,12 +108,12 @@ export default function QuizEditPage() {
     queryKey: ["quiz", params.quizId],
     queryFn: async () => {
       const [response, error] = await attempt(
-        getQuizQuestions(params.quizId as string),
+        findQuiz(params.quizId as string),
       );
       if (error) {
         toast.error("Failed to fetch quiz questions");
       }
-      setQuestions(response?.data || []);
+      setQuestions(response?.data?.questions || []);
       return response?.data;
     },
   });

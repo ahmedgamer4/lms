@@ -28,7 +28,9 @@ export default function EditCoursePage({}: {}) {
   const { isLoading, data } = useQuery({
     queryKey: ["dashboard-course", courseId],
     queryFn: async () => {
-      const [response, error] = await attempt(getCourse(courseId, true));
+      const [response, error] = await attempt(
+        getCourse(courseId, true, false, true),
+      );
       if (error) {
         toast.error("Error fetching course");
         return;
