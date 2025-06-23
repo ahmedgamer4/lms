@@ -1,5 +1,5 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Video, FileQuestion, Plus, Trash2 } from "lucide-react";
+import { Video, FileQuestion, Trash2, Loader2 } from "lucide-react";
 import { Lesson } from "@/lib/courses";
 import { toast } from "sonner";
 import { deleteVideo, Video as VideoInterface } from "@/lib/videos";
@@ -7,10 +7,9 @@ import { useState } from "react";
 import { VideoPreview } from "./video-preview";
 import { VideoUploader } from "./video-uploader";
 import { Button } from "@/components/ui/button";
-import { Quiz, deleteQuiz, getQuizQuestions } from "@/lib/quizzes";
+import { Quiz, deleteQuiz, findQuiz } from "@/lib/quizzes";
 import { CreateQuizDialog } from "./create-quiz-dialog";
 import { useParams, useRouter } from "next/navigation";
-import { param } from "drizzle-orm";
 import { useQuery } from "@tanstack/react-query";
 import { attempt } from "@/lib/utils";
 
@@ -32,14 +31,12 @@ export const LessonTabs = ({ lesson }: LessonTabsProps) => {
     queryKey: ["quiz", lesson.quizzes[0]?.id],
     queryFn: async () => {
       if (!lesson.quizzes[0]?.id) {
-        return [];
+        return { questions: [] };
       }
-      const [response, error] = await attempt(
-        getQuizQuestions(lesson.quizzes[0]?.id),
-      );
+      const [response, error] = await attempt(findQuiz(lesson.quizzes[0]?.id));
       if (error) {
         toast.error(error.message);
-        return [];
+        return { questions: [] };
       }
       return response.data;
     },
@@ -76,7 +73,12 @@ export const LessonTabs = ({ lesson }: LessonTabsProps) => {
     setLessonQuizzes([...lessonQuizzes, quiz]);
   };
 
-  if (isQuizLoading) return <div>Loading...</div>;
+  if (isQuizLoading)
+    return (
+      <div className="flex h-full items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin" />
+      </div>
+    );
   if (isQuizError) return <div>Error</div>;
 
   return (
@@ -127,7 +129,8 @@ export const LessonTabs = ({ lesson }: LessonTabsProps) => {
                 <div>
                   <h3 className="font-medium">{quiz.title}</h3>
                   <p className="text-muted-foreground text-sm">
-                    {quizData?.length || 0} questions • {quiz.duration} minutes
+                    {quizData?.questions.length || 0} questions •{" "}
+                    {quiz.duration} minutes
                   </p>
                 </div>
               </div>
