@@ -8,7 +8,7 @@ import {
   uuid,
   varchar,
 } from "drizzle-orm/pg-core";
-import { lessons } from "./course";
+import { enrollments, lessons } from "./course";
 import { InferSelectModel, relations, sql } from "drizzle-orm";
 
 export const quizzes = pgTable("quizzes", {
@@ -35,10 +35,6 @@ export const quizQuestions = pgTable("quiz_questions", {
     .notNull(),
   questionText: text("question_text").notNull(),
   orderIndex: integer("order_index").notNull(),
-  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
-  updatedAt: timestamp("updated_at", { withTimezone: true })
-    .default(sql`CURRENT_TIMESTAMP`)
-    .$onUpdate(() => new Date()),
 });
 
 export const quizAnswers = pgTable("quiz_answers", {
@@ -51,10 +47,39 @@ export const quizAnswers = pgTable("quiz_answers", {
     .notNull(),
   answerText: text("answer_text").notNull(),
   isCorrect: boolean("is_correct").default(false).notNull(),
-  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
-  updatedAt: timestamp("updated_at", { withTimezone: true })
-    .default(sql`CURRENT_TIMESTAMP`)
-    .$onUpdate(() => new Date()),
+});
+
+export const submittedQuestionAnswers = pgTable("submitted_question_answers", {
+  id: serial("id").primaryKey(),
+  questionId: integer("question_id")
+    .references(() => quizQuestions.id, {
+      onDelete: "cascade",
+      onUpdate: "cascade",
+    })
+    .notNull(),
+  answerId: integer("answer_id")
+    .references(() => quizAnswers.id, {
+      onDelete: "cascade",
+      onUpdate: "cascade",
+    })
+    .notNull(),
+});
+
+export const studentQuizCompletions = pgTable("student_quiz_completions", {
+  id: serial("id").primaryKey(),
+  enrollmentId: integer("enrollment_id")
+    .references(() => enrollments.id, {
+      onUpdate: "cascade",
+      onDelete: "cascade",
+    })
+    .notNull(),
+
+  quizId: uuid("quiz_id")
+    .references(() => quizzes.id, {
+      onDelete: "cascade",
+    })
+    .notNull(),
+  completedAt: timestamp("completed_at", { withTimezone: true }).defaultNow(),
 });
 
 export const quizzesRelations = relations(quizzes, ({ one, many }) => ({
@@ -63,6 +88,7 @@ export const quizzesRelations = relations(quizzes, ({ one, many }) => ({
     references: [lessons.id],
   }),
   questions: many(quizQuestions),
+  studentQuizCompletions: many(studentQuizCompletions),
 }));
 
 export const quizQuestionsRelations = relations(
@@ -82,6 +108,20 @@ export const quizAnswersRelations = relations(quizAnswers, ({ one }) => ({
     references: [quizQuestions.id],
   }),
 }));
+
+export const studentQuizCompletionsRelations = relations(
+  studentQuizCompletions,
+  ({ one }) => ({
+    quiz: one(quizzes, {
+      fields: [studentQuizCompletions.quizId],
+      references: [quizzes.id],
+    }),
+    enrollment: one(enrollments, {
+      fields: [studentQuizCompletions.enrollmentId],
+      references: [enrollments.id],
+    }),
+  }),
+);
 
 export type SelectQuiz = InferSelectModel<typeof quizzes>;
 export type SelectQuizQuestion = InferSelectModel<typeof quizQuestions>;

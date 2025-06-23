@@ -10,8 +10,8 @@ import {
 } from "drizzle-orm/pg-core";
 import { teachers, students } from "./user";
 import { InferSelectModel, relations, sql } from "drizzle-orm";
-import { videos } from "./video";
-import { quizzes } from "./quiz";
+import { studentVideoCompletions, videos } from "./video";
+import { quizzes, studentQuizCompletions } from "./quiz";
 import { courseCodes } from "./course-code";
 
 export const courses = pgTable("courses", {
@@ -102,6 +102,8 @@ export const lessonsRelations = relations(lessons, ({ one, many }) => ({
   }),
 
   studentLessonCompletions: many(studentLessonCompletions),
+  studentVideoCompletions: many(studentVideoCompletions),
+  studentQuizCompletions: many(studentQuizCompletions),
 
   videos: many(videos),
   quizzes: many(quizzes),
@@ -117,6 +119,8 @@ export const enrollmentsRelations = relations(enrollments, ({ one, many }) => ({
     references: [courses.id],
   }),
   studentLessonCompletions: many(studentLessonCompletions),
+  studentVideoCompletions: many(studentVideoCompletions),
+  studentQuizCompletions: many(studentQuizCompletions),
 }));
 
 export const studentLessonCompletions = pgTable("student_lesson_completions", {
