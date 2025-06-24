@@ -9,11 +9,14 @@ import {
   CreateQuizDto,
   CreateQuizQuestionDto,
   db,
+  lessons,
   quizAnswers,
   quizQuestions,
   quizzes,
   SelectQuizAnswer,
+  studentLessonCompletions,
   studentQuizCompletions,
+  studentVideoCompletions,
   UpdateQuizAnswerDto,
   UpdateQuizDto,
   UpdateQuizQuestionDto,
@@ -301,6 +304,7 @@ export class QuizzesService {
         where: eq(quizzes.id, quizId),
         columns: {
           id: true,
+          lessonId: true,
         },
       }),
     );
@@ -316,21 +320,72 @@ export class QuizzesService {
     const [, error] = await attempt(
       db.transaction(async (tx) => {
         // Check if quiz is already completed
-        const completion = await tx.query.studentQuizCompletions.findFirst({
+        const quizCompletion = await tx.query.studentQuizCompletions.findFirst({
           where: and(
             eq(studentQuizCompletions.enrollmentId, enrollmentId),
             eq(studentQuizCompletions.quizId, quizId),
           ),
         });
 
-        if (completion) {
+        if (quizCompletion) {
           throw new ConflictException('Quiz already completed');
         }
 
-        // Create completion
+        // Create quiz completion
         await tx.insert(studentQuizCompletions).values({
           enrollmentId,
           quizId,
+        });
+
+        const lessonId = quiz.lessonId;
+        // Get lesson with quizzes and student quiz completion
+        const lesson = await tx.query.lessons.findFirst({
+          where: eq(lessons.id, lessonId),
+          columns: {
+            id: true,
+          },
+          with: {
+            videos: {
+              columns: {
+                id: true,
+              },
+              with: {
+                studentVideoCompletions: {
+                  columns: {
+                    id: true,
+                  },
+                  where: eq(studentVideoCompletions.enrollmentId, enrollmentId),
+                },
+              },
+            },
+          },
+        });
+
+        if (!lesson) throw new NotFoundException('Lesson not found');
+
+        // Break if lesson has quizzes and student has not completed any of them
+        if (
+          lesson.videos.length > 0 &&
+          lesson.videos.some(
+            (video) => video.studentVideoCompletions.length === 0,
+          )
+        ) {
+          return;
+        }
+
+        const completion = await tx.query.studentLessonCompletions.findFirst({
+          where: and(
+            eq(studentLessonCompletions.enrollmentId, enrollmentId),
+            eq(studentLessonCompletions.lessonId, lessonId),
+          ),
+        });
+
+        if (completion)
+          throw new ConflictException('Already completed this lesson');
+
+        await tx.insert(studentLessonCompletions).values({
+          enrollmentId,
+          lessonId,
         });
       }),
     );
