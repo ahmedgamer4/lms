@@ -68,8 +68,8 @@ export const submittedQuestionAnswers = pgTable("submitted_question_answers", {
     .notNull(),
 });
 
-export const studentQuizCompletions = pgTable(
-  "student_quiz_completions",
+export const quizSubmissions = pgTable(
+  "quiz_submissions",
   {
     id: serial("id").primaryKey(),
     enrollmentId: integer("enrollment_id")
@@ -87,7 +87,7 @@ export const studentQuizCompletions = pgTable(
     completedAt: timestamp("completed_at", { withTimezone: true }).defaultNow(),
   },
   (t) => [
-    unique("student_quiz_completion_unique")
+    unique("quiz_submission_unique")
       .on(t.enrollmentId, t.quizId)
       .nullsNotDistinct(),
   ],
@@ -99,7 +99,7 @@ export const quizzesRelations = relations(quizzes, ({ one, many }) => ({
     references: [lessons.id],
   }),
   questions: many(quizQuestions),
-  studentQuizCompletions: many(studentQuizCompletions),
+  quizSubmissions: many(quizSubmissions),
 }));
 
 export const quizQuestionsRelations = relations(
@@ -121,14 +121,14 @@ export const quizAnswersRelations = relations(quizAnswers, ({ one }) => ({
 }));
 
 export const studentQuizCompletionsRelations = relations(
-  studentQuizCompletions,
+  quizSubmissions,
   ({ one }) => ({
     quiz: one(quizzes, {
-      fields: [studentQuizCompletions.quizId],
+      fields: [quizSubmissions.quizId],
       references: [quizzes.id],
     }),
     enrollment: one(enrollments, {
-      fields: [studentQuizCompletions.enrollmentId],
+      fields: [quizSubmissions.enrollmentId],
       references: [enrollments.id],
     }),
   }),

@@ -12,7 +12,7 @@ import {
 import { teachers, students } from "./user";
 import { InferSelectModel, relations, sql } from "drizzle-orm";
 import { studentVideoCompletions, videos } from "./video";
-import { quizzes, studentQuizCompletions } from "./quiz";
+import { quizzes, quizSubmissions } from "./quiz";
 import { courseCodes } from "./course-code";
 
 export const courses = pgTable("courses", {
@@ -104,7 +104,7 @@ export const lessonsRelations = relations(lessons, ({ one, many }) => ({
 
   studentLessonCompletions: many(studentLessonCompletions),
   studentVideoCompletions: many(studentVideoCompletions),
-  studentQuizCompletions: many(studentQuizCompletions),
+  quizSubmissions: many(quizSubmissions),
 
   videos: many(videos),
   quizzes: many(quizzes),
@@ -121,7 +121,7 @@ export const enrollmentsRelations = relations(enrollments, ({ one, many }) => ({
   }),
   studentLessonCompletions: many(studentLessonCompletions),
   studentVideoCompletions: many(studentVideoCompletions),
-  studentQuizCompletions: many(studentQuizCompletions),
+  quizSubmissions: many(quizSubmissions),
 }));
 
 export const studentLessonCompletions = pgTable(
