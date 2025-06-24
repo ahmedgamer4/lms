@@ -13,7 +13,7 @@ import {
   Video,
 } from "lucide-react";
 import Link from "next/link";
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { attempt, cn } from "@/lib/utils";
 import { Sheet, SheetTrigger } from "@/components/ui/sheet";
@@ -32,6 +32,7 @@ export default function LessonPage() {
   const courseId = Number(params.courseId);
   const sectionId = Number(params.sectionId);
   const lessonId = Number(params.lessonId);
+  const [blur, setBlur] = useState(false);
 
   const { data: courseResponse, isLoading: courseLoading } = useQuery({
     queryKey: ["student-course", courseId],
@@ -82,6 +83,31 @@ export default function LessonPage() {
     },
   });
 
+  useEffect(() => {
+    const handleContextMenu = (e: MouseEvent) => {
+      e.preventDefault();
+    };
+    document.addEventListener("contextmenu", handleContextMenu);
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      navigator.clipboard.writeText("");
+      setBlur(true);
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    window.addEventListener("blur", () => setBlur(true));
+    document.addEventListener("visibilitychange", () => {
+      if (document.hidden) {
+        setBlur(true);
+      }
+    });
+
+    return () => {
+      document.removeEventListener("contextmenu", handleContextMenu);
+      window.removeEventListener("keydown", handleKeyDown);
+      setBlur(false);
+    };
+  }, []);
+
   const handleCompleteVideo = async () => {
     const enrollmentId = course?.enrollments?.[0]?.id;
     if (!enrollmentId) return;
@@ -97,6 +123,10 @@ export default function LessonPage() {
 
     queryClient.invalidateQueries({
       queryKey: ["video-completed", lessonId],
+    });
+
+    queryClient.invalidateQueries({
+      queryKey: ["lesson-completed", lessonId],
     });
 
     toast.success("Video completed");
@@ -127,7 +157,17 @@ export default function LessonPage() {
 
   return (
     <Sheet>
-      <div className="flex h-full min-h-screen w-full">
+      <div
+        onClick={() => setBlur(false)}
+        className="flex h-full min-h-screen w-full"
+        style={{
+          filter: blur ? "blur(10px)" : "none",
+          WebkitUserSelect: "none",
+          MozUserSelect: "none",
+          msUserSelect: "none",
+          userSelect: "none",
+        }}
+      >
         <aside className="bg-muted/60 sticky top-0 hidden h-full overflow-y-auto border-r p-6 md:block">
           <h2 className="text-primary mb-4 text-xl font-semibold">
             {course.title}

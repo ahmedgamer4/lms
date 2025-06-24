@@ -171,3 +171,9 @@
 body {
   letter-spacing: var(--tracking-normal);
 }
+
+@media print {
+  body {
+    display: none;
+  }
+}
