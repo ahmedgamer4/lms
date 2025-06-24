@@ -12,10 +12,9 @@ import {
   lessons,
   quizAnswers,
   quizQuestions,
+  quizSubmissions,
   quizzes,
-  SelectQuizAnswer,
   studentLessonCompletions,
-  studentQuizCompletions,
   studentVideoCompletions,
   UpdateQuizAnswerDto,
   UpdateQuizDto,
@@ -320,10 +319,10 @@ export class QuizzesService {
     const [, error] = await attempt(
       db.transaction(async (tx) => {
         // Check if quiz is already completed
-        const quizCompletion = await tx.query.studentQuizCompletions.findFirst({
+        const quizCompletion = await tx.query.quizSubmissions.findFirst({
           where: and(
-            eq(studentQuizCompletions.enrollmentId, enrollmentId),
-            eq(studentQuizCompletions.quizId, quizId),
+            eq(quizSubmissions.enrollmentId, enrollmentId),
+            eq(quizSubmissions.quizId, quizId),
           ),
         });
 
@@ -332,7 +331,7 @@ export class QuizzesService {
         }
 
         // Create quiz completion
-        await tx.insert(studentQuizCompletions).values({
+        await tx.insert(quizSubmissions).values({
           enrollmentId,
           quizId,
         });
@@ -397,10 +396,10 @@ export class QuizzesService {
 
   async checkIfCompleted(quizId: string, enrollmentId: number) {
     const [result, error] = await attempt(
-      db.query.studentQuizCompletions.findFirst({
+      db.query.quizSubmissions.findFirst({
         where: and(
-          eq(studentQuizCompletions.quizId, quizId),
-          eq(studentQuizCompletions.enrollmentId, enrollmentId),
+          eq(quizSubmissions.quizId, quizId),
+          eq(quizSubmissions.enrollmentId, enrollmentId),
         ),
       }),
     );

@@ -10,7 +10,7 @@ import {
   enrollments,
   lessons,
   studentLessonCompletions,
-  studentQuizCompletions,
+  quizSubmissions,
   studentVideoCompletions,
   videos,
 } from '@lms-saas/shared-lib';
@@ -103,11 +103,11 @@ export class VideosService {
                 id: true,
               },
               with: {
-                studentQuizCompletions: {
+                quizSubmissions: {
                   columns: {
                     id: true,
                   },
-                  where: eq(studentQuizCompletions.enrollmentId, enrollmentId),
+                  where: eq(quizSubmissions.enrollmentId, enrollmentId),
                 },
               },
             },
@@ -119,9 +119,7 @@ export class VideosService {
         // Break if lesson has quizzes and student has not completed any of them
         if (
           lesson.quizzes.length > 0 &&
-          lesson.quizzes.some(
-            (quiz) => quiz.studentQuizCompletions.length === 0,
-          )
+          lesson.quizzes.some((quiz) => quiz.quizSubmissions.length === 0)
         ) {
           return;
         }

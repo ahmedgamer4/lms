@@ -11,8 +11,8 @@ import {
   db,
   enrollments,
   lessons,
+  quizSubmissions,
   studentLessonCompletions,
-  studentQuizCompletions,
   studentVideoCompletions,
   UpdateLessonDto,
   videos,
@@ -116,8 +116,8 @@ export class LessonsService {
               id: true,
             },
           },
-          studentQuizCompletions: {
-            where: eq(studentQuizCompletions.enrollmentId, enrollmentId),
+          quizSubmissions: {
+            where: eq(quizSubmissions.enrollmentId, enrollmentId),
             columns: {
               id: true,
             },
@@ -138,7 +138,7 @@ export class LessonsService {
       throw new BadRequestException('Video lesson not completed');
     }
 
-    if (lesson.studentQuizCompletions?.length < 0) {
+    if (lesson.quizSubmissions?.length < 0) {
       throw new BadRequestException('Quiz lesson not completed');
     }
 
