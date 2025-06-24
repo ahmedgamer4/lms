@@ -8,6 +8,9 @@ import { and, eq } from 'drizzle-orm';
 import {
   db,
   enrollments,
+  lessons,
+  studentLessonCompletions,
+  studentQuizCompletions,
   studentVideoCompletions,
   videos,
 } from '@lms-saas/shared-lib';
@@ -64,7 +67,7 @@ export class VideosService {
   async completeVideo(videoId: string, enrollmentId: number) {
     const [, error] = await attempt(
       db.transaction(async (tx) => {
-        const video = await this.getVideo(videoId);
+        const [video] = await this.getVideo(videoId);
         if (!video) throw new NotFoundException('Video not found');
 
         const enrollment = await tx.query.enrollments.findFirst({
@@ -72,18 +75,70 @@ export class VideosService {
         });
         if (!enrollment) throw new NotFoundException('Enrollment not found');
 
-        const completion = await tx.query.studentVideoCompletions.findFirst({
-          where: and(
-            eq(studentVideoCompletions.enrollmentId, enrollmentId),
-            eq(studentVideoCompletions.videoId, videoId),
-          ),
-        });
-        if (completion)
+        const videoCompletion =
+          await tx.query.studentVideoCompletions.findFirst({
+            where: and(
+              eq(studentVideoCompletions.enrollmentId, enrollmentId),
+              eq(studentVideoCompletions.videoId, videoId),
+            ),
+          });
+        if (videoCompletion)
           throw new ConflictException('Already completed this video');
 
         await tx.insert(studentVideoCompletions).values({
           enrollmentId,
           videoId,
+        });
+
+        const lessonId = video.lessonId;
+        // Get lesson with quizzes and student quiz completion
+        const lesson = await tx.query.lessons.findFirst({
+          where: eq(lessons.id, lessonId),
+          columns: {
+            id: true,
+          },
+          with: {
+            quizzes: {
+              columns: {
+                id: true,
+              },
+              with: {
+                studentQuizCompletions: {
+                  columns: {
+                    id: true,
+                  },
+                  where: eq(studentQuizCompletions.enrollmentId, enrollmentId),
+                },
+              },
+            },
+          },
+        });
+
+        if (!lesson) throw new NotFoundException('Lesson not found');
+
+        // Break if lesson has quizzes and student has not completed any of them
+        if (
+          lesson.quizzes.length > 0 &&
+          lesson.quizzes.some(
+            (quiz) => quiz.studentQuizCompletions.length === 0,
+          )
+        ) {
+          return;
+        }
+
+        const completion = await tx.query.studentLessonCompletions.findFirst({
+          where: and(
+            eq(studentLessonCompletions.enrollmentId, enrollmentId),
+            eq(studentLessonCompletions.lessonId, lessonId),
+          ),
+        });
+
+        if (completion)
+          throw new ConflictException('Already completed this lesson');
+
+        await tx.insert(studentLessonCompletions).values({
+          enrollmentId,
+          lessonId,
         });
       }),
     );
