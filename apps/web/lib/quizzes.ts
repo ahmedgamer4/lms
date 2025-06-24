@@ -7,6 +7,7 @@ import {
   UpdateQuizAnswerDto,
   UpdateQuizDto,
   UpdateQuizQuestionDto,
+  CompleteQuizDto,
 } from "@lms-saas/shared-lib/dtos";
 import { z } from "zod";
 import { SelectQuizAnswer } from "@lms-saas/shared-lib";
@@ -139,6 +140,22 @@ export const deleteAnswer = async (answerId: number) => {
     `${baseUrl}/1/quizzes/${crypto.randomUUID()}/questions/1/answers/${answerId}`,
     {
       method: "DELETE",
+    },
+  );
+};
+
+export const submitQuiz = async (quizId: string, enrollmentId: number) => {
+  return authFetch<void>(`${baseUrl}/1/quizzes/${quizId}/submit`, {
+    method: "POST",
+    data: { enrollmentId } as CompleteQuizDto,
+  });
+};
+
+export const isQuizCompleted = async (quizId: string, enrollmentId: number) => {
+  return authFetch<{ completed: boolean }>(
+    `${baseUrl}/1/quizzes/${quizId}/completed?enrollmentId=${enrollmentId}`,
+    {
+      method: "GET",
     },
   );
 };
