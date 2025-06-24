@@ -3,6 +3,7 @@ import {
   pgTable,
   serial,
   timestamp,
+  unique,
   uuid,
   varchar,
 } from "drizzle-orm/pg-core";
@@ -22,22 +23,30 @@ export const videos = pgTable("videos", {
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
 });
 
-export const studentVideoCompletions = pgTable("student_video_completions", {
-  id: serial("id").primaryKey(),
-  enrollmentId: integer("enrollment_id")
-    .references(() => enrollments.id, {
-      onUpdate: "cascade",
-      onDelete: "cascade",
-    })
-    .notNull(),
+export const studentVideoCompletions = pgTable(
+  "student_video_completions",
+  {
+    id: serial("id").primaryKey(),
+    enrollmentId: integer("enrollment_id")
+      .references(() => enrollments.id, {
+        onUpdate: "cascade",
+        onDelete: "cascade",
+      })
+      .notNull(),
 
-  videoId: uuid("video_id")
-    .references(() => videos.id, {
-      onDelete: "cascade",
-    })
-    .notNull(),
-  completedAt: timestamp("completed_at", { withTimezone: true }).defaultNow(),
-});
+    videoId: uuid("video_id")
+      .references(() => videos.id, {
+        onDelete: "cascade",
+      })
+      .notNull(),
+    completedAt: timestamp("completed_at", { withTimezone: true }).defaultNow(),
+  },
+  (t) => [
+    unique("student_video_completion_unique")
+      .on(t.enrollmentId, t.videoId)
+      .nullsNotDistinct(),
+  ],
+);
 
 export const videosRelations = relations(videos, ({ one, many }) => ({
   lesson: one(lessons, {

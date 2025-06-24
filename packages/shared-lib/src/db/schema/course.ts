@@ -6,6 +6,7 @@ import {
   serial,
   text,
   timestamp,
+  unique,
   varchar,
 } from "drizzle-orm/pg-core";
 import { teachers, students } from "./user";
@@ -123,16 +124,24 @@ export const enrollmentsRelations = relations(enrollments, ({ one, many }) => ({
   studentQuizCompletions: many(studentQuizCompletions),
 }));
 
-export const studentLessonCompletions = pgTable("student_lesson_completions", {
-  id: serial("id").primaryKey(),
-  enrollmentId: integer("enrollment_id")
-    .notNull()
-    .references(() => enrollments.id, { onDelete: "cascade" }),
-  lessonId: integer("lesson_id")
-    .notNull()
-    .references(() => lessons.id, { onDelete: "cascade" }),
-  completedAt: timestamp("completed_at", { withTimezone: true }).defaultNow(),
-});
+export const studentLessonCompletions = pgTable(
+  "student_lesson_completions",
+  {
+    id: serial("id").primaryKey(),
+    enrollmentId: integer("enrollment_id")
+      .notNull()
+      .references(() => enrollments.id, { onDelete: "cascade" }),
+    lessonId: integer("lesson_id")
+      .notNull()
+      .references(() => lessons.id, { onDelete: "cascade" }),
+    completedAt: timestamp("completed_at", { withTimezone: true }).defaultNow(),
+  },
+  (t) => [
+    unique("student_lesson_completion_unique")
+      .on(t.enrollmentId, t.lessonId)
+      .nullsNotDistinct(),
+  ],
+);
 
 export const studentLessonCompletionsRelations = relations(
   studentLessonCompletions,

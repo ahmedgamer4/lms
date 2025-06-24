@@ -5,6 +5,7 @@ import {
   serial,
   text,
   timestamp,
+  unique,
   uuid,
   varchar,
 } from "drizzle-orm/pg-core";
@@ -13,10 +14,12 @@ import { InferSelectModel, relations, sql } from "drizzle-orm";
 
 export const quizzes = pgTable("quizzes", {
   id: uuid("id").defaultRandom().primaryKey(),
-  lessonId: integer("lesson_id").references(() => lessons.id, {
-    onDelete: "cascade",
-    onUpdate: "cascade",
-  }),
+  lessonId: integer("lesson_id")
+    .references(() => lessons.id, {
+      onDelete: "cascade",
+      onUpdate: "cascade",
+    })
+    .notNull(),
   title: varchar("title", { length: 255 }).notNull(),
   duration: integer("duration").notNull(),
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
@@ -65,22 +68,30 @@ export const submittedQuestionAnswers = pgTable("submitted_question_answers", {
     .notNull(),
 });
 
-export const studentQuizCompletions = pgTable("student_quiz_completions", {
-  id: serial("id").primaryKey(),
-  enrollmentId: integer("enrollment_id")
-    .references(() => enrollments.id, {
-      onUpdate: "cascade",
-      onDelete: "cascade",
-    })
-    .notNull(),
+export const studentQuizCompletions = pgTable(
+  "student_quiz_completions",
+  {
+    id: serial("id").primaryKey(),
+    enrollmentId: integer("enrollment_id")
+      .references(() => enrollments.id, {
+        onUpdate: "cascade",
+        onDelete: "cascade",
+      })
+      .notNull(),
 
-  quizId: uuid("quiz_id")
-    .references(() => quizzes.id, {
-      onDelete: "cascade",
-    })
-    .notNull(),
-  completedAt: timestamp("completed_at", { withTimezone: true }).defaultNow(),
-});
+    quizId: uuid("quiz_id")
+      .references(() => quizzes.id, {
+        onDelete: "cascade",
+      })
+      .notNull(),
+    completedAt: timestamp("completed_at", { withTimezone: true }).defaultNow(),
+  },
+  (t) => [
+    unique("student_quiz_completion_unique")
+      .on(t.enrollmentId, t.quizId)
+      .nullsNotDistinct(),
+  ],
+);
 
 export const quizzesRelations = relations(quizzes, ({ one, many }) => ({
   lesson: one(lessons, {
