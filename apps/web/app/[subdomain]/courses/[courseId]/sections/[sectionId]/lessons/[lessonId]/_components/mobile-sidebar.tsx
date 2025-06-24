@@ -21,7 +21,7 @@ export function MobileSidebar({
   return (
     <SheetContent side="left">
       <SheetHeader>
-        <SheetTitle>Course Content</SheetTitle>
+        <SheetTitle className="text-primary">{course.title}</SheetTitle>
       </SheetHeader>
       <div className="px-4">
         <SidebarContent
