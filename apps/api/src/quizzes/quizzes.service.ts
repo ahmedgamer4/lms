@@ -5,6 +5,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import {
+  CompleteQuizDto,
   CreateQuizAnswerDto,
   CreateQuizDto,
   CreateQuizQuestionDto,
@@ -16,11 +17,12 @@ import {
   quizzes,
   studentLessonCompletions,
   studentVideoCompletions,
+  submittedQuestionAnswers,
   UpdateQuizAnswerDto,
   UpdateQuizDto,
   UpdateQuizQuestionDto,
 } from '@lms-saas/shared-lib';
-import { and, eq } from 'drizzle-orm';
+import { and, eq, inArray } from 'drizzle-orm';
 import { attempt } from '@/utils/error-handling';
 
 @Injectable()
@@ -296,7 +298,7 @@ export class QuizzesService {
     }
   }
 
-  async completeQuiz(quizId: string, enrollmentId: number) {
+  async completeQuiz(quizId: string, studentId: number, dto: CompleteQuizDto) {
     // Check if quiz exists
     const [quiz, quizError] = await attempt(
       db.query.quizzes.findFirst({
@@ -321,7 +323,7 @@ export class QuizzesService {
         // Check if quiz is already completed
         const quizCompletion = await tx.query.quizSubmissions.findFirst({
           where: and(
-            eq(quizSubmissions.enrollmentId, enrollmentId),
+            eq(quizSubmissions.enrollmentId, dto.enrollmentId),
             eq(quizSubmissions.quizId, quizId),
           ),
         });
@@ -330,11 +332,62 @@ export class QuizzesService {
           throw new ConflictException('Quiz already completed');
         }
 
-        // Create quiz completion
-        await tx.insert(quizSubmissions).values({
-          enrollmentId,
-          quizId,
+        // TODO: Add multiple answers logic
+        // Calculate score
+        const questionsIds = dto.answers.map((a) => a.questionId);
+        const answersIds = dto.answers.map((a) => a.answerId);
+
+        const submittedAnswers = await tx.query.quizAnswers.findMany({
+          where: and(
+            inArray(quizAnswers.questionId, questionsIds),
+            inArray(quizAnswers.id, answersIds),
+          ),
+          columns: {
+            isCorrect: true,
+          },
         });
+
+        let score = 0;
+        for (const answer of submittedAnswers) {
+          score += answer.isCorrect ? 1 : 0;
+        }
+        score /= submittedAnswers.length;
+
+        // Create quiz completion
+        const [quizCompletionInsertionResult] = await tx
+          .insert(quizSubmissions)
+          .values({
+            enrollmentId: dto.enrollmentId,
+            quizId,
+            studentId,
+            score: score.toString(),
+          })
+          .returning({
+            id: quizSubmissions.id,
+          });
+
+        // Insert submitted questions
+        const correctAnswers = await tx.query.quizAnswers.findMany({
+          where: and(
+            inArray(quizAnswers.questionId, questionsIds),
+            eq(quizAnswers.isCorrect, true),
+          ),
+          columns: {
+            id: true,
+            questionId: true,
+          },
+        });
+
+        await tx.insert(submittedQuestionAnswers).values(
+          dto.answers.map((a) => ({
+            submissionId: quizCompletionInsertionResult.id,
+            answerId: a.answerId,
+            questionId: a.questionId,
+            correctAnswerId: correctAnswers.find(
+              (c) => c.questionId === a.questionId,
+            )?.id!,
+          })),
+        );
 
         const lessonId = quiz.lessonId;
         // Get lesson with quizzes and student quiz completion
@@ -353,7 +406,10 @@ export class QuizzesService {
                   columns: {
                     id: true,
                   },
-                  where: eq(studentVideoCompletions.enrollmentId, enrollmentId),
+                  where: eq(
+                    studentVideoCompletions.enrollmentId,
+                    dto.enrollmentId,
+                  ),
                 },
               },
             },
@@ -374,7 +430,7 @@ export class QuizzesService {
 
         const completion = await tx.query.studentLessonCompletions.findFirst({
           where: and(
-            eq(studentLessonCompletions.enrollmentId, enrollmentId),
+            eq(studentLessonCompletions.enrollmentId, dto.enrollmentId),
             eq(studentLessonCompletions.lessonId, lessonId),
           ),
         });
@@ -383,7 +439,7 @@ export class QuizzesService {
           throw new ConflictException('Already completed this lesson');
 
         await tx.insert(studentLessonCompletions).values({
-          enrollmentId,
+          enrollmentId: dto.enrollmentId,
           lessonId,
         });
       }),
@@ -411,5 +467,67 @@ export class QuizzesService {
     return {
       completed: !!result,
     };
+  }
+
+  async getQuizResults(studentId: number, quizId: string) {
+    const [response, error] = await attempt(
+      db.query.quizSubmissions.findFirst({
+        where: and(
+          eq(quizSubmissions.quizId, quizId),
+          eq(quizSubmissions.studentId, studentId),
+        ),
+        columns: {
+          score: true,
+          id: true,
+        },
+        with: {
+          quiz: {
+            columns: {
+              id: true,
+              title: true,
+            },
+          },
+          submittedQuestionAnswers: {
+            columns: {
+              id: true,
+            },
+            with: {
+              question: {
+                columns: {
+                  id: true,
+                  questionText: true,
+                },
+              },
+              answer: {
+                columns: {
+                  id: true,
+                  answerText: true,
+                },
+              },
+              correctAnswer: {
+                columns: {
+                  id: true,
+                  answerText: true,
+                },
+              },
+            },
+          },
+        },
+      }),
+    );
+
+    const questions = response?.submittedQuestionAnswers.map((q) => q.question);
+    const answers = response?.submittedQuestionAnswers.map((q) => q.answer);
+
+    const results = questions?.map((q, idx) => ({
+      ...q,
+      answers: answers?.[idx],
+    }));
+
+    if (error) {
+      throw error;
+    }
+
+    return response;
   }
 }

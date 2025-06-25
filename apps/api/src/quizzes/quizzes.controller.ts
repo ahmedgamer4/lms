@@ -10,6 +10,7 @@ import {
   Post,
   Put,
   Query,
+  Req,
   UseGuards,
 } from '@nestjs/common';
 import { ApiBearerAuth } from '@nestjs/swagger';
@@ -64,10 +65,11 @@ export class QuizzesController {
   @Post('/:quizId/submit')
   @Roles('student')
   async completeQuiz(
+    @Req() req: any,
     @Param('quizId', ParseUUIDPipe) quizId: string,
     @Body() dto: CompleteQuizDto,
   ) {
-    return this.quizzesService.completeQuiz(quizId, dto.enrollmentId);
+    return this.quizzesService.completeQuiz(quizId, req.user.id, dto);
   }
 
   @Get('/:quizId/completed')
@@ -137,5 +139,14 @@ export class QuizzesController {
   @Roles('teacher')
   async deleteAnswer(@Param('answerId', ParseIntPipe) answerId: number) {
     return this.quizzesService.deleteAnswer(answerId);
+  }
+
+  @Get('/:quizId/results')
+  @Roles('student')
+  async getQuizResults(
+    @Req() req: any,
+    @Param('quizId', ParseUUIDPipe) quizId: string,
+  ) {
+    return this.quizzesService.getQuizResults(req.user.id, quizId);
   }
 }
