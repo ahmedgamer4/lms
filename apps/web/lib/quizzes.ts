@@ -8,6 +8,7 @@ import {
   UpdateQuizDto,
   UpdateQuizQuestionDto,
   CompleteQuizDto,
+  SubmittedAnswer,
 } from "@lms-saas/shared-lib/dtos";
 import { z } from "zod";
 import { SelectQuizAnswer } from "@lms-saas/shared-lib";
@@ -29,6 +30,30 @@ export interface QuizQuestion {
 }
 
 export type QuizAnswer = SelectQuizAnswer;
+
+export interface QuizResults {
+  id: number;
+  score: string;
+  quiz: {
+    id: string;
+    title: string;
+  };
+  submittedQuestionAnswers: {
+    id: number;
+    question: {
+      id: number;
+      questionText: string;
+    };
+    answer: {
+      id: number;
+      answerText: string;
+    };
+    correctAnswer: {
+      id: number;
+      answerText: string;
+    };
+  }[];
+}
 
 export const createQuizSchema = z.object({
   title: z.string().min(3).max(255),
@@ -144,10 +169,14 @@ export const deleteAnswer = async (answerId: number) => {
   );
 };
 
-export const submitQuiz = async (quizId: string, enrollmentId: number) => {
+export const submitQuiz = async (
+  quizId: string,
+  enrollmentId: number,
+  answers: SubmittedAnswer[],
+) => {
   return authFetch<void>(`${baseUrl}/1/quizzes/${quizId}/submit`, {
     method: "POST",
-    data: { enrollmentId } as CompleteQuizDto,
+    data: { enrollmentId, answers } as CompleteQuizDto,
   });
 };
 
@@ -158,4 +187,10 @@ export const isQuizCompleted = async (quizId: string, enrollmentId: number) => {
       method: "GET",
     },
   );
+};
+
+export const getQuizResults = async (quizId: string) => {
+  return authFetch<QuizResults>(`${baseUrl}/1/quizzes/${quizId}/results`, {
+    method: "GET",
+  });
 };
