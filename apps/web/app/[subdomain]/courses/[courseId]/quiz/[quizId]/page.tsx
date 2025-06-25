@@ -1,0 +1,507 @@
+"use client";
+
+import { useEffect, useState, useCallback, useMemo } from "react";
+import { useParams, useRouter } from "next/navigation";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Progress } from "@/components/ui/progress";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { toast } from "sonner";
+import { findQuiz, submitQuiz, isQuizCompleted } from "@/lib/quizzes";
+import { getCourse } from "@/lib/courses";
+import { Loader2, Clock, CheckCircle } from "lucide-react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { attempt } from "@/lib/utils";
+
+const LoadingSpinner = () => (
+  <div className="flex h-screen items-center justify-center">
+    <Loader2 className="h-10 w-10 animate-spin" />
+  </div>
+);
+
+const ErrorState = ({
+  title,
+  buttonText,
+  onButtonClick,
+}: {
+  title: string;
+  buttonText: string;
+  onButtonClick: () => void;
+}) => (
+  <div className="flex h-screen items-center justify-center">
+    <div className="text-center">
+      <h1 className="mb-4 text-2xl font-bold">{title}</h1>
+      <Button onClick={onButtonClick}>{buttonText}</Button>
+    </div>
+  </div>
+);
+
+const TimerDisplay = ({
+  timeRemaining,
+  isTimerExpired,
+}: {
+  timeRemaining: number;
+  isTimerExpired: boolean;
+}) => {
+  const formatTime = useCallback((seconds: number) => {
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+    return `${minutes.toString().padStart(2, "0")}:${remainingSeconds.toString().padStart(2, "0")}`;
+  }, []);
+
+  const getTimeColor = useCallback((seconds: number) => {
+    if (seconds <= 300) return "text-red-500"; // Last 5 minutes
+    if (seconds <= 600) return "text-yellow-500"; // Last 10 minutes
+    return "text-green-500";
+  }, []);
+
+  return (
+    <div className="mb-4 flex items-center justify-between">
+      <div className="flex items-center gap-2">
+        <Clock className="h-5 w-5" />
+        <span className="text-sm font-medium">Time Remaining:</span>
+        <span className={`text-lg font-bold ${getTimeColor(timeRemaining)}`}>
+          {formatTime(timeRemaining)}
+        </span>
+      </div>
+      {isTimerExpired && (
+        <div className="text-sm font-medium text-red-500">
+          Time's up! Submitting...
+        </div>
+      )}
+    </div>
+  );
+};
+
+const QuestionPagination = ({
+  questions,
+  currentQuestionIndex,
+  selectedAnswers,
+  onQuestionSelect,
+  isTimerExpired,
+}: {
+  questions: any[];
+  currentQuestionIndex: number;
+  selectedAnswers: Record<string, string>;
+  onQuestionSelect: (index: number) => void;
+  isTimerExpired: boolean;
+}) => {
+  const answeredCount = Object.keys(selectedAnswers).length;
+  const totalQuestions = questions.length;
+
+  return (
+    <div className="mb-6">
+      <div className="mb-2 flex items-center justify-between">
+        <span className="text-muted-foreground text-sm font-medium">
+          Navigate to question:
+        </span>
+        <span className="text-muted-foreground text-xs">
+          {answeredCount} of {totalQuestions} answered
+        </span>
+      </div>
+      <div className="flex flex-wrap gap-2">
+        {questions.map((question, index) => {
+          const isAnswered = selectedAnswers[question.id];
+          const isCurrent = index === currentQuestionIndex;
+
+          return (
+            <button
+              key={question.id}
+              onClick={() => onQuestionSelect(index)}
+              disabled={isTimerExpired}
+              className={`relative flex h-10 w-10 items-center justify-center rounded-lg border-2 text-sm font-medium transition-all duration-200 ${
+                isCurrent
+                  ? "border-primary bg-primary text-primary-foreground"
+                  : isAnswered
+                    ? "border-green-500 bg-green-50 text-green-700 hover:border-green-600 hover:bg-green-100"
+                    : "border-muted-foreground/30 bg-background text-muted-foreground hover:border-primary hover:bg-muted"
+              } ${isTimerExpired ? "cursor-not-allowed opacity-50" : "cursor-pointer"}`}
+              title={`Question ${index + 1}${isAnswered ? " (Answered)" : " (Not answered)"}`}
+            >
+              {index + 1}
+              {isAnswered && (
+                <CheckCircle className="absolute -top-1 -right-1 h-4 w-4" />
+              )}
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+};
+
+export default function QuizPage() {
+  const params = useParams();
+  const router = useRouter();
+  const queryClient = useQueryClient();
+  const courseId = Number(params.courseId);
+  const quizId = params.quizId as string;
+
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  const [selectedAnswers, setSelectedAnswers] = useState<
+    Record<string, string>
+  >({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [timeRemaining, setTimeRemaining] = useState<number>(0);
+  const [isTimerExpired, setIsTimerExpired] = useState(false);
+
+  const {
+    data: quizResponse,
+    isLoading: isQuizLoading,
+    error: quizError,
+  } = useQuery({
+    queryKey: ["quiz", quizId],
+    queryFn: async () => {
+      const [response, error] = await attempt(findQuiz(quizId));
+      if (error) {
+        throw new Error("Failed to fetch quiz");
+      }
+      return response;
+    },
+    retry: 2,
+  });
+
+  const quiz = quizResponse?.data;
+
+  const {
+    data: quizCompletedResponse,
+    isLoading: isQuizCompletedLoading,
+    error: completionError,
+  } = useQuery({
+    queryKey: ["quiz-completed", quizId, courseId],
+    queryFn: async () => {
+      const [courseResponse, courseError] = await attempt(
+        getCourse(courseId, false, true),
+      );
+      if (courseError) {
+        throw new Error("Failed to fetch course");
+      }
+
+      const enrollmentId = courseResponse?.data?.enrollments?.[0]?.id;
+      if (!enrollmentId) {
+        throw new Error("Not enrolled in course");
+      }
+
+      const [response, error] = await attempt(
+        isQuizCompleted(quizId, enrollmentId),
+      );
+      if (error) {
+        throw new Error("Failed to check quiz completion");
+      }
+
+      return { completed: response.data.completed, enrollmentId };
+    },
+    retry: 2,
+    enabled: !!courseId && !!quizId,
+  });
+
+  const quizCompleted = quizCompletedResponse?.completed || false;
+  const enrollmentId = quizCompletedResponse?.enrollmentId;
+
+  const { progress, progressText, totalQuestions, currentQuestion } =
+    useMemo(() => {
+      if (!quiz?.questions?.length) {
+        return {
+          progress: 0,
+          progressText: "0% Complete",
+          answeredCount: 0,
+          totalQuestions: 0,
+          currentQuestion: null,
+        };
+      }
+
+      const totalQuestions = quiz.questions.length;
+      const progress = ((currentQuestionIndex + 1) / totalQuestions) * 100;
+      const progressText = `${Math.round(progress)}% Complete`;
+      const answeredCount = Object.keys(selectedAnswers).length;
+      const currentQuestion = quiz.questions[currentQuestionIndex];
+
+      return {
+        progress,
+        progressText,
+        answeredCount,
+        totalQuestions,
+        currentQuestion,
+      };
+    }, [quiz?.questions, currentQuestionIndex, selectedAnswers]);
+
+  useEffect(() => {
+    if (quiz?.duration && !quizCompleted) {
+      setTimeRemaining(quiz.duration * 60);
+    }
+  }, [quiz?.duration, quizCompleted]);
+
+  useEffect(() => {
+    if (timeRemaining <= 0 || isTimerExpired || quizCompleted) return;
+
+    const timer = setInterval(() => {
+      setTimeRemaining((prev) => {
+        if (prev <= 1) {
+          setIsTimerExpired(true);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [timeRemaining, isTimerExpired, quizCompleted]);
+
+  const handleSubmit = useCallback(async () => {
+    if (isSubmitting || quizCompleted || !enrollmentId) return;
+    setIsSubmitting(true);
+
+    try {
+      const [, error] = await attempt(
+        submitQuiz(
+          quizId,
+          enrollmentId,
+          Object.entries(selectedAnswers).map(([key, value]) => ({
+            questionId: Number(key),
+            answerId: Number(value),
+          })),
+        ),
+      );
+
+      if (error) {
+        toast.error("Failed to submit quiz. Please try again.");
+        return;
+      }
+
+      toast.success("Quiz submitted successfully");
+
+      // Invalidate quiz completion status
+      queryClient.invalidateQueries({
+        queryKey: ["quiz-completed", quizId],
+      });
+
+      router.push(`/courses/${courseId}/quiz/${quizId}/results`);
+    } catch (error) {
+      toast.error("An unexpected error occurred. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  }, [
+    quizId,
+    enrollmentId,
+    selectedAnswers,
+    isSubmitting,
+    quizCompleted,
+    queryClient,
+    courseId,
+    router,
+  ]);
+
+  // Auto-submit when timer expires
+  useEffect(() => {
+    if (isTimerExpired && !isSubmitting && !quizCompleted) {
+      toast.warning("Time's up! Submitting your quiz automatically.");
+      handleSubmit();
+    }
+  }, [isTimerExpired, isSubmitting, quizCompleted, handleSubmit]);
+
+  const handleAnswerSelect = useCallback(
+    (questionId: number, optionId: string) => {
+      setSelectedAnswers((prev) => ({
+        ...prev,
+        [questionId]: optionId,
+      }));
+    },
+    [],
+  );
+
+  const handleQuestionSelect = useCallback((index: number) => {
+    setCurrentQuestionIndex(index);
+  }, []);
+
+  const handlePrevious = useCallback(() => {
+    setCurrentQuestionIndex((prev) => Math.max(0, prev - 1));
+  }, []);
+
+  const handleNext = useCallback(() => {
+    setCurrentQuestionIndex((prev) => Math.min(totalQuestions - 1, prev + 1));
+  }, [totalQuestions]);
+
+  if (quizError) {
+    return (
+      <ErrorState
+        title="Failed to load quiz"
+        buttonText="Back to Course"
+        onButtonClick={() => router.push(`/courses/${courseId}`)}
+      />
+    );
+  }
+
+  if (completionError?.message === "Not enrolled in course") {
+    return (
+      <ErrorState
+        title="You are not enrolled in this course"
+        buttonText="Enroll Now"
+        onButtonClick={() => router.push(`/courses/${courseId}/enroll`)}
+      />
+    );
+  }
+
+  if (completionError) {
+    return (
+      <ErrorState
+        title="Failed to load course data"
+        buttonText="Back to Course"
+        onButtonClick={() => router.push(`/courses/${courseId}`)}
+      />
+    );
+  }
+
+  if (isQuizLoading || isQuizCompletedLoading) {
+    return <LoadingSpinner />;
+  }
+
+  if (!enrollmentId) {
+    return (
+      <ErrorState
+        title="You are not enrolled in this course"
+        buttonText="Enroll Now"
+        onButtonClick={() => router.push(`/courses/${courseId}/enroll`)}
+      />
+    );
+  }
+
+  if (!quiz) {
+    return (
+      <ErrorState
+        title="Quiz not found"
+        buttonText="Back to Course"
+        onButtonClick={() => router.push(`/courses/${courseId}`)}
+      />
+    );
+  }
+
+  if (!currentQuestion) {
+    return (
+      <ErrorState
+        title="No questions available"
+        buttonText="Back to Course"
+        onButtonClick={() => router.push(`/courses/${courseId}`)}
+      />
+    );
+  }
+
+  if (quizCompleted) {
+    return (
+      <ErrorState
+        title="Quiz already completed"
+        buttonText="View Results"
+        onButtonClick={() =>
+          router.push(`/courses/${courseId}/quiz/${quizId}/results`)
+        }
+      />
+    );
+  }
+
+  return (
+    <div className="bg-background flex min-h-screen items-center justify-center px-2">
+      <Card className="border-border mx-auto w-full max-w-2xl rounded-xl border shadow-sm">
+        <CardContent className="pt-6">
+          <TimerDisplay
+            timeRemaining={timeRemaining}
+            isTimerExpired={isTimerExpired}
+          />
+
+          {/* Progress and question count */}
+          <div className="mb-2 flex items-center justify-between">
+            <div className="text-2xl font-bold">
+              Question {currentQuestionIndex + 1} of {totalQuestions}
+            </div>
+            <div className="text-sm font-medium">{progressText}</div>
+          </div>
+          <Progress
+            value={progress}
+            className="bg-muted mb-6 h-2 rounded-full"
+          />
+
+          {/* Question text */}
+          <div className="mb-6 text-xl font-semibold">
+            {currentQuestion.questionText}
+          </div>
+
+          {/* Answer options */}
+          <RadioGroup
+            value={selectedAnswers[currentQuestion.id]}
+            onValueChange={(value: string) =>
+              handleAnswerSelect(currentQuestion.id, value)
+            }
+            className="mb-8 space-y-4"
+            disabled={isTimerExpired}
+          >
+            {currentQuestion.answers.map((option: any) => (
+              <label
+                key={option.id}
+                htmlFor={option.id.toString()}
+                className={`flex cursor-pointer items-center rounded-lg border px-4 py-3 transition-colors ${
+                  selectedAnswers[currentQuestion.id] === option.id.toString()
+                    ? "border-primary bg-muted"
+                    : "border-muted-foreground/60 bg-sidebar hover:border-primary"
+                } ${isTimerExpired ? "cursor-not-allowed opacity-50" : ""}`}
+              >
+                <RadioGroupItem
+                  value={option.id.toString()}
+                  id={option.id.toString()}
+                  className="mr-3"
+                  disabled={isTimerExpired}
+                />
+                <span className="text-base">{option.answerText}</span>
+              </label>
+            ))}
+          </RadioGroup>
+
+          {/* Question Pagination */}
+          <QuestionPagination
+            questions={quiz.questions}
+            currentQuestionIndex={currentQuestionIndex}
+            selectedAnswers={selectedAnswers}
+            onQuestionSelect={handleQuestionSelect}
+            isTimerExpired={isTimerExpired}
+          />
+
+          {/* Navigation buttons */}
+          <div className="mt-8 flex justify-between">
+            <Button
+              variant="outline"
+              onClick={handlePrevious}
+              disabled={currentQuestionIndex === 0 || isTimerExpired}
+              className="min-w-[100px]"
+            >
+              Previous
+            </Button>
+            {currentQuestionIndex === totalQuestions - 1 ? (
+              <Button
+                onClick={handleSubmit}
+                disabled={isSubmitting || isTimerExpired}
+                className="min-w-[100px]"
+              >
+                {isSubmitting ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Submitting...
+                  </>
+                ) : (
+                  "Submit Quiz"
+                )}
+              </Button>
+            ) : (
+              <Button
+                onClick={handleNext}
+                className="min-w-[100px]"
+                disabled={
+                  !selectedAnswers[currentQuestion.id] || isTimerExpired
+                }
+              >
+                Next
+              </Button>
+            )}
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
