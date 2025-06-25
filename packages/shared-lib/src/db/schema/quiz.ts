@@ -1,6 +1,7 @@
 import {
   boolean,
   integer,
+  numeric,
   pgTable,
   serial,
   text,
@@ -11,6 +12,7 @@ import {
 } from "drizzle-orm/pg-core";
 import { enrollments, lessons } from "./course";
 import { InferSelectModel, relations, sql } from "drizzle-orm";
+import { students } from "./user";
 
 export const quizzes = pgTable("quizzes", {
   id: uuid("id").defaultRandom().primaryKey(),
@@ -52,21 +54,39 @@ export const quizAnswers = pgTable("quiz_answers", {
   isCorrect: boolean("is_correct").default(false).notNull(),
 });
 
-export const submittedQuestionAnswers = pgTable("submitted_question_answers", {
-  id: serial("id").primaryKey(),
-  questionId: integer("question_id")
-    .references(() => quizQuestions.id, {
-      onDelete: "cascade",
-      onUpdate: "cascade",
-    })
-    .notNull(),
-  answerId: integer("answer_id")
-    .references(() => quizAnswers.id, {
-      onDelete: "cascade",
-      onUpdate: "cascade",
-    })
-    .notNull(),
-});
+export const submittedQuestionAnswers = pgTable(
+  "submitted_question_answers",
+  {
+    id: serial("id").primaryKey(),
+    questionId: integer("question_id")
+      .references(() => quizQuestions.id, {
+        onDelete: "cascade",
+        onUpdate: "cascade",
+      })
+      .notNull(),
+    answerId: integer("answer_id")
+      .references(() => quizAnswers.id, {
+        onDelete: "cascade",
+        onUpdate: "cascade",
+      })
+      .notNull(),
+    submissionId: integer("submission_id")
+      .references(() => quizSubmissions.id, {
+        onDelete: "cascade",
+        onUpdate: "cascade",
+      })
+      .notNull(),
+    correctAnswerId: integer("correct_answer_id")
+      .references(() => quizAnswers.id, {
+        onDelete: "cascade",
+        onUpdate: "cascade",
+      })
+      .notNull(),
+  },
+  (t) => [
+    unique("submitted_question_answer_unique").on(t.questionId, t.answerId),
+  ],
+);
 
 export const quizSubmissions = pgTable(
   "quiz_submissions",
@@ -84,6 +104,12 @@ export const quizSubmissions = pgTable(
         onDelete: "cascade",
       })
       .notNull(),
+    studentId: integer("student_id")
+      .references(() => students.id, {
+        onDelete: "cascade",
+      })
+      .notNull(),
+    score: numeric("score", { precision: 10, scale: 2 }).notNull(),
     completedAt: timestamp("completed_at", { withTimezone: true }).defaultNow(),
   },
   (t) => [
@@ -100,6 +126,7 @@ export const quizzesRelations = relations(quizzes, ({ one, many }) => ({
   }),
   questions: many(quizQuestions),
   quizSubmissions: many(quizSubmissions),
+  submittedQuestionAnswers: many(submittedQuestionAnswers),
 }));
 
 export const quizQuestionsRelations = relations(
@@ -110,19 +137,22 @@ export const quizQuestionsRelations = relations(
       references: [quizzes.id],
     }),
     answers: many(quizAnswers),
+    submittedQuestionAnswers: many(submittedQuestionAnswers),
   }),
 );
 
-export const quizAnswersRelations = relations(quizAnswers, ({ one }) => ({
+export const quizAnswersRelations = relations(quizAnswers, ({ one, many }) => ({
   question: one(quizQuestions, {
     fields: [quizAnswers.questionId],
     references: [quizQuestions.id],
   }),
+  submittedQuestionAnswers: many(submittedQuestionAnswers),
+  correctQuestionAnswers: many(submittedQuestionAnswers),
 }));
 
 export const studentQuizCompletionsRelations = relations(
   quizSubmissions,
-  ({ one }) => ({
+  ({ one, many }) => ({
     quiz: one(quizzes, {
       fields: [quizSubmissions.quizId],
       references: [quizzes.id],
@@ -131,9 +161,35 @@ export const studentQuizCompletionsRelations = relations(
       fields: [quizSubmissions.enrollmentId],
       references: [enrollments.id],
     }),
+    student: one(students, {
+      fields: [quizSubmissions.studentId],
+      references: [students.id],
+    }),
+    submittedQuestionAnswers: many(submittedQuestionAnswers),
   }),
 );
 
+export const submittedQuestionAnswersRelations = relations(
+  submittedQuestionAnswers,
+  ({ one }) => ({
+    question: one(quizQuestions, {
+      fields: [submittedQuestionAnswers.questionId],
+      references: [quizQuestions.id],
+    }),
+    answer: one(quizAnswers, {
+      fields: [submittedQuestionAnswers.answerId],
+      references: [quizAnswers.id],
+    }),
+    submission: one(quizSubmissions, {
+      fields: [submittedQuestionAnswers.submissionId],
+      references: [quizSubmissions.id],
+    }),
+    correctAnswer: one(quizAnswers, {
+      fields: [submittedQuestionAnswers.correctAnswerId],
+      references: [quizAnswers.id],
+    }),
+  }),
+);
 export type SelectQuiz = InferSelectModel<typeof quizzes>;
 export type SelectQuizQuestion = InferSelectModel<typeof quizQuestions>;
 export type SelectQuizAnswer = InferSelectModel<typeof quizAnswers>;
