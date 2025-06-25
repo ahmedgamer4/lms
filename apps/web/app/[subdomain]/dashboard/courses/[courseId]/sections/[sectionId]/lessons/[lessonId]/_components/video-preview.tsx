@@ -44,11 +44,6 @@ export const VideoPreview = ({
   return (
     <div className="space-y-4">
       <div className="relative aspect-video w-full overflow-hidden rounded-lg border bg-black">
-        {/* <SecureVideoPlayer
-          src={video.manifestUrl}
-          poster="/video-placeholder.png"
-          className="h-full w-full"
-        /> */}
         <VideoJsPlayer
           src={video.manifestUrl}
           poster="/video-placeholder.png"

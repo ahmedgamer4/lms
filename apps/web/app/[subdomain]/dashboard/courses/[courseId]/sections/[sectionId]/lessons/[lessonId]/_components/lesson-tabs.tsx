@@ -47,6 +47,7 @@ export const LessonTabs = ({ lesson }: LessonTabsProps) => {
   };
 
   const handleVideoDelete = async (videoIndex: number, id: string) => {
+    if (!id) return;
     const [, error] = await attempt(deleteVideo(lesson.id, id));
     if (error) {
       toast.error("Cannot remove video");
