@@ -180,9 +180,9 @@ export const submitQuiz = async (
   });
 };
 
-export const isQuizCompleted = async (quizId: string, enrollmentId: number) => {
+export const isQuizCompleted = async (quizId: string) => {
   return authFetch<{ completed: boolean }>(
-    `${baseUrl}/1/quizzes/${quizId}/completed?enrollmentId=${enrollmentId}`,
+    `${baseUrl}/1/quizzes/${quizId}/completed`,
     {
       method: "GET",
     },
