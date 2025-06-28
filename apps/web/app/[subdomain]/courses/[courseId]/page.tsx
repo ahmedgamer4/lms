@@ -10,9 +10,10 @@ import {
   Star,
   Users,
   ChevronRight,
+  ArrowLeft,
 } from "lucide-react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import Link from "next/link";
@@ -59,7 +60,14 @@ export default function CoursePage() {
   }
 
   return (
-    <div className="container mx-auto max-w-7xl space-y-8 px-4 py-8">
+    <div className="container mx-auto max-w-7xl space-y-4 px-4 py-8">
+      <Link
+        href={`/courses`}
+        className={buttonVariants({ variant: "outline" })}
+      >
+        <ArrowLeft className="h-4 w-4" />
+        Back to courses
+      </Link>
       <div className="flex flex-col gap-4 md:flex-row md:items-start">
         <div className="flex flex-1 flex-col gap-4">
           <div className="space-y-4">
