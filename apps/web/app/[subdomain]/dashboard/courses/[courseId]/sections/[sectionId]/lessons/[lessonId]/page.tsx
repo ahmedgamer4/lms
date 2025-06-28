@@ -1,6 +1,6 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -292,7 +292,10 @@ export default function LessonPage() {
             </AlertDialogHeader>
             <AlertDialogFooter>
               <AlertDialogCancel>Cancel</AlertDialogCancel>
-              <AlertDialogAction onClick={handleDeleteLesson}>
+              <AlertDialogAction
+                className={buttonVariants({ variant: "destructive" })}
+                onClick={handleDeleteLesson}
+              >
                 Delete
               </AlertDialogAction>
             </AlertDialogFooter>
@@ -318,7 +321,7 @@ export default function LessonPage() {
             </div>
           </CardHeader>
           <CardContent className="pt-6">
-            <div className="grid gap-4">
+            <div className="grid gap-6">
               <form onSubmit={handleUpdateTitle} className="grid gap-2">
                 <Label htmlFor="title">Title</Label>
                 <div className="flex gap-2">
