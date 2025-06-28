@@ -1,32 +1,70 @@
 "use client";
 
 import { buttonVariants } from "@/components/ui/button";
-import { getQuizResults } from "@/lib/quizzes";
-import { cn } from "@/lib/utils";
+import { getQuizResults, isQuizCompleted } from "@/lib/quizzes";
+import { attempt, cn } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
+import { toast } from "sonner";
 
 export default function ResultsPage() {
   const { courseId, quizId } = useParams();
-  const { data, isLoading } = useQuery({
+  const { data: quizResultsData, isLoading: isQuizResultsLoading } = useQuery({
     queryKey: ["quizResults", quizId],
     queryFn: async () => {
-      const results = await getQuizResults(quizId as string);
-      return results;
+      const [response, error] = await attempt(getQuizResults(quizId as string));
+
+      if (error) {
+        toast.error("Failed to get quiz results");
+        return null;
+      }
+      return response.data;
     },
   });
 
-  if (isLoading || !data || !data.data) {
+  const { data: quizCompletion, isLoading: isQuizCompletionLoading } = useQuery(
+    {
+      queryKey: ["quizCompletion", quizId],
+      queryFn: async () => {
+        const [response, error] = await attempt(
+          isQuizCompleted(quizId as string),
+        );
+
+        if (error) {
+          toast.error("Failed to check quiz completion");
+          return null;
+        }
+
+        return response.data;
+      },
+    },
+  );
+
+  if (isQuizResultsLoading || isQuizCompletionLoading) {
     return (
-      <div className="flex h-full items-center justify-center">
+      <div className="flex h-full min-h-[calc(100vh-200px)] items-center justify-center">
         <Loader2 className="h-10 w-10 animate-spin" />
       </div>
     );
   }
 
-  const results = data.data;
+  if (!quizCompletion?.completed) {
+    return (
+      <div className="flex min-h-[calc(100vh-200px)] flex-col items-center justify-center">
+        <h2 className="text-xl font-semibold">Quiz not completed</h2>
+        <Link
+          href={`/courses/${courseId}/quiz/${quizId}`}
+          className={cn(buttonVariants({ variant: "outline" }), "mt-2")}
+        >
+          Start Quiz
+        </Link>
+      </div>
+    );
+  }
+
+  const results = quizResultsData!;
   const percentage = Number(results.score) * 100;
   const questionsCount = results.submittedQuestionAnswers.length;
 
