@@ -450,12 +450,12 @@ export class QuizzesService {
     }
   }
 
-  async checkIfCompleted(quizId: string, enrollmentId: number) {
+  async checkIfCompleted(quizId: string, studentId: number) {
     const [result, error] = await attempt(
       db.query.quizSubmissions.findFirst({
         where: and(
           eq(quizSubmissions.quizId, quizId),
-          eq(quizSubmissions.enrollmentId, enrollmentId),
+          eq(quizSubmissions.studentId, studentId),
         ),
       }),
     );

@@ -75,10 +75,10 @@ export class QuizzesController {
   @Get('/:quizId/completed')
   @Roles('student')
   async checkIfCompleted(
+    @Req() req: any,
     @Param('quizId', ParseUUIDPipe) quizId: string,
-    @Query('enrollmentId', ParseIntPipe) enrollmentId: number,
   ) {
-    return this.quizzesService.checkIfCompleted(quizId, enrollmentId);
+    return this.quizzesService.checkIfCompleted(quizId, req.user.id);
   }
 
   @Get('/:quizId/questions')
