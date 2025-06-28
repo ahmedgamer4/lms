@@ -64,7 +64,10 @@ export function Topbar() {
                 )}
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuItem className="">
+              <DropdownMenuItem
+                className="cursor-pointer"
+                onClick={handleLogout}
+              >
                 <LogOut className="h-5 w-5" />
                 Logout
               </DropdownMenuItem>
