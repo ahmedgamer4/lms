@@ -22,7 +22,7 @@ import {
   UpdateQuizDto,
   UpdateQuizQuestionDto,
 } from '@lms-saas/shared-lib';
-import { and, eq, inArray } from 'drizzle-orm';
+import { and, count, eq, inArray } from 'drizzle-orm';
 import { attempt } from '@/utils/error-handling';
 
 @Injectable()
@@ -351,7 +351,15 @@ export class QuizzesService {
         for (const answer of submittedAnswers) {
           score += answer.isCorrect ? 1 : 0;
         }
-        score /= submittedAnswers.length;
+
+        const [totalQuestionsCount] = await tx
+          .select({
+            count: count(quizQuestions.id),
+          })
+          .from(quizQuestions)
+          .where(eq(quizQuestions.quizId, quizId));
+
+        score /= totalQuestionsCount.count;
 
         // Create quiz completion
         const [quizCompletionInsertionResult] = await tx
@@ -378,16 +386,18 @@ export class QuizzesService {
           },
         });
 
-        await tx.insert(submittedQuestionAnswers).values(
-          dto.answers.map((a) => ({
-            submissionId: quizCompletionInsertionResult.id,
-            answerId: a.answerId,
-            questionId: a.questionId,
-            correctAnswerId: correctAnswers.find(
-              (c) => c.questionId === a.questionId,
-            )?.id!,
-          })),
-        );
+        if (correctAnswers.length > 0) {
+          await tx.insert(submittedQuestionAnswers).values(
+            dto.answers.map((a) => ({
+              submissionId: quizCompletionInsertionResult.id,
+              answerId: a.answerId,
+              questionId: a.questionId,
+              correctAnswerId: correctAnswers.find(
+                (c) => c.questionId === a.questionId,
+              )?.id!,
+            })),
+          );
+        }
 
         const lessonId = quiz.lessonId;
         // Get lesson with quizzes and student quiz completion
@@ -435,13 +445,12 @@ export class QuizzesService {
           ),
         });
 
-        if (completion)
-          throw new ConflictException('Already completed this lesson');
-
-        await tx.insert(studentLessonCompletions).values({
-          enrollmentId: dto.enrollmentId,
-          lessonId,
-        });
+        if (!completion) {
+          await tx.insert(studentLessonCompletions).values({
+            enrollmentId: dto.enrollmentId,
+            lessonId,
+          });
+        }
       }),
     );
 
@@ -486,6 +495,23 @@ export class QuizzesService {
               id: true,
               title: true,
             },
+            with: {
+              questions: {
+                columns: {
+                  id: true,
+                  questionText: true,
+                },
+                with: {
+                  answers: {
+                    columns: {
+                      id: true,
+                      answerText: true,
+                    },
+                    where: eq(quizAnswers.isCorrect, true),
+                  },
+                },
+              },
+            },
           },
           submittedQuestionAnswers: {
             columns: {
@@ -495,16 +521,9 @@ export class QuizzesService {
               question: {
                 columns: {
                   id: true,
-                  questionText: true,
                 },
               },
               answer: {
-                columns: {
-                  id: true,
-                  answerText: true,
-                },
-              },
-              correctAnswer: {
                 columns: {
                   id: true,
                   answerText: true,
@@ -516,18 +535,34 @@ export class QuizzesService {
       }),
     );
 
-    const questions = response?.submittedQuestionAnswers.map((q) => q.question);
-    const answers = response?.submittedQuestionAnswers.map((q) => q.answer);
+    const quizQuestions = response?.quiz.questions;
+    const submittedQuestionAnswers = response?.submittedQuestionAnswers;
+    const questionsResult = quizQuestions?.map((q) => {
+      const submittedAnswer = submittedQuestionAnswers?.find(
+        (a) => a.question.id === q.id,
+      );
 
-    const results = questions?.map((q, idx) => ({
-      ...q,
-      answers: answers?.[idx],
-    }));
+      const { answers, ...rest } = q;
+
+      return {
+        ...rest,
+        correctAnswer: answers[0],
+        submittedAnswer: submittedAnswer?.answer,
+      };
+    });
 
     if (error) {
       throw error;
     }
 
-    return response;
+    return {
+      id: response?.id,
+      score: response?.score,
+      quiz: {
+        id: response?.quiz.id,
+        title: response?.quiz.title,
+      },
+      questions: questionsResult,
+    };
   }
 }
