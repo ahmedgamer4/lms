@@ -13,11 +13,10 @@ import {
   updateLesson,
 } from "@/lib/courses";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { SerializedEditorState } from "lexical";
 import { Video, Trash2, Loader2, Pencil, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
-import { FormEvent, useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import {
   AlertDialog,
@@ -39,38 +38,8 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { LessonTabs } from "./_components/lesson-tabs";
-import { Editor } from "@/components/blocks/editor-00/editor";
 import { attempt } from "@/lib/utils";
-
-const initialValue = {
-  root: {
-    children: [
-      {
-        children: [
-          {
-            detail: 0,
-            format: 0,
-            mode: "normal",
-            style: "",
-            text: "",
-            type: "text",
-            version: 1,
-          },
-        ],
-        direction: "ltr",
-        format: "",
-        indent: 0,
-        type: "paragraph",
-        version: 1,
-      },
-    ],
-    direction: "ltr",
-    format: "",
-    indent: 0,
-    type: "root",
-    version: 1,
-  },
-} as unknown as SerializedEditorState;
+import { DescriptionForm } from "./_components/description-form";
 
 export default function LessonPage() {
   const params = useParams();
@@ -78,10 +47,8 @@ export default function LessonPage() {
   const queryClient = useQueryClient();
   const [isLoading, setIsLoading] = useState(false);
   const [title, setTitle] = useState("");
-  const [editorState, setEditorState] =
-    useState<SerializedEditorState>(initialValue);
 
-  const { data: course } = useQuery({
+  const { data: course, isLoading: isCourseLoading } = useQuery({
     queryKey: ["course", params.courseId],
     queryFn: async () => {
       const [response, error] = await attempt(
@@ -95,7 +62,7 @@ export default function LessonPage() {
     },
   });
 
-  const { data: section } = useQuery({
+  const { data: section, isLoading: isSectionLoading } = useQuery({
     queryKey: ["section", params.sectionId],
     queryFn: async () => {
       const [response, error] = await attempt(
@@ -125,14 +92,15 @@ export default function LessonPage() {
         return;
       }
 
-      if (response?.data) {
-        setTitle(response.data.title);
-        setEditorState(JSON.parse(response.data.description));
-      }
-
       return response;
     },
   });
+
+  useEffect(() => {
+    if (lessonData?.data) {
+      setTitle(lessonData.data.title);
+    }
+  }, [lessonData?.data]);
 
   async function handleUpdateTitle(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -162,38 +130,6 @@ export default function LessonPage() {
     setIsLoading(false);
   }
 
-  async function handleUpdateDescription(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    if (!editorState) {
-      toast.error("Description cannot be empty");
-      return;
-    }
-
-    const data = JSON.stringify(editorState);
-
-    try {
-      setIsLoading(true);
-      const [, error] = await attempt(
-        updateLesson(
-          Number(params.courseId),
-          Number(params.sectionId),
-          Number(params.lessonId),
-          { description: data },
-        ),
-      );
-
-      if (error) {
-        toast.error("Failed to update lesson description");
-      }
-
-      toast.success("Lesson description updated");
-    } catch (error) {
-      toast.error("Failed to update lesson description");
-    } finally {
-      setIsLoading(false);
-    }
-  }
-
   async function handleDeleteLesson() {
     setIsLoading(true);
     const [, error] = await attempt(
@@ -216,9 +152,10 @@ export default function LessonPage() {
   if (
     !course?.data ||
     !section?.data ||
-    !lessonData ||
-    !lessonData.data ||
-    isLessonLoading
+    !lessonData?.data ||
+    isLessonLoading ||
+    isCourseLoading ||
+    isSectionLoading
   ) {
     return (
       <div className="flex h-[calc(100vh-200px)] items-center justify-center">
@@ -342,25 +279,12 @@ export default function LessonPage() {
                 </div>
               </form>
 
-              <form
-                onSubmit={handleUpdateDescription}
-                className="grid w-full gap-2"
-              >
-                <Label htmlFor="description">Description</Label>
-                <div className="flex w-full flex-col items-end gap-3">
-                  <Editor
-                    editorSerializedState={editorState}
-                    onSerializedChange={setEditorState}
-                  />
-                  <Button disabled={isLoading} className="w-[100px]">
-                    {isLoading ? (
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                    ) : (
-                      "Save"
-                    )}
-                  </Button>
-                </div>
-              </form>
+              <DescriptionForm
+                initialData={JSON.parse(lesson.description)}
+                courseId={Number(params.courseId)}
+                sectionId={Number(params.sectionId)}
+                lessonId={Number(params.lessonId)}
+              />
             </div>
           </CardContent>
         </Card>
