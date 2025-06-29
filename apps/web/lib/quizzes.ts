@@ -38,17 +38,14 @@ export interface QuizResults {
     id: string;
     title: string;
   };
-  submittedQuestionAnswers: {
+  questions: {
     id: number;
-    question: {
-      id: number;
-      questionText: string;
-    };
-    answer: {
+    questionText: string;
+    correctAnswer: {
       id: number;
       answerText: string;
     };
-    correctAnswer: {
+    submittedAnswer: {
       id: number;
       answerText: string;
     };
