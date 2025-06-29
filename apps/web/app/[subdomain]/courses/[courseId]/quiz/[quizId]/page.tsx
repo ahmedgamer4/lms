@@ -406,7 +406,6 @@ export default function QuizPage() {
   const handleAnswerSelect = useCallback(
     (questionId: number, optionId: string) => {
       setSelectedAnswers((prev) => {
-        console.log("prev", prev);
         const newSelectedAnswers = {
           ...prev,
           [questionId]: optionId,
@@ -417,7 +416,6 @@ export default function QuizPage() {
             localSelectedAnswers: newSelectedAnswers,
           };
         });
-        console.log("newSelectedAnswers", newSelectedAnswers);
         return newSelectedAnswers;
       });
     },
