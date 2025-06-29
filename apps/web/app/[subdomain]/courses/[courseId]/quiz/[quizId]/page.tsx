@@ -12,9 +12,10 @@ import { getCourse } from "@/lib/courses";
 import { Loader2, Clock, CheckCircle } from "lucide-react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { attempt } from "@/lib/utils";
+import { useLocalStorage } from "@uidotdev/usehooks";
 
 const LoadingSpinner = () => (
-  <div className="flex h-screen items-center justify-center">
+  <div className="flex min-h-[calc(100vh-200px)] items-center justify-center">
     <Loader2 className="h-10 w-10 animate-spin" />
   </div>
 );
@@ -136,6 +137,11 @@ export default function QuizPage() {
   const queryClient = useQueryClient();
   const courseId = Number(params.courseId);
   const quizId = params.quizId as string;
+  const [quizEndTimeDetails, setQuizEndTimeDetails] = useLocalStorage<{
+    quizId: string;
+    endTime: number;
+    localSelectedAnswers: Record<string, string>;
+  } | null>("quizEndTimeDetails", null);
 
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedAnswers, setSelectedAnswers] = useState<
@@ -144,6 +150,18 @@ export default function QuizPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [timeRemaining, setTimeRemaining] = useState<number>(0);
   const [isTimerExpired, setIsTimerExpired] = useState(false);
+
+  const { data: courseData, isLoading: isCourseLoading } = useQuery({
+    queryKey: ["student-course", courseId],
+    queryFn: async () => {
+      const [response, error] = await attempt(getCourse(courseId, false, true));
+      if (error) {
+        toast.error("Failed to fetch course");
+        return null;
+      }
+      return response.data;
+    },
+  });
 
   const {
     data: quizResponse,
@@ -182,9 +200,7 @@ export default function QuizPage() {
         throw new Error("Not enrolled in course");
       }
 
-      const [response, error] = await attempt(
-        isQuizCompleted(quizId, enrollmentId),
-      );
+      const [response, error] = await attempt(isQuizCompleted(quizId));
       if (error) {
         throw new Error("Failed to check quiz completion");
       }
@@ -227,9 +243,93 @@ export default function QuizPage() {
 
   useEffect(() => {
     if (quiz?.duration && !quizCompleted) {
-      setTimeRemaining(quiz.duration * 60);
+      const duration = quiz.duration * 60;
+
+      if (!quizEndTimeDetails) {
+        // First time taking any quiz
+        const now = new Date();
+        const endTime = new Date(now.getTime() + duration * 1000);
+        setQuizEndTimeDetails({
+          quizId,
+          endTime: endTime.getTime(),
+          localSelectedAnswers: {},
+        });
+        setTimeRemaining(duration);
+      } else if (quizEndTimeDetails.quizId !== quizId) {
+        // Switching to a different quiz
+        const handleQuizSwitch = async () => {
+          try {
+            // Check if the old quiz is completed
+            const [completionResponse, completionError] = await attempt(
+              isQuizCompleted(quizEndTimeDetails.quizId),
+            );
+
+            if (completionError) {
+              toast.error("Failed to check previous quiz status");
+              return;
+            }
+
+            if (!completionResponse.data.completed) {
+              // Auto-submit the old quiz if not completed
+              const [submitResponse, submitError] = await attempt(
+                submitQuiz(
+                  quizEndTimeDetails.quizId,
+                  courseData?.enrollments?.[0]?.id!,
+                  Object.entries(quizEndTimeDetails.localSelectedAnswers).map(
+                    ([key, value]) => ({
+                      questionId: Number(key),
+                      answerId: Number(value),
+                    }),
+                  ),
+                ),
+              );
+
+              if (submitError) {
+                toast.error("Failed to submit previous quiz");
+                return;
+              }
+
+              toast.info("Previous quiz was automatically submitted");
+            }
+
+            // Set up new quiz timer
+            const now = new Date();
+            const endTime = new Date(now.getTime() + duration * 1000);
+            setQuizEndTimeDetails({
+              quizId,
+              endTime: endTime.getTime(),
+              localSelectedAnswers: {},
+            });
+            setTimeRemaining(duration);
+
+            // Clear previous quiz answers
+            setSelectedAnswers({});
+            setCurrentQuestionIndex(0);
+          } catch (error) {
+            toast.error("Failed to switch quizzes");
+          }
+        };
+
+        handleQuizSwitch();
+      } else {
+        // Same quiz - resume timer
+        const now = new Date();
+        const timeRemaining = Math.max(
+          0,
+          quizEndTimeDetails.endTime - now.getTime(),
+        );
+        setSelectedAnswers(quizEndTimeDetails.localSelectedAnswers || {});
+
+        if (timeRemaining <= 0) {
+          // Timer has expired, auto-submit
+          setIsTimerExpired(true);
+          setTimeRemaining(0);
+        } else {
+          setTimeRemaining(Math.round(timeRemaining / 1000));
+        }
+      }
     }
-  }, [quiz?.duration, quizCompleted]);
+  }, [quiz?.duration, quizCompleted, quizId, enrollmentId, courseData]);
 
   useEffect(() => {
     if (timeRemaining <= 0 || isTimerExpired || quizCompleted) return;
@@ -268,6 +368,9 @@ export default function QuizPage() {
         return;
       }
 
+      // Reset local storage timer
+      setQuizEndTimeDetails(null);
+
       toast.success("Quiz submitted successfully");
 
       // Invalidate quiz completion status
@@ -302,12 +405,23 @@ export default function QuizPage() {
 
   const handleAnswerSelect = useCallback(
     (questionId: number, optionId: string) => {
-      setSelectedAnswers((prev) => ({
-        ...prev,
-        [questionId]: optionId,
-      }));
+      setSelectedAnswers((prev) => {
+        console.log("prev", prev);
+        const newSelectedAnswers = {
+          ...prev,
+          [questionId]: optionId,
+        };
+        setQuizEndTimeDetails((prev) => {
+          return {
+            ...prev!,
+            localSelectedAnswers: newSelectedAnswers,
+          };
+        });
+        console.log("newSelectedAnswers", newSelectedAnswers);
+        return newSelectedAnswers;
+      });
     },
-    [],
+    [quizId],
   );
 
   const handleQuestionSelect = useCallback((index: number) => {
@@ -352,7 +466,7 @@ export default function QuizPage() {
     );
   }
 
-  if (isQuizLoading || isQuizCompletedLoading) {
+  if (isQuizLoading || isQuizCompletedLoading || isCourseLoading) {
     return <LoadingSpinner />;
   }
 
@@ -387,6 +501,10 @@ export default function QuizPage() {
   }
 
   if (quizCompleted) {
+    // If the quiz was completed and there is another quiz in progress, clear the local storage of the current quiz
+    if (quizEndTimeDetails?.quizId === quizId) {
+      setQuizEndTimeDetails(null);
+    }
     return (
       <ErrorState
         title="Quiz already completed"
@@ -433,7 +551,7 @@ export default function QuizPage() {
             className="mb-8 space-y-4"
             disabled={isTimerExpired}
           >
-            {currentQuestion.answers.map((option: any) => (
+            {currentQuestion.answers.map((option) => (
               <label
                 key={option.id}
                 htmlFor={option.id.toString()}
@@ -476,7 +594,11 @@ export default function QuizPage() {
             {currentQuestionIndex === totalQuestions - 1 ? (
               <Button
                 onClick={handleSubmit}
-                disabled={isSubmitting || isTimerExpired}
+                disabled={
+                  isSubmitting ||
+                  isTimerExpired ||
+                  !selectedAnswers[currentQuestion.id]
+                }
                 className="min-w-[100px]"
               >
                 {isSubmitting ? (
