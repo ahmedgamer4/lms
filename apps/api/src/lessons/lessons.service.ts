@@ -110,16 +110,24 @@ export class LessonsService {
         },
         where: eq(lessons.id, lessonId),
         with: {
-          studentVideoCompletions: {
-            where: eq(studentVideoCompletions.enrollmentId, enrollmentId),
+          studentLessonCompletions: {
+            where: eq(studentLessonCompletions.enrollmentId, enrollmentId),
             columns: {
               id: true,
             },
           },
-          quizSubmissions: {
-            where: eq(quizSubmissions.enrollmentId, enrollmentId),
-            columns: {
-              id: true,
+          quizzes: {
+            with: {
+              quizSubmissions: {
+                where: eq(quizSubmissions.enrollmentId, enrollmentId),
+              },
+            },
+          },
+          videos: {
+            with: {
+              studentVideoCompletions: {
+                where: eq(studentVideoCompletions.enrollmentId, enrollmentId),
+              },
             },
           },
         },
@@ -134,12 +142,18 @@ export class LessonsService {
       throw new NotFoundException('Lesson not found');
     }
 
-    if (lesson.studentVideoCompletions?.length < 0) {
-      throw new BadRequestException('Video lesson not completed');
+    if (lesson.videos.length > 0) {
+      const video = lesson.videos[0];
+      if (video.studentVideoCompletions.length === 0) {
+        throw new BadRequestException('Video lesson not completed');
+      }
     }
 
-    if (lesson.quizSubmissions?.length < 0) {
-      throw new BadRequestException('Quiz lesson not completed');
+    if (lesson.quizzes.length < 0) {
+      const quiz = lesson.quizzes[0];
+      if (quiz.quizSubmissions.length === 0) {
+        throw new BadRequestException('Quiz lesson not completed');
+      }
     }
 
     const [result, error] = await attempt(

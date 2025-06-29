@@ -131,13 +131,12 @@ export class VideosService {
           ),
         });
 
-        if (completion)
-          throw new ConflictException('Already completed this lesson');
-
-        await tx.insert(studentLessonCompletions).values({
-          enrollmentId,
-          lessonId,
-        });
+        if (!completion) {
+          await tx.insert(studentLessonCompletions).values({
+            enrollmentId,
+            lessonId,
+          });
+        }
       }),
     );
 
