@@ -53,10 +53,13 @@ export default function ResultsPage() {
   if (!quizCompletion?.completed) {
     return (
       <div className="flex min-h-[calc(100vh-200px)] flex-col items-center justify-center">
-        <h2 className="text-xl font-semibold">Quiz not completed</h2>
+        <h2 className="text-2xl font-semibold">Quiz not completed</h2>
         <Link
           href={`/courses/${courseId}/quiz/${quizId}`}
-          className={cn(buttonVariants({ variant: "outline" }), "mt-2")}
+          className={cn(
+            buttonVariants({ variant: "default", size: "lg" }),
+            "mt-4",
+          )}
         >
           Start Quiz
         </Link>
@@ -66,7 +69,7 @@ export default function ResultsPage() {
 
   const results = quizResultsData!;
   const percentage = Number(results.score) * 100;
-  const questionsCount = results.submittedQuestionAnswers.length;
+  const questionsCount = results.questions.length;
 
   return (
     <div className="bg-card mx-auto mt-10 max-w-2xl rounded-lg p-6 shadow">
@@ -103,27 +106,27 @@ export default function ResultsPage() {
       <div className="mb-8">
         <h3 className="mb-2 font-semibold">Detailed Answers</h3>
         <ul className="space-y-4">
-          {results.submittedQuestionAnswers.map((q, idx) => (
+          {results.questions.map((q, idx) => (
             <li
               key={idx}
-              className={`rounded border-2 p-4 ${q.answer.id === q.correctAnswer.id ? "bg-accent/50 border-green-300" : "bg-accent/50 border-red-300"}`}
+              className={`rounded border-2 p-4 ${q.submittedAnswer.id === q.correctAnswer.id ? "bg-accent/50 border-green-300" : "bg-accent/50 border-red-300"}`}
             >
               <div className="font-medium">
-                Q{idx + 1}: {q.question.questionText}
+                Q{idx + 1}: {q.questionText}
               </div>
               <div className="ml-2">
                 <span className="font-semibold">Your answer:</span>{" "}
                 <span
                   className={
-                    q.answer.id === q.correctAnswer.id
+                    q.submittedAnswer.id === q.correctAnswer.id
                       ? "text-green-700"
                       : "text-red-700"
                   }
                 >
-                  {q.answer.answerText}
+                  {q.submittedAnswer.answerText}
                 </span>
               </div>
-              {q.answer.id !== q.correctAnswer.id && (
+              {q.submittedAnswer.id !== q.correctAnswer.id && (
                 <div className="text-muted-foreground ml-2 text-sm">
                   <span className="font-semibold">Correct answer:</span>{" "}
                   {q.correctAnswer.answerText}
