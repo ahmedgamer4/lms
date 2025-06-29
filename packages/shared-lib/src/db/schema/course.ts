@@ -103,8 +103,6 @@ export const lessonsRelations = relations(lessons, ({ one, many }) => ({
   }),
 
   studentLessonCompletions: many(studentLessonCompletions),
-  studentVideoCompletions: many(studentVideoCompletions),
-  quizSubmissions: many(quizSubmissions),
 
   videos: many(videos),
   quizzes: many(quizzes),
