@@ -76,12 +76,6 @@ export const submittedQuestionAnswers = pgTable(
         onUpdate: "cascade",
       })
       .notNull(),
-    correctAnswerId: integer("correct_answer_id")
-      .references(() => quizAnswers.id, {
-        onDelete: "cascade",
-        onUpdate: "cascade",
-      })
-      .notNull(),
   },
   (t) => [
     unique("submitted_question_answer_unique").on(t.questionId, t.answerId),
@@ -126,7 +120,6 @@ export const quizzesRelations = relations(quizzes, ({ one, many }) => ({
   }),
   questions: many(quizQuestions),
   quizSubmissions: many(quizSubmissions),
-  submittedQuestionAnswers: many(submittedQuestionAnswers),
 }));
 
 export const quizQuestionsRelations = relations(
@@ -147,10 +140,12 @@ export const quizAnswersRelations = relations(quizAnswers, ({ one, many }) => ({
     references: [quizQuestions.id],
   }),
   submittedQuestionAnswers: many(submittedQuestionAnswers),
-  correctQuestionAnswers: many(submittedQuestionAnswers),
+  correctQuestionAnswers: many(submittedQuestionAnswers, {
+    relationName: "correct_question_answers",
+  }),
 }));
 
-export const studentQuizCompletionsRelations = relations(
+export const quizSubmissionsRelations = relations(
   quizSubmissions,
   ({ one, many }) => ({
     quiz: one(quizzes, {
@@ -184,12 +179,13 @@ export const submittedQuestionAnswersRelations = relations(
       fields: [submittedQuestionAnswers.submissionId],
       references: [quizSubmissions.id],
     }),
-    correctAnswer: one(quizAnswers, {
-      fields: [submittedQuestionAnswers.correctAnswerId],
-      references: [quizAnswers.id],
-    }),
   }),
 );
+
 export type SelectQuiz = InferSelectModel<typeof quizzes>;
 export type SelectQuizQuestion = InferSelectModel<typeof quizQuestions>;
 export type SelectQuizAnswer = InferSelectModel<typeof quizAnswers>;
+export type SelectQuizSubmission = InferSelectModel<typeof quizSubmissions>;
+export type SelectSubmittedQuestionAnswer = InferSelectModel<
+  typeof submittedQuestionAnswers
+>;
