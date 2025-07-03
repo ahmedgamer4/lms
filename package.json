@@ -27,6 +27,7 @@
   "dependencies": {
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.1",
+    "dayjs": "^1.11.13",
     "dotenv": "^16.4.7",
     "drizzle-orm": "^0.38.2",
     "pg": "^8.13.1",
