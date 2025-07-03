@@ -11,7 +11,7 @@ import {
   studentLessonCompletions,
 } from '@lms-saas/shared-lib';
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { and, count, desc, eq } from 'drizzle-orm';
+import { and, count, desc, eq, inArray } from 'drizzle-orm';
 
 type WithClause = {
   courseSections?: {
@@ -91,6 +91,7 @@ export class CoursesService {
         ),
         orderBy: [desc(courses.createdAt)],
         columns: {
+          teacherId: false,
           createdAt: false,
           updatedAt: false,
         },
@@ -112,8 +113,27 @@ export class CoursesService {
         )
     )[0].count;
 
+    const studentsCount = await db
+      .select({ count: count(enrollments.id), courseId: enrollments.courseId })
+      .from(enrollments)
+      .groupBy(enrollments.courseId)
+      .where(
+        inArray(
+          enrollments.courseId,
+          res.map((r) => r.id),
+        ),
+      );
+
+    const coursesRes = res.map((r) => {
+      const course = studentsCount.find((s) => s.courseId === r.id);
+      return {
+        ...r,
+        studentsCount: course?.count || 0,
+      };
+    });
+
     return {
-      courses: res,
+      courses: coursesRes,
       count: coursesCount,
     };
   }
