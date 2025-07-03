@@ -17,8 +17,6 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
-import { Textarea } from "@/components/ui/textarea";
 import { updateLesson } from "@/lib/courses";
 import { attempt } from "@/lib/utils";
 import { SerializedEditorState } from "lexical";
@@ -108,7 +106,7 @@ export const DescriptionForm = ({
   };
 
   return (
-    <div className="bg-primary/5 mt-6 rounded-lg border p-4">
+    <div className="bg-primary/5 rounded-lg border p-4">
       <div className="flex items-center justify-between font-medium">
         Lesson description
         <Button onClick={toggleEdit} variant="ghost">
