@@ -58,6 +58,7 @@ export const enrollments = pgTable("enrollments", {
       onDelete: "cascade",
     }),
   enrolledAt: timestamp("enrolled_at", { withTimezone: true }).defaultNow(),
+  completedAt: timestamp("completed_at", { withTimezone: true }),
   status: varchar("status", { length: 20 }).notNull().default("active"),
   progress: integer("progress").notNull().default(0),
 });

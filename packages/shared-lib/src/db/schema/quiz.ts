@@ -140,9 +140,6 @@ export const quizAnswersRelations = relations(quizAnswers, ({ one, many }) => ({
     references: [quizQuestions.id],
   }),
   submittedQuestionAnswers: many(submittedQuestionAnswers),
-  correctQuestionAnswers: many(submittedQuestionAnswers, {
-    relationName: "correct_question_answers",
-  }),
 }));
 
 export const quizSubmissionsRelations = relations(
