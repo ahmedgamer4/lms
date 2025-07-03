@@ -21,6 +21,7 @@ export type CourseWithEnrollments = SelectCourse & {
   courseCodes: {
     id: number;
   }[];
+  studentsCount: number;
   enrollments: {
     id: number;
     progress: number;
