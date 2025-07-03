@@ -11,6 +11,7 @@ import { VideosModule } from './videos/videos.module';
 import { LessonsModule } from './lessons/lessons.module';
 import { QuizzesModule } from './quizzes/quizzes.module';
 import { CourseCodesModule } from './course-codes/course-codes.module';
+import { AnalyticsModule } from './analytics/analytics.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { CourseCodesModule } from './course-codes/course-codes.module';
     LessonsModule,
     QuizzesModule,
     CourseCodesModule,
+    AnalyticsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
