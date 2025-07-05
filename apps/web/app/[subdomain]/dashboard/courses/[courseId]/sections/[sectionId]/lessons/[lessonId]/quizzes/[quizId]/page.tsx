@@ -104,7 +104,11 @@ export default function QuizEditPage() {
     },
   });
 
-  const { isLoading: isQuizLoading, isError: isQuizError } = useQuery({
+  const {
+    data: quizData,
+    isLoading: isQuizLoading,
+    isError: isQuizError,
+  } = useQuery({
     queryKey: ["quiz", params.quizId],
     queryFn: async () => {
       const [response, error] = await attempt(
@@ -329,7 +333,7 @@ export default function QuizEditPage() {
           </div>
         </div>
         <QuestionDialog
-          questionLength={questions.length}
+          questionLength={quizData?.questions.length || 0}
           quizId={params.quizId as string}
           setQuestions={setQuestions}
         />
