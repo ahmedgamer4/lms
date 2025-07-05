@@ -5,6 +5,7 @@ import { Loader2 } from "lucide-react";
 import { attempt } from "@/lib/utils";
 import { toast } from "sonner";
 import { VideoJsPlayer } from "@/components/video-js-player";
+
 export const VideoPlayer = ({ lesson }: { lesson: Lesson }) => {
   const {
     data: videoResponse,
@@ -34,9 +35,9 @@ export const VideoPlayer = ({ lesson }: { lesson: Lesson }) => {
   if (isError) return <div>Error loading video</div>;
 
   return (
-    <div className="relative w-full">
+    <div className="flex h-full w-full items-center justify-center bg-black">
       <VideoJsPlayer
-        className="h-full w-full"
+        className="aspect-video h-full w-auto max-w-full"
         src={videoResponse?.data.manifestUrl || ""}
       />
     </div>

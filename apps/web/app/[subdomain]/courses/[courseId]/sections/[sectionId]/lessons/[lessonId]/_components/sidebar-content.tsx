@@ -33,7 +33,6 @@ import { toast } from "sonner";
 
 interface SidebarContentProps {
   course: CourseWithSectionsAndEnrollments;
-  sectionId: number;
   lessonId: number;
 }
 
@@ -338,50 +337,7 @@ function SectionAccordion({
   );
 }
 
-export function SidebarContent({
-  course,
-  sectionId,
-  lessonId,
-}: SidebarContentProps) {
-  const {
-    data: lessonData,
-    isLoading: lessonLoading,
-    error,
-  } = useQuery({
-    queryKey: ["lesson", lessonId],
-    queryFn: async () => {
-      const [response, error] = await attempt(
-        findLesson(course.id, sectionId, lessonId),
-      );
-      if (error || !response) {
-        throw error || new Error("Failed to fetch lesson");
-      }
-      return response;
-    },
-  });
-
-  if (lessonLoading) {
-    return <LoadingSpinner />;
-  }
-
-  if (error) {
-    return (
-      <Card className="border-destructive/50 bg-destructive/5">
-        <CardContent className="flex flex-col items-center justify-center py-8 text-center">
-          <div className="bg-destructive/10 mb-3 flex h-12 w-12 items-center justify-center rounded-full">
-            <FileText className="text-destructive h-6 w-6" />
-          </div>
-          <h3 className="text-destructive mb-1 font-medium">
-            Failed to load lesson
-          </h3>
-          <p className="text-muted-foreground text-sm">
-            Please try refreshing the page
-          </p>
-        </CardContent>
-      </Card>
-    );
-  }
-
+export function SidebarContent({ course, lessonId }: SidebarContentProps) {
   return (
     <div className="space-y-3 p-1">
       <div className="px-2 py-3">

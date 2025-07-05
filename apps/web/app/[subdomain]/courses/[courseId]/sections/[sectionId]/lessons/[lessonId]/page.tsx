@@ -161,27 +161,24 @@ export default function LessonPage() {
         onClick={() => setBlur(false)}
         className="flex h-full min-h-screen w-full"
         style={{
-          filter: blur ? "blur(10px)" : "none",
           WebkitUserSelect: "none",
           MozUserSelect: "none",
           msUserSelect: "none",
           userSelect: "none",
         }}
       >
-        <aside className="bg-muted/60 sticky top-0 hidden h-full overflow-y-auto border-r p-6 md:block">
-          <h2 className="text-primary mb-4 text-xl font-semibold">
-            {course.title}
-          </h2>
-          <SidebarContent
-            course={course}
-            sectionId={sectionId}
-            lessonId={lessonId}
-          />
+        <aside className="bg-muted/60 sticky top-0 hidden h-full overflow-y-auto border-r p-2 lg:block">
+          <div className="p-2">
+            <h2 className="text-primary mb-4 text-2xl font-semibold text-wrap">
+              {course.title}
+            </h2>
+          </div>
+          <SidebarContent course={course} lessonId={lessonId} />
         </aside>
 
         <div className="flex w-full flex-col items-center justify-center px-4 py-2 md:flex-1 md:p-8">
           <div className="mb-2 flex w-full max-w-6xl items-center gap-2">
-            <div className="md:hidden">
+            <div className="lg:hidden">
               <SheetTrigger asChild>
                 <Button variant="outline" className="" size="icon">
                   <Menu size={24} />
@@ -197,7 +194,12 @@ export default function LessonPage() {
             </Link>
           </div>
 
-          <div className="bg-muted mb-8 flex aspect-video w-full max-w-6xl items-center justify-center border">
+          <div
+            className="bg-muted mb-8 flex aspect-video w-full max-w-6xl items-center justify-center overflow-hidden border"
+            style={{
+              filter: blur ? "blur(10px)" : "none",
+            }}
+          >
             {lesson.videos?.[0] ? (
               <VideoPlayer lesson={lesson} />
             ) : (
@@ -210,7 +212,7 @@ export default function LessonPage() {
               <>
                 <Separator className="my-4" />
                 <p
-                  className="text-lg"
+                  className="text-lg text-balance break-all whitespace-normal"
                   dangerouslySetInnerHTML={{
                     __html: purify.sanitize(
                       lexicalToHtml(JSON.parse(lesson.description)),
@@ -260,11 +262,7 @@ export default function LessonPage() {
           </div>
         </div>
       </div>
-      <MobileSidebar
-        course={course}
-        sectionId={sectionId}
-        lessonId={lessonId}
-      />
+      <MobileSidebar course={course} lessonId={lessonId} />
     </Sheet>
   );
 }
