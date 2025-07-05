@@ -22,7 +22,7 @@ import {
   UpdateQuizDto,
   UpdateQuizQuestionDto,
 } from '@lms-saas/shared-lib';
-import { and, count, eq, inArray } from 'drizzle-orm';
+import { and, asc, count, eq, inArray } from 'drizzle-orm';
 import { attempt } from '@/utils/error-handling';
 
 @Injectable()
@@ -53,6 +53,7 @@ export class QuizzesService {
       },
       with: {
         questions: {
+          orderBy: [asc(quizQuestions.orderIndex)],
           columns: {
             quizId: false,
           },
