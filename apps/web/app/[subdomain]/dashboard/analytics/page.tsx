@@ -6,13 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import {
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-  ChartLegend,
-  ChartLegendContent,
-} from "@/components/ui/chart";
+import { ChartContainer, ChartTooltip } from "@/components/ui/chart";
 import {
   LineChart,
   Line,
@@ -23,17 +17,13 @@ import {
   XAxis,
   YAxis,
   CartesianGrid,
-  ResponsiveContainer,
 } from "recharts";
 import {
   Users,
   BookOpen,
   TrendingUp,
   DollarSign,
-  Clock,
   Star,
-  Eye,
-  Download,
   ArrowUpRight,
   ArrowDownRight,
   Calendar,
@@ -42,7 +32,6 @@ import {
   BarChart3,
   PieChart,
   LineChart as LineChartIcon,
-  Filter,
   RefreshCw,
   Loader2,
 } from "lucide-react";
@@ -55,7 +44,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-// Mock data for analytics
 const mockData = {
   overview: {
     totalStudents: 1247,
@@ -143,7 +131,6 @@ const mockData = {
   ],
 };
 
-// Chart configurations
 const chartConfig = {
   students: {
     label: "Students",
@@ -259,17 +246,16 @@ const ActivityItem = ({ activity }: { activity: any }) => {
             )}
           </p>
         </div>
-        <p className="text-muted-foreground text-xs">{activity.time}</p>
+        <p className="text-muted-foreground text-xs">{activity.timeAgo}</p>
       </div>
     </div>
   );
 };
 
 export default function AnalyticsPage() {
-  const [timeRange, setTimeRange] = useState("30d");
+  const [timeRange, setTimeRange] = useState("6m");
   const [isRefreshing, setIsRefreshing] = useState(false);
 
-  // Map timeRange to period in months for getMonthly
   const timeRangeToPeriod = {
     "90d": 3,
     "6m": 6,
