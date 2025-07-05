@@ -164,7 +164,7 @@ export const VideoUploader = ({
     <div className="space-y-4">
       <div
         {...getRootProps()}
-        className={`cursor-pointer rounded-lg border-2 border-dashed p-8 text-center transition-colors ${
+        className={`flex h-[300px] w-full cursor-pointer items-center justify-center rounded-lg border-2 border-dashed p-8 text-center transition-colors ${
           isDragActive
             ? "border-primary bg-primary/5"
             : "border-muted-foreground/25 hover:border-primary/50"
