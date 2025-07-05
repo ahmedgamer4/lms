@@ -13,7 +13,11 @@ import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import Image from "next/image";
 
-export function CourseCard({ course }: { course: SelectCourse }) {
+export function CourseCard({
+  course,
+}: {
+  course: SelectCourse & { studentsCount: number };
+}) {
   return (
     <Card className="group hover:border-primary/50 flex flex-col overflow-hidden rounded-xl border transition-all duration-300 hover:shadow-lg">
       <CardHeader className="relative p-0">
@@ -47,11 +51,11 @@ export function CourseCard({ course }: { course: SelectCourse }) {
         <div className="text-muted-foreground mt-auto flex items-center gap-4 text-sm">
           <div className="flex items-center gap-1">
             <Users className="h-4 w-4" />
-            <span>0 students</span>
+            <span>{course.studentsCount} students</span>
           </div>
           <div className="flex items-center gap-1">
             <Clock className="h-4 w-4" />
-            <span>0 hours</span>
+            <span>{course.lessonsCount} lessons</span>
           </div>
           <div className="flex items-center gap-1">
             <Star className="h-4 w-4" />
