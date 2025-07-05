@@ -30,12 +30,12 @@ export function Plugins() {
 
       <ToolbarPlugin>
         {({ blockType }) => (
-          <div className="vertical-align-middle sticky top-0 z-10 flex gap-2 overflow-auto border-b p-1">
+          <div className="vertical-align-middle bg-background sticky top-0 z-10 flex gap-2 overflow-auto rounded-t-lg border-b p-1">
             <HistoryToolbarPlugin />
 
             <BlockFormatDropDown>
               <FormatParagraph />
-              <FormatHeading levels={["h1", "h2", "h3"]} />
+              <FormatHeading levels={["h2", "h3", "h4", "h5", "h6"]} />
               <FormatNumberedList />
               <FormatBulletedList />
               <FormatCheckList />
