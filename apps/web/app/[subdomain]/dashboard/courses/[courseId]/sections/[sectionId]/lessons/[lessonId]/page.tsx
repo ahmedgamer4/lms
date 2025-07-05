@@ -40,6 +40,7 @@ import {
 import { LessonTabs } from "./_components/lesson-tabs";
 import { attempt } from "@/lib/utils";
 import { DescriptionForm } from "./_components/description-form";
+import { TitleForm } from "./_components/title-form";
 
 export default function LessonPage() {
   const params = useParams();
@@ -242,71 +243,43 @@ export default function LessonPage() {
 
       <Separator />
 
-      <div className="grid gap-6">
-        <Card className="shadow-none">
-          <CardHeader className="bg-primary/5 border-b">
-            <div className="flex items-center gap-3">
-              <div className="bg-primary/10 flex h-10 w-10 items-center justify-center rounded-full">
-                <Pencil className="text-primary h-5 w-5" />
-              </div>
-              <div>
-                <CardTitle className="text-xl">Lesson Details</CardTitle>
-                <p className="text-muted-foreground text-sm">
-                  Basic information about your lesson
-                </p>
-              </div>
-            </div>
-          </CardHeader>
-          <CardContent className="pt-6">
-            <div className="grid gap-6">
-              <form onSubmit={handleUpdateTitle} className="grid gap-2">
-                <Label htmlFor="title">Title</Label>
-                <div className="flex gap-2">
-                  <Input
-                    id="title"
-                    value={title}
-                    onChange={(e) => setTitle(e.target.value)}
-                    placeholder="Enter lesson title"
-                    className="flex-1"
-                  />
-                  <Button disabled={isLoading} className="w-[100px]">
-                    {isLoading ? (
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                    ) : (
-                      "Save"
-                    )}
-                  </Button>
+      <div className="flex flex-col-reverse gap-6 lg:flex-row">
+        <div className="w-full space-y-6 lg:w-1/2">
+          <TitleForm
+            initialData={{ title: lesson.title }}
+            courseId={Number(params.courseId)}
+            sectionId={Number(params.sectionId)}
+            lessonId={Number(params.lessonId)}
+          />
+
+          <DescriptionForm
+            initialData={JSON.parse(lesson.description)}
+            courseId={Number(params.courseId)}
+            sectionId={Number(params.sectionId)}
+            lessonId={Number(params.lessonId)}
+          />
+        </div>
+
+        <div className="grid w-full gap-6 lg:h-[515px] lg:w-1/2">
+          <Card className="shadow-none">
+            <CardHeader className="bg-primary/5 border-b">
+              <div className="flex items-center gap-3">
+                <div className="bg-primary/10 flex h-10 w-10 items-center justify-center rounded-full">
+                  <Video className="text-primary h-5 w-5" />
                 </div>
-              </form>
-
-              <DescriptionForm
-                initialData={JSON.parse(lesson.description)}
-                courseId={Number(params.courseId)}
-                sectionId={Number(params.sectionId)}
-                lessonId={Number(params.lessonId)}
-              />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="shadow-none">
-          <CardHeader className="bg-primary/5 border-b">
-            <div className="flex items-center gap-3">
-              <div className="bg-primary/10 flex h-10 w-10 items-center justify-center rounded-full">
-                <Video className="text-primary h-5 w-5" />
+                <div>
+                  <CardTitle className="text-xl">Lesson Content</CardTitle>
+                  <p className="text-muted-foreground text-sm">
+                    Add videos and quizzes to your lesson
+                  </p>
+                </div>
               </div>
-              <div>
-                <CardTitle className="text-xl">Lesson Content</CardTitle>
-                <p className="text-muted-foreground text-sm">
-                  Add videos and quizzes to your lesson
-                </p>
-              </div>
-            </div>
-          </CardHeader>
-          <CardContent className="pt-6">
-            <LessonTabs lesson={lesson} />
-          </CardContent>
-        </Card>
+            </CardHeader>
+            <CardContent className="pt-6">
+              <LessonTabs lesson={lesson} />
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </div>
   );
