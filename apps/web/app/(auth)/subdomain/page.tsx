@@ -22,7 +22,7 @@ function SubdomainContent() {
   return (
     <div className="flex min-h-screen flex-col items-center justify-center p-4">
       <h1 className="mb-2 text-3xl font-semibold">{subdomain}</h1>
-      <p className="text-lg text-gray-700">
+      <p className="text-muted-foreground text-lg">
         {subdomain ? `${subdomain}.example.com` : "No subdomain provided"}
       </p>
       <Button onClick={handleGo} className="mt-6" disabled={!subdomain}>
