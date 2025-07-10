@@ -26,7 +26,12 @@
     "description": "Description",
     "descriptionPlaceholder": "Enter your course description",
     "image": "Image",
-    "imagePlaceholder": "Enter your course image"
+    "imagePlaceholder": "Enter your course image",
+    "light": "Light",
+    "dark": "Dark",
+    "system": "System",
+    "language": "Language",
+    "toggleTheme": "Toggle theme"
   },
   "navigation": {
     "home": "Home",
@@ -52,6 +57,13 @@
     "passwordMismatch": "Passwords do not match",
     "emailRequired": "Email is required",
     "passwordRequired": "Password is required"
+  },
+  "sidebar": {
+    "platform": "Platform",
+    "items": "Items",
+    "courses": "Courses",
+    "analytics": "Analytics",
+    "settings": "Settings"
   },
   "dashboard": {
     "welcome": "Welcome to your dashboard",

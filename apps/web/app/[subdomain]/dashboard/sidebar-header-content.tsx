@@ -1,6 +1,7 @@
 "use client";
 
 import { ModeToggle } from "@/components/mode-toggle";
+import LanguageSwitcher from "@/components/language-switcher";
 import {
   SidebarContent,
   SidebarGroup,
@@ -26,7 +27,10 @@ export default function SidebarHeaderContent() {
             <GraduationCap size={50} className="mr-2 flex flex-col" />
             {t("platform")}
           </div>
-          <ModeToggle />
+          <div className="flex items-center gap-2">
+            <LanguageSwitcher />
+            <ModeToggle />
+          </div>
         </div>
       </SidebarHeader>
       <SidebarContent>
