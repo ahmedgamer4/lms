@@ -52,7 +52,7 @@ export function SignupForm() {
         onSubmit={form.handleSubmit(onSubmit)}
         className="mb-3 w-full space-y-3"
       >
-        <div className="text-sm text-red-500">
+        <div className="text-destructive text-sm">
           {form.formState.errors.root?.message}
         </div>
         <FormField
