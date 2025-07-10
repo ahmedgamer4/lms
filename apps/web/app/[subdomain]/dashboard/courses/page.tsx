@@ -26,7 +26,10 @@ import {
 } from "@/components/ui/pagination";
 import { attempt } from "@/lib/utils";
 import { toast } from "sonner";
+import { useTranslations } from "next-intl";
+
 export default function CoursesPage() {
+  const t = useTranslations("courses");
   const [open, setOpen] = useState(false);
   const [page, setPage] = useState(1);
   const [published, setPublished] = useState(true);
@@ -65,12 +68,12 @@ export default function CoursesPage() {
     <Dialog open={open} onOpenChange={setOpen}>
       <div className="container mx-auto">
         <div className="w-full justify-between md:flex">
-          <h2 className="text-2xl font-bold">All Courses</h2>
+          <h2 className="text-2xl font-bold">{t("title")}</h2>
           <div className="flex items-center justify-end gap-2">
             <DialogTrigger asChild>
               <Button className="mt-2 md:mt-0" variant={"video"}>
                 <Plus />
-                New Course
+                {t("createCourse")}
               </Button>
             </DialogTrigger>
           </div>
@@ -83,14 +86,14 @@ export default function CoursesPage() {
               className={published ? "underline" : ""}
               onClick={() => setPublished(true)}
             >
-              Published
+              {t("published")}
             </Button>
             <Button
               className={!published ? "underline" : ""}
               variant={"link"}
               onClick={() => setPublished(false)}
             >
-              Unpublished
+              {t("unpublished")}
             </Button>
           </div>
 
@@ -98,7 +101,7 @@ export default function CoursesPage() {
 
           <div className="mt-4 grid grid-cols-[repeat(auto-fill,_minmax(350px,_1fr))] gap-6">
             {courses.length === 0 ? (
-              <div>No Courses</div>
+              <div>{t("noCourses")}</div>
             ) : (
               courses.map((course) => (
                 <CourseCard key={course.id} course={course} />
@@ -146,7 +149,7 @@ export default function CoursesPage() {
 
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Create New Course</DialogTitle>
+          <DialogTitle>{t("createCourse")}</DialogTitle>
         </DialogHeader>
         <CreateCourseForm setOpen={setOpen} />
       </DialogContent>

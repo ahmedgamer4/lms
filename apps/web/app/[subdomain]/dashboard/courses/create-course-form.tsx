@@ -14,6 +14,7 @@ import { createCourse } from "@/lib/courses";
 import { classValidatorResolver } from "@hookform/resolvers/class-validator";
 import { CreateCourseDto } from "@lms-saas/shared-lib/dtos";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useTranslations } from "next-intl";
 import { Dispatch, SetStateAction, useMemo } from "react";
 import { useForm } from "react-hook-form";
 
@@ -23,6 +24,7 @@ export function CreateCourseForm({
   setOpen: Dispatch<SetStateAction<boolean>>;
 }) {
   const queryClient = useQueryClient();
+  const t = useTranslations();
 
   const { mutateAsync } = useMutation({
     mutationFn: createCourse,
@@ -51,22 +53,24 @@ export function CreateCourseForm({
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="space-y-4 mb-2 w-full"
+        className="mb-2 w-full space-y-4"
       >
         <FormField
           control={form.control}
           name="title"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Title</FormLabel>
+              <FormLabel className="mb-2">{t("common.title")}</FormLabel>
               <FormControl>
-                <Input placeholder="Enter your course title" {...field} />
+                <Input placeholder={t("common.title")} {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
-        <Button className="w-full">Create</Button>
+        <Button className="w-full" type="submit">
+          {t("common.create")}
+        </Button>
       </form>
     </Form>
   );
