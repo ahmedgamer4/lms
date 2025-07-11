@@ -1,7 +1,7 @@
 "use client";
 
 import * as z from "zod";
-import { Pencil, PlusCircle, ImageIcon, Loader2 } from "lucide-react";
+import { Pencil, PlusCircle, ImageIcon, Loader2, X } from "lucide-react";
 import { useRef, useState } from "react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
@@ -20,6 +20,7 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { attempt } from "@/lib/utils";
+import { useTranslations } from "next-intl";
 interface ImageFormProps {
   initialData: {
     imageUrl: string;
@@ -34,6 +35,8 @@ const formSchema = z.object({
 export const ImageForm = ({ initialData, courseId }: ImageFormProps) => {
   const queryClient = useQueryClient();
   const [isEditing, setIsEditing] = useState(false);
+  const t = useTranslations("courses");
+  const tCommon = useTranslations("common");
 
   const toggleEdit = () => setIsEditing((current) => !current);
 
@@ -54,17 +57,17 @@ export const ImageForm = ({ initialData, courseId }: ImageFormProps) => {
         uploadCoverImage(courseId, values.coverImage),
       );
       if (error) {
-        toast.error("Something went wrong");
+        toast.error(tCommon("somethingWentWrong"));
       } else {
         queryClient.invalidateQueries({
           queryKey: ["dashboard-course", courseId],
         });
-        toast.success("Course updated");
+        toast.success(tCommon("updatedSuccessfully"));
         toggleEdit();
         router.refresh();
       }
     } catch {
-      toast.error("Something went wrong");
+      toast.error(tCommon("somethingWentWrong"));
     }
   };
 
@@ -73,19 +76,24 @@ export const ImageForm = ({ initialData, courseId }: ImageFormProps) => {
   return (
     <div className="bg-primary/5 mt-6 rounded-lg border p-4">
       <div className="flex items-center justify-between font-medium">
-        Course image
+        {t("courseImage")}
         <Button onClick={toggleEdit} variant="ghost">
-          {isEditing && <>Cancel</>}
+          {isEditing && (
+            <>
+              <X className="mr-0.5 h-4 w-4" />
+              {tCommon("cancel")}
+            </>
+          )}
           {!isEditing && !initialData.imageUrl && (
             <>
               <PlusCircle className="mr-0.5 h-4 w-4" />
-              Add an image
+              {tCommon("add")}
             </>
           )}
           {!isEditing && initialData.imageUrl && (
             <>
               <Pencil className="mr-0.5 h-4 w-4" />
-              Edit image
+              {tCommon("edit")}
             </>
           )}
         </Button>
@@ -136,7 +144,7 @@ export const ImageForm = ({ initialData, courseId }: ImageFormProps) => {
                 {isSubmitting && (
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 )}
-                Save
+                {tCommon("save")}
               </Button>
             </div>
           </form>

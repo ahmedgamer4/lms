@@ -4,7 +4,7 @@ import * as z from "zod";
 import axios from "axios";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { Pencil } from "lucide-react";
+import { Pencil, X } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
@@ -21,6 +21,7 @@ import { cn } from "@/lib/utils";
 import { Textarea } from "@/components/ui/textarea";
 import { updateCourse } from "@/lib/courses";
 import { attempt } from "@/lib/utils";
+import { useTranslations } from "next-intl";
 interface DescriptionFormProps {
   initialData: { description: string };
   courseId: number;
@@ -38,6 +39,8 @@ export const DescriptionForm = ({
 }: DescriptionFormProps) => {
   const [description, setDescription] = useState(initialData.description);
   const [isEditing, setIsEditing] = useState(false);
+  const t = useTranslations("courses");
+  const tCommon = useTranslations("common");
 
   const toggleEdit = () => setIsEditing((current) => !current);
 
@@ -58,29 +61,32 @@ export const DescriptionForm = ({
         updateCourse(courseId, { description: values.description }),
       );
       if (error) {
-        toast.error("Something went wrong");
+        toast.error(tCommon("somethingWentWrong"));
       } else {
         setDescription(values.description);
-        toast.success("Course updated");
+        toast.success(tCommon("updatedSuccessfully"));
         toggleEdit();
         router.refresh();
       }
     } catch {
-      toast.error("Something went wrong");
+      toast.error(tCommon("somethingWentWrong"));
     }
   };
 
   return (
     <div className="bg-primary/5 mt-6 rounded-lg border p-4">
       <div className="flex items-center justify-between font-medium">
-        Course description
+        {t("courseDescription")}
         <Button onClick={toggleEdit} variant="ghost">
           {isEditing ? (
-            <>Cancel</>
+            <>
+              <X className="mr-0.5 h-4 w-4" />
+              {tCommon("cancel")}
+            </>
           ) : (
             <>
               <Pencil className="mr-0.5 h-4 w-4" />
-              Edit
+              {tCommon("edit")}
             </>
           )}
         </Button>
@@ -92,7 +98,7 @@ export const DescriptionForm = ({
             !description && "text-slate-500 italic",
           )}
         >
-          {description || "No description"}
+          {description || t("noDescriptionAvailable")}
         </p>
       )}
       {isEditing && (
@@ -109,8 +115,8 @@ export const DescriptionForm = ({
                   <FormControl>
                     <Textarea
                       disabled={isSubmitting}
-                      placeholder="e.g. 'This course is about...'"
                       {...field}
+                      placeholder={tCommon("descriptionPlaceholder")}
                     />
                   </FormControl>
                   <FormMessage />
@@ -119,7 +125,7 @@ export const DescriptionForm = ({
             />
             <div className="flex items-center gap-x-2">
               <Button disabled={!isValid || isSubmitting} type="submit">
-                Save
+                {tCommon("save")}
               </Button>
             </div>
           </form>

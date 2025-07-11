@@ -26,15 +26,18 @@ import {
 import { useQueryClient } from "@tanstack/react-query";
 import { attempt } from "@/lib/utils";
 import { toast } from "sonner";
+import { useTranslations } from "next-intl";
 export const ChaptersList = ({ course }: { course: any }) => {
   const queryClient = useQueryClient();
   const [sections, setSections] = useState<Omit<CourseSection, "courseId">[]>(
     course?.courseSections || [],
   );
+  const t = useTranslations("courses");
+  const tCommon = useTranslations("common");
 
   async function addSection() {
     const newSection = {
-      title: "New Section",
+      title: t("newSection"),
       orderIndex: sections.length,
     };
 
@@ -55,7 +58,6 @@ export const ChaptersList = ({ course }: { course: any }) => {
     const updatedSections = [...sections];
     updatedSections.splice(index, 1);
 
-    // Update order indices
     updatedSections.forEach((section, idx) => {
       section.orderIndex = idx;
     });
@@ -65,7 +67,7 @@ export const ChaptersList = ({ course }: { course: any }) => {
       deleteCourseSection(course.id, sections[index]!.id),
     );
     if (error) {
-      toast.error("Something went wrong");
+      toast.error(tCommon("somethingWentWrong"));
     }
   }
 
@@ -130,7 +132,7 @@ export const ChaptersList = ({ course }: { course: any }) => {
                               <div className="flex-1 space-y-1">
                                 <h3 className="font-medium">{section.title}</h3>
                                 <p className="text-muted-foreground text-sm">
-                                  Press edit to see details
+                                  {tCommon("pressEditToSeeDetails")}
                                 </p>
                               </div>
                             </div>
@@ -144,7 +146,7 @@ export const ChaptersList = ({ course }: { course: any }) => {
                                   className="gap-2"
                                 >
                                   <Pen className="h-4 w-4" />
-                                  Edit
+                                  {tCommon("edit")}
                                 </Button>
                               </Link>
                               <AlertDialog>
@@ -160,16 +162,15 @@ export const ChaptersList = ({ course }: { course: any }) => {
                                 <AlertDialogContent>
                                   <AlertDialogHeader>
                                     <AlertDialogTitle>
-                                      Delete Section
+                                      {tCommon("delete")}
                                     </AlertDialogTitle>
                                     <AlertDialogDescription>
-                                      Are you sure you want to delete this
-                                      section? This action cannot be undone.
+                                      {tCommon("deleteDescription")}
                                     </AlertDialogDescription>
                                   </AlertDialogHeader>
                                   <AlertDialogFooter>
                                     <AlertDialogCancel>
-                                      Cancel
+                                      {tCommon("cancel")}
                                     </AlertDialogCancel>
                                     <AlertDialogAction
                                       onClick={() =>
@@ -177,7 +178,7 @@ export const ChaptersList = ({ course }: { course: any }) => {
                                       }
                                       className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                                     >
-                                      Delete
+                                      {tCommon("delete")}
                                     </AlertDialogAction>
                                   </AlertDialogFooter>
                                 </AlertDialogContent>
@@ -192,14 +193,14 @@ export const ChaptersList = ({ course }: { course: any }) => {
                   <div className="flex flex-col items-center justify-center rounded-lg border border-dashed p-8 text-center">
                     <ListChecks className="text-muted-foreground mb-4 h-12 w-12" />
                     <h3 className="mb-2 text-lg font-medium">
-                      No sections created yet
+                      {t("noSectionsCreatedYet")}
                     </h3>
                     <p className="text-muted-foreground mb-4 text-sm">
-                      Get started by creating your first course section
+                      {t("getStartedByCreatingYourFirstCourseSection")}
                     </p>
                     <Button onClick={addSection} className="gap-2">
                       <Plus className="h-4 w-4" />
-                      Add Section
+                      {tCommon("add")} {t("section")}
                     </Button>
                   </div>
                 )}
@@ -216,7 +217,7 @@ export const ChaptersList = ({ course }: { course: any }) => {
             className="w-full gap-2"
           >
             <Plus className="h-4 w-4" />
-            Add Section
+            {tCommon("add")} {t("section")}
           </Button>
         )}
       </CardContent>

@@ -3,7 +3,7 @@
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { Pencil } from "lucide-react";
+import { Pencil, X } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
@@ -19,6 +19,8 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { updateCourse } from "@/lib/courses";
 import { attempt } from "@/lib/utils";
+import { useTranslations } from "next-intl";
+
 interface TitleFormProps {
   initialData: {
     title: string;
@@ -35,6 +37,8 @@ const formSchema = z.object({
 export const TitleForm = ({ initialData, courseId }: TitleFormProps) => {
   const [title, setTitle] = useState(initialData.title);
   const [isEditing, setIsEditing] = useState(false);
+  const t = useTranslations("courses");
+  const tCommon = useTranslations("common");
 
   const toggleEdit = () => setIsEditing((current) => !current);
 
@@ -53,29 +57,32 @@ export const TitleForm = ({ initialData, courseId }: TitleFormProps) => {
         updateCourse(courseId, { title: values.title }),
       );
       if (error) {
-        toast.error("Something went wrong");
+        toast.error(tCommon("somethingWentWrong"));
       } else {
         setTitle(values.title);
-        toast.success("Course updated");
+        toast.success(tCommon("updatedSuccessfully"));
         toggleEdit();
         router.refresh();
       }
     } catch {
-      toast.error("Something went wrong");
+      toast.error(tCommon("somethingWentWrong"));
     }
   };
 
   return (
     <div className="bg-primary/5 rounded-lg border p-4">
       <div className="flex items-center justify-between font-medium">
-        Course title
+        {t("courseTitle")}
         <Button onClick={toggleEdit} variant="ghost">
           {isEditing ? (
-            <>Cancel</>
+            <>
+              <X className="mr-0.5 h-4 w-4" />
+              {tCommon("cancel")}
+            </>
           ) : (
             <>
               <Pencil className="mr-0.5 h-4 w-4" />
-              Edit
+              {tCommon("edit")}
             </>
           )}
         </Button>
@@ -95,7 +102,7 @@ export const TitleForm = ({ initialData, courseId }: TitleFormProps) => {
                   <FormControl>
                     <Input
                       disabled={isSubmitting}
-                      placeholder="e.g. 'Advanced web development'"
+                      placeholder={tCommon("titlePlaceholder")}
                       {...field}
                     />
                   </FormControl>
@@ -105,7 +112,7 @@ export const TitleForm = ({ initialData, courseId }: TitleFormProps) => {
             />
             <div className="flex items-center gap-x-2">
               <Button disabled={!isValid || isSubmitting} type="submit">
-                Save
+                {tCommon("save")}
               </Button>
             </div>
           </form>

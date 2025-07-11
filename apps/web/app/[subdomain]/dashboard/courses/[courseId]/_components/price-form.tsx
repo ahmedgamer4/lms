@@ -4,7 +4,7 @@ import * as z from "zod";
 import axios from "axios";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { Pencil } from "lucide-react";
+import { Pencil, X } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
@@ -21,6 +21,7 @@ import { attempt, cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 import { formatPrice } from "@/lib/format-price";
 import { updateCourse } from "@/lib/courses";
+import { useTranslations } from "next-intl";
 
 interface PriceFormProps {
   initialData: { price: string };
@@ -34,6 +35,8 @@ const formSchema = z.object({
 export const PriceForm = ({ initialData, courseId }: PriceFormProps) => {
   const [price, setPrice] = useState(initialData.price);
   const [isEditing, setIsEditing] = useState(false);
+  const t = useTranslations("courses");
+  const tCommon = useTranslations("common");
 
   const toggleEdit = () => setIsEditing((current) => !current);
 
@@ -54,36 +57,39 @@ export const PriceForm = ({ initialData, courseId }: PriceFormProps) => {
         updateCourse(courseId, { price: values.price }),
       );
       if (error) {
-        toast.error("Something went wrong");
+        toast.error(tCommon("somethingWentWrong"));
       } else {
         setPrice(values.price);
-        toast.success("Course updated");
+        toast.success(tCommon("updatedSuccessfully"));
         toggleEdit();
         router.refresh();
       }
     } catch {
-      toast.error("Something went wrong");
+      toast.error(tCommon("somethingWentWrong"));
     }
   };
 
   return (
     <div className="bg-primary/5 mt-6 rounded-lg border p-4">
       <div className="flex items-center justify-between font-medium">
-        Course price
+        {t("coursePrice")}
         <Button onClick={toggleEdit} variant="ghost">
           {isEditing ? (
-            <>Cancel</>
+            <>
+              <X className="mr-0.5 h-4 w-4" />
+              {tCommon("cancel")}
+            </>
           ) : (
             <>
               <Pencil className="mr-0.5 h-4 w-4" />
-              Edit
+              {tCommon("edit")}
             </>
           )}
         </Button>
       </div>
       {!isEditing && (
         <p className={cn("mt-2 text-sm", !price && "text-slate-500 italic")}>
-          {price ? formatPrice(price) : "No price"}
+          {price ? formatPrice(price) : tCommon("noPriceAvailable")}
         </p>
       )}
       {isEditing && (
@@ -102,7 +108,7 @@ export const PriceForm = ({ initialData, courseId }: PriceFormProps) => {
                       type="number"
                       step="0.01"
                       disabled={isSubmitting}
-                      placeholder="Set a price for your course"
+                      placeholder="eg 100"
                       {...field}
                     />
                   </FormControl>
@@ -112,7 +118,7 @@ export const PriceForm = ({ initialData, courseId }: PriceFormProps) => {
             />
             <div className="flex items-center gap-x-2">
               <Button disabled={!isValid || isSubmitting} type="submit">
-                Save
+                {tCommon("save")}
               </Button>
             </div>
           </form>

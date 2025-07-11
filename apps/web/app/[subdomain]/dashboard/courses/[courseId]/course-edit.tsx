@@ -35,8 +35,12 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import Link from "next/link";
 import { attempt } from "@/lib/utils";
+import { useTranslations } from "next-intl";
 
 export default function CourseEdit({ course }: { course: any }) {
+  const t = useTranslations("courses");
+  const tCommon = useTranslations("common");
+
   const router = useRouter();
   const [publishLoading, setPublishLoading] = useState(false);
   const queryClient = useQueryClient();
@@ -73,9 +77,11 @@ export default function CourseEdit({ course }: { course: any }) {
     <div className="mx-auto mt-4 space-y-4">
       <div className="items-center justify-between md:flex">
         <div className="space-y-1">
-          <h1 className="text-2xl font-bold tracking-tight">Course Settings</h1>
+          <h1 className="text-2xl font-bold tracking-tight">
+            {t("courseSettings")}
+          </h1>
           <p className="text-muted-foreground text-sm">
-            Manage your course details and content
+            {t("courseSettingsDescription")}
           </p>
         </div>
         <div className="mt-3 flex items-center gap-2 md:mt-0">
@@ -92,7 +98,7 @@ export default function CourseEdit({ course }: { course: any }) {
             ) : (
               <Eye className="h-4 w-4" />
             )}
-            {course.published ? "Unpublish" : "Publish"}
+            {course.published ? t("unpublish") : t("publish")}
           </Button>
           <Dialog>
             <DialogTrigger asChild>
@@ -102,15 +108,16 @@ export default function CourseEdit({ course }: { course: any }) {
                 className="gap-2"
               >
                 <Trash className="h-4 w-4" />
-                Delete
+                {tCommon("delete")}
               </Button>
             </DialogTrigger>
             <DialogContent>
               <DialogHeader>
-                <DialogTitle>Delete Course</DialogTitle>
+                <DialogTitle>
+                  {tCommon("delete")} {t("course")}
+                </DialogTitle>
                 <DialogDescription>
-                  This action cannot be undone. This will permanently delete
-                  your course and remove all associated data from our servers.
+                  {tCommon("deleteDescription")}
                 </DialogDescription>
               </DialogHeader>
               <DialogFooter>
@@ -123,7 +130,7 @@ export default function CourseEdit({ course }: { course: any }) {
                   {publishLoading && (
                     <Loader2 className="h-4 w-4 animate-spin" />
                   )}
-                  Delete Course
+                  {tCommon("delete")} {t("course")}
                 </Button>
               </DialogFooter>
             </DialogContent>
@@ -141,9 +148,9 @@ export default function CourseEdit({ course }: { course: any }) {
                 <LayoutDashboard className="text-primary" />
               </div>
               <div>
-                <CardTitle className="text-xl">Course Details</CardTitle>
+                <CardTitle className="text-xl">{t("courseDetails")}</CardTitle>
                 <p className="text-muted-foreground text-sm">
-                  Basic information about your course
+                  {t("courseDetailsDescription")}
                 </p>
               </div>
             </div>
@@ -175,23 +182,23 @@ export default function CourseEdit({ course }: { course: any }) {
                   <QrCode className="text-primary" />
                 </div>
                 <div>
-                  <h2 className="text-xl font-semibold">Course Codes</h2>
+                  <h2 className="text-xl font-semibold">{t("courseCodes")}</h2>
                   <p className="text-muted-foreground text-sm">
-                    Manage your course codes
+                    {t("courseCodesDescription")}
                   </p>
                 </div>
               </div>
             </div>
             <div className="bg-primary/5 flex w-full items-center justify-between rounded-lg border p-4">
               <p className="text-sm">
-                {course.courseCodes?.length || 0} codes generated
+                {course.courseCodes?.length || 0} {t("courseCodesGenerated")}
               </p>
               <Link
                 href={`/dashboard/courses/${course.id}/codes`}
                 className={buttonVariants({ variant: "outline" })}
               >
                 <Settings2 className="mr-1 h-4 w-4" />
-                Manage Codes
+                {t("courseCodesGenerate")}
               </Link>
             </div>
           </div>
@@ -206,15 +213,17 @@ export default function CourseEdit({ course }: { course: any }) {
                     <List className="text-primary" />
                   </div>
                   <div>
-                    <h2 className="text-xl font-semibold">Course Content</h2>
+                    <h2 className="text-xl font-semibold">
+                      {t("courseContent")}
+                    </h2>
                     <p className="text-muted-foreground text-sm">
-                      Manage your course chapters and lessons
+                      {t("courseContentDescription")}
                     </p>
                   </div>
                 </div>
               </div>
               <Badge variant="secondary" className="font-medium">
-                {course.courseSections?.length || 0} Chapters
+                {course.courseSections?.length || 0} {t("chapters")}
               </Badge>
             </div>
             <ChaptersList course={course} />
