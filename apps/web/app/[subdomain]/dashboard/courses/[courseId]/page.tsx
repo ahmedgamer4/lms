@@ -13,12 +13,16 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { Loader2 } from "lucide-react";
-import { attempt } from "@/lib/utils";
+import { attempt, cn } from "@/lib/utils";
 import { toast } from "sonner";
+import { useTranslations } from "next-intl";
+import { useEffect, useState } from "react";
 
 export default function EditCoursePage({}: {}) {
+  const t = useTranslations("courses");
   const params = useParams();
   const courseId = Number.parseInt(params.courseId as string);
+  const [locale, setLocale] = useState("ar");
 
   if (isNaN(courseId)) {
     console.error("Invalid course ID:", params.courseId);
@@ -39,6 +43,15 @@ export default function EditCoursePage({}: {}) {
     },
   });
 
+  useEffect(() => {
+    const currentLocale =
+      document.cookie
+        .split("; ")
+        .find((row) => row.startsWith("NEXT_LOCALE="))
+        ?.split("=")[1] || "ar";
+    setLocale(currentLocale);
+  }, []);
+
   if (isLoading)
     return (
       <div className="flex h-[calc(100vh-200px)] items-center justify-center">
@@ -54,9 +67,13 @@ export default function EditCoursePage({}: {}) {
       <Breadcrumb>
         <BreadcrumbList>
           <BreadcrumbItem>
-            <BreadcrumbLink href="/dashboard/courses">Courses</BreadcrumbLink>
+            <BreadcrumbLink href="/dashboard/courses">
+              {t("title")}
+            </BreadcrumbLink>
           </BreadcrumbItem>
-          <BreadcrumbSeparator />
+          <BreadcrumbSeparator
+            className={cn(locale === "ar" && "rotate-180")}
+          />
           <BreadcrumbItem>
             <BreadcrumbPage>{course.title}</BreadcrumbPage>
           </BreadcrumbItem>
