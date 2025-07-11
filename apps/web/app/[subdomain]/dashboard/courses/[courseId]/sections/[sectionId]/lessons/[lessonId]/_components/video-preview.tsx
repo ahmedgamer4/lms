@@ -1,10 +1,11 @@
-import { Video, X } from "lucide-react";
+import { Loader2, Trash, Video, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useQuery } from "@tanstack/react-query";
 import { getVideo } from "@/lib/videos";
 import { VideoJsPlayer } from "@/components/video-js-player";
 import { attempt } from "@/lib/utils";
 import { toast } from "sonner";
+import { useTranslations } from "next-intl";
 
 interface VideoPreviewProps {
   lessonId: number;
@@ -35,9 +36,17 @@ export const VideoPreview = ({
     },
   });
 
-  if (isLoading) return <div>Loading...</div>;
-  if (isError) return <div>Error loading video</div>;
-  if (!videoData) return <div>No video data available</div>;
+  const t = useTranslations("lessons");
+  const tCommon = useTranslations("common");
+
+  if (isLoading)
+    return (
+      <div className="flex h-full items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin" />
+      </div>
+    );
+  if (isError) return <div>{tCommon("somethingWentWrong")}</div>;
+  if (!videoData) return <div>{tCommon("somethingWentWrong")}</div>;
 
   const video = videoData.data;
 
@@ -62,8 +71,8 @@ export const VideoPreview = ({
             onClick={onDelete}
             className="hover:bg-destructive/10 hover:text-destructive"
           >
-            <X className="mr-2 h-4 w-4" />
-            Remove Video
+            <Trash className="mr-2 h-4 w-4" />
+            {tCommon("delete")} {t("video")}
           </Button>
         )}
       </div>

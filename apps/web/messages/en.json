@@ -44,7 +44,15 @@
     "areYouSure": "Are you sure",
     "details": "Details",
     "basicInformation": "basic information",
-    "content": "Content"
+    "content": "Content",
+    "noDescription": "No description",
+    "createdSuccessfully": "Created successfully",
+    "minutes": "minute",
+    "duration": "Duration",
+    "durationPlaceholder": "Enter duration",
+    "creating": "Creating",
+    "upload": "Upload",
+    "uploading": "Uploading"
   },
   "navigation": {
     "home": "Home",
@@ -142,6 +150,7 @@
     "editLesson": "Edit Lesson",
     "deleteLesson": "Delete Lesson",
     "lessonTitle": "Lesson Title",
+    "lessonDescription": "Lesson Description",
     "lessonContent": "Lesson Content",
     "lessonVideo": "Lesson Video",
     "markAsComplete": "Mark as Complete",
@@ -149,7 +158,14 @@
     "inProgress": "In Progress",
     "notStarted": "Not Started",
     "videos": "Videos",
-    "quizzes": "Quizzes"
+    "quizzes": "Quizzes",
+    "lesson": "Lesson",
+    "addVideosAndQuizzesToYourLesson": "Add videos and quizzes to your lesson",
+    "noQuizzesYet": "No quizzes yet",
+    "createQuizToTestYourStudentsKnowledge": "Create a quiz to test your students' knowledge",
+    "addNewQuizToTestYourStudentsKnowledge": "Add a new quiz to test your students' knowledge",
+    "quiz": "Quiz",
+    "video": "Video"
   },
   "quizzes": {
     "title": "Quizzes",

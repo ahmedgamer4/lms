@@ -15,17 +15,17 @@ import { ChartBar, Book, Settings, GraduationCap } from "lucide-react";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import Image from "next/image";
 
 export default function SidebarHeaderContent() {
   const t = useTranslations("sidebar");
   const path = usePathname();
   return (
     <>
-      <SidebarHeader className="mt-3 ml-3 text-xl font-bold">
-        <div className="flex items-center justify-between pr-3">
+      <SidebarHeader className="text-xl font-bold">
+        <div className="flex items-center justify-between">
           <div className="flex items-center">
-            <GraduationCap size={50} className="mr-2 flex flex-col" />
-            {t("platform")}
+            <Image src="/logo.svg" alt="logo" width={70} height={30} />
           </div>
           <div className="flex items-center gap-2">
             <LanguageSwitcher />

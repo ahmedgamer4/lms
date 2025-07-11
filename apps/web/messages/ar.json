@@ -44,7 +44,15 @@
     "areYouSure": "هل أنت متأكد",
     "details": "تفاصيل",
     "basicInformation": "المعلومات الأساسية",
-    "content": "المحتوى"
+    "content": "المحتوى",
+    "noDescription": "لا يوجد وصف",
+    "createdSuccessfully": "تم الإنشاء بنجاح",
+    "minutes": "دقيقة",
+    "duration": "المدة",
+    "durationPlaceholder": "أدخل المدة",
+    "creating": "يتم إنشاء",
+    "uploading": "يتم الرفع",
+    "upload": "رفع"
   },
   "navigation": {
     "home": "الرئيسية",
@@ -136,7 +144,9 @@
     "createLesson": "إنشاء درس",
     "editLesson": "تعديل الدرس",
     "deleteLesson": "حذف الدرس",
+    "lesson": "الدرس",
     "lessonTitle": "عنوان الدرس",
+    "lessonDescription": "وصف الدرس",
     "lessonContent": "محتوى الدرس",
     "lessonVideo": "فيديو الدرس",
     "markAsComplete": "تحديد كمكتمل",
@@ -144,7 +154,13 @@
     "inProgress": "قيد التنفيذ",
     "notStarted": "لم يبدأ",
     "videos": "فيديوهات",
-    "quizzes": "اختبارات"
+    "quizzes": "اختبارات",
+    "addVideosAndQuizzesToYourLesson": "إضافة فيديوهات واختبارات إلى الدرس",
+    "noQuizzesYet": "لا يوجد اختبارات متاحة",
+    "createQuizToTestYourStudentsKnowledge": "إنشاء اختبار لاختبار معلومات الطلاب",
+    "addNewQuizToTestYourStudentsKnowledge": "إضافة اختبار جديد لاختبار معلومات الطلاب",
+    "quiz": "اختبار",
+    "video": "فيديو"
   },
   "quizzes": {
     "title": "الاختبارات",

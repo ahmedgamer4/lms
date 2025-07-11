@@ -15,6 +15,7 @@ import { useDropzone } from "react-dropzone";
 import { toast } from "sonner";
 import { Progress } from "@/components/ui/progress";
 import { attempt } from "@/lib/utils";
+import { useTranslations } from "next-intl";
 
 export const VideoUploader = ({
   lessonId,
@@ -29,6 +30,9 @@ export const VideoUploader = ({
   const [uploadProgress, setUploadProgress] = useState(0);
   const [transcodingProgress, setTranscodingProgress] = useState(0);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+
+  const t = useTranslations("lessons");
+  const tCommon = useTranslations("common");
 
   const onDrop = useCallback((files: File[]) => {
     const file = files[0];
@@ -149,11 +153,11 @@ export const VideoUploader = ({
 
       queryClient.invalidateQueries({ queryKey: ["video-url", details.id] });
 
-      toast.success("Video uploaded successfully");
+      toast.success(tCommon("updatedSuccessfully"));
       setSelectedFile(null);
     } catch (err) {
       console.error(err);
-      toast.error("Failed to upload video");
+      toast.error(tCommon("somethingWentWrong"));
     } finally {
       setIsUploading(false);
       setIsTranscoding(false);
@@ -219,7 +223,7 @@ export const VideoUploader = ({
             </div>
           ) : (
             <Button onClick={handleUpload} className="w-full">
-              Upload Video
+              {tCommon("upload")} {t("video")}
             </Button>
           )}
         </div>

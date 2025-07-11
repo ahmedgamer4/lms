@@ -4,7 +4,7 @@ import * as z from "zod";
 import axios from "axios";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { Pencil } from "lucide-react";
+import { Pencil, X } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
@@ -22,6 +22,7 @@ import { attempt } from "@/lib/utils";
 import { SerializedEditorState } from "lexical";
 import { lexicalToHtml } from "@/lib/lexical-to-html";
 import { Editor } from "@/components/blocks/editor-00/editor";
+import { useTranslations } from "next-intl";
 interface DescriptionFormProps {
   initialData: SerializedEditorState;
   courseId: number;
@@ -77,6 +78,9 @@ export const DescriptionForm = ({
 
   const router = useRouter();
 
+  const t = useTranslations("lessons");
+  const tCommon = useTranslations("common");
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -94,28 +98,31 @@ export const DescriptionForm = ({
         }),
       );
       if (error) {
-        toast.error("Something went wrong");
+        toast.error(tCommon("somethingWentWrong"));
       } else {
-        toast.success("Course updated");
+        toast.success(tCommon("updatedSuccessfully"));
         toggleEdit();
         router.refresh();
       }
     } catch {
-      toast.error("Something went wrong");
+      toast.error(tCommon("somethingWentWrong"));
     }
   };
 
   return (
     <div className="bg-primary/5 rounded-lg border p-4">
       <div className="flex items-center justify-between font-medium">
-        Lesson description
+        {t("lessonDescription")}
         <Button onClick={toggleEdit} variant="ghost">
           {isEditing ? (
-            <>Cancel</>
+            <>
+              <X className="mr-0.5 h-4 w-4" />
+              {tCommon("cancel")}
+            </>
           ) : (
             <>
               <Pencil className="mr-0.5 h-4 w-4" />
-              Edit
+              {tCommon("edit")}
             </>
           )}
         </Button>
@@ -125,7 +132,9 @@ export const DescriptionForm = ({
           className="mt-2 text-sm text-balance break-all whitespace-normal"
           dangerouslySetInnerHTML={{
             __html: purify.sanitize(
-              lexicalToHtml(form.getValues("description")),
+              lexicalToHtml(
+                form.getValues("description") || tCommon("noDescription"),
+              ),
             ),
           }}
         />

@@ -24,6 +24,7 @@ import { attempt } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CreateQuizDto } from "@lms-saas/shared-lib/dtos";
 import { Loader, Plus } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -49,6 +50,9 @@ export const CreateQuizDialog = ({
     },
   });
 
+  const t = useTranslations("lessons");
+  const tCommon = useTranslations("common");
+
   const handleSubmit = async (data: CreateQuizDto) => {
     try {
       const [response, error] = await attempt(createQuiz(lessonId, data));
@@ -70,14 +74,16 @@ export const CreateQuizDialog = ({
       <DialogTrigger hidden={quizzesNumber >= 1} asChild>
         <Button hidden={quizzesNumber >= 1} className="gap-2">
           <Plus className="h-4 w-4" />
-          Create Quiz
+          {tCommon("create")} {t("quiz")}
         </Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Create New Quiz</DialogTitle>
+          <DialogTitle>
+            {tCommon("create")} {t("quiz")}
+          </DialogTitle>
           <DialogDescription>
-            Add a new quiz to test your students' knowledge
+            {t("addNewQuizToTestYourStudentsKnowledge")}
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
@@ -93,9 +99,12 @@ export const CreateQuizDialog = ({
               name="title"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Title</FormLabel>
+                  <FormLabel>{tCommon("title")}</FormLabel>
                   <FormControl>
-                    <Input placeholder="Enter quiz title" {...field} />
+                    <Input
+                      placeholder={tCommon("titlePlaceholder")}
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -106,11 +115,11 @@ export const CreateQuizDialog = ({
               name="duration"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Duration</FormLabel>
+                  <FormLabel>{tCommon("duration")}</FormLabel>
                   <FormControl>
                     <Input
                       type="number"
-                      placeholder="Set a duration"
+                      placeholder={tCommon("durationPlaceholder")}
                       {...field}
                     />
                   </FormControl>
@@ -123,10 +132,10 @@ export const CreateQuizDialog = ({
                 {form.formState.isSubmitting ? (
                   <div>
                     <Loader className="animate-spin" />
-                    Creating...
+                    {tCommon("creating")}...
                   </div>
                 ) : (
-                  "Create Quiz"
+                  tCommon("create")
                 )}
               </Button>
             </DialogFooter>

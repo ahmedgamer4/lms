@@ -12,6 +12,7 @@ import { CreateQuizDialog } from "./create-quiz-dialog";
 import { useParams, useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { attempt } from "@/lib/utils";
+import { useTranslations } from "next-intl";
 
 type LessonTabsProps = {
   lesson: Lesson;
@@ -22,6 +23,9 @@ export const LessonTabs = ({ lesson }: LessonTabsProps) => {
   const router = useRouter();
   const [lessonVideos, setLessonVideos] = useState(lesson.videos);
   const [lessonQuizzes, setLessonQuizzes] = useState(lesson.quizzes);
+
+  const t = useTranslations("lessons");
+  const tCommon = useTranslations("common");
 
   const {
     data: quizData,
@@ -50,7 +54,7 @@ export const LessonTabs = ({ lesson }: LessonTabsProps) => {
     if (!id) return;
     const [, error] = await attempt(deleteVideo(lesson.id, id));
     if (error) {
-      toast.error("Cannot remove video");
+      toast.error(tCommon("somethingWentWrong"));
       return;
     }
     const videos = [...lessonVideos];
@@ -61,17 +65,18 @@ export const LessonTabs = ({ lesson }: LessonTabsProps) => {
   const handleQuizDelete = async (quizIndex: number, id: string) => {
     const [, error] = await attempt(deleteQuiz(lesson.id, id));
     if (error) {
-      toast.error("Cannot remove quiz");
+      toast.error(tCommon("somethingWentWrong"));
       return;
     }
     const quizzes = [...lessonQuizzes];
     quizzes.splice(quizIndex, 1);
     setLessonQuizzes(quizzes);
-    toast.success("Quiz removed successfully");
+    toast.success(tCommon("deletedSuccessfully"));
   };
 
   const handleQuizCreated = (quiz: Quiz) => {
     setLessonQuizzes([...lessonQuizzes, quiz]);
+    toast.success(tCommon("createdSuccessfully"));
   };
 
   if (isQuizLoading)
@@ -80,18 +85,18 @@ export const LessonTabs = ({ lesson }: LessonTabsProps) => {
         <Loader2 className="h-8 w-8 animate-spin" />
       </div>
     );
-  if (isQuizError) return <div>Error</div>;
+  if (isQuizError) return <div>{tCommon("somethingWentWrong")}</div>;
 
   return (
     <Tabs defaultValue="videos" className="w-full">
       <TabsList className="mb-4">
         <TabsTrigger value="videos" className="gap-2">
           <Video className="h-4 w-4" />
-          Video
+          {t("videos")}
         </TabsTrigger>
         <TabsTrigger value="quizzes" className="gap-2">
           <FileQuestion className="h-4 w-4" />
-          Quiz
+          {t("quizzes")}
         </TabsTrigger>
       </TabsList>
 
@@ -130,8 +135,8 @@ export const LessonTabs = ({ lesson }: LessonTabsProps) => {
                 <div>
                   <h3 className="font-medium">{quiz.title}</h3>
                   <p className="text-muted-foreground text-sm">
-                    {quizData?.questions.length || 0} questions •{" "}
-                    {quiz.duration} minutes
+                    {quizData?.questions.length || 0} {t("questions")} •{" "}
+                    {quiz.duration} {tCommon("minutes")}
                   </p>
                 </div>
               </div>
@@ -145,7 +150,7 @@ export const LessonTabs = ({ lesson }: LessonTabsProps) => {
                     )
                   }
                 >
-                  Edit
+                  {tCommon("edit")}
                 </Button>
                 <Button
                   variant="ghost"
@@ -164,9 +169,9 @@ export const LessonTabs = ({ lesson }: LessonTabsProps) => {
               <div className="bg-primary/10 flex h-12 w-12 items-center justify-center rounded-full">
                 <FileQuestion className="text-primary h-6 w-6" />
               </div>
-              <h3 className="mt-4 text-lg font-medium">No quizzes yet</h3>
+              <h3 className="mt-4 text-lg font-medium">{t("noQuizzesYet")}</h3>
               <p className="text-muted-foreground mt-2 text-sm">
-                Create a quiz to test your students' knowledge
+                {t("createQuizToTestYourStudentsKnowledge")}
               </p>
               <CreateQuizDialog
                 quizzesNumber={lessonQuizzes.length || 0}
