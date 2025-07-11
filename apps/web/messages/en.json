@@ -38,7 +38,13 @@
     "noPriceAvailable": "No price available",
     "noImageAvailable": "No image available",
     "pressEditToSeeDetails": "Press edit to see details",
-    "pressAddToSeeDetails": "Press add to see details"
+    "pressAddToSeeDetails": "Press add to see details",
+    "cannotBeEmpty": "Cannot be empty",
+    "deletedSuccessfully": "Deleted successfully",
+    "areYouSure": "Are you sure",
+    "details": "Details",
+    "basicInformation": "basic information",
+    "content": "Content"
   },
   "navigation": {
     "home": "Home",
@@ -141,7 +147,9 @@
     "markAsComplete": "Mark as Complete",
     "completed": "Completed",
     "inProgress": "In Progress",
-    "notStarted": "Not Started"
+    "notStarted": "Not Started",
+    "videos": "Videos",
+    "quizzes": "Quizzes"
   },
   "quizzes": {
     "title": "Quizzes",

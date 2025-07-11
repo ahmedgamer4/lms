@@ -38,7 +38,13 @@
     "noPriceAvailable": "لا يوجد سعر متاح",
     "noImageAvailable": "لا يوجد صورة متاحة",
     "pressEditToSeeDetails": "اضغط تعديل لعرض التفاصيل",
-    "pressAddToSeeDetails": "اضغط إضافة لعرض التفاصيل"
+    "pressAddToSeeDetails": "اضغط إضافة لعرض التفاصيل",
+    "cannotBeEmpty": "لا يمكن أن يكون فارغاً",
+    "deletedSuccessfully": "تم الحذف بنجاح",
+    "areYouSure": "هل أنت متأكد",
+    "details": "تفاصيل",
+    "basicInformation": "المعلومات الأساسية",
+    "content": "المحتوى"
   },
   "navigation": {
     "home": "الرئيسية",
@@ -136,7 +142,9 @@
     "markAsComplete": "تحديد كمكتمل",
     "completed": "مكتمل",
     "inProgress": "قيد التنفيذ",
-    "notStarted": "لم يبدأ"
+    "notStarted": "لم يبدأ",
+    "videos": "فيديوهات",
+    "quizzes": "اختبارات"
   },
   "quizzes": {
     "title": "الاختبارات",

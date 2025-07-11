@@ -39,6 +39,7 @@ import {
 import Link from "next/link";
 import { LessonsList } from "./_components/lesson-list";
 import { attempt } from "@/lib/utils";
+import { useTranslations } from "next-intl";
 export default function SectionPage() {
   const params = useParams();
   const router = useRouter();
@@ -46,13 +47,16 @@ export default function SectionPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [title, setTitle] = useState("");
   const [sectionData, setSectionData] = useState<CourseSection | null>(null);
+  const t = useTranslations("courses");
+  const tCommon = useTranslations("common");
+  const tLessons = useTranslations("lessons");
 
   const { data: course } = useQuery({
     queryKey: ["course", params.courseId],
     queryFn: async () => {
       const [data, error] = await attempt(getCourse(Number(params.courseId)));
       if (error) {
-        toast.error("Failed to fetch course");
+        toast.error(tCommon("somethingWentWrong"));
         return;
       }
       return data;
@@ -66,7 +70,7 @@ export default function SectionPage() {
         findCourseSection(Number(params.courseId), Number(params.sectionId)),
       );
       if (error) {
-        toast.error("Failed to fetch section");
+        toast.error(tCommon("somethingWentWrong"));
         return;
       }
       return data;
@@ -92,7 +96,7 @@ export default function SectionPage() {
 
   async function handleUpdateTitle() {
     if (!title.trim()) {
-      toast.error("Title cannot be empty");
+      toast.error(tCommon("cannotBeEmpty"));
       return;
     }
 
@@ -104,9 +108,9 @@ export default function SectionPage() {
     );
 
     if (error) {
-      toast.error("Failed to update section title");
+      toast.error(tCommon("somethingWentWrong"));
     } else {
-      toast.success("Section title updated");
+      toast.success(tCommon("updatedSuccessfully"));
       queryClient.invalidateQueries({
         queryKey: ["section", params.sectionId],
       });
@@ -123,9 +127,9 @@ export default function SectionPage() {
     );
 
     if (error) {
-      toast.error("Failed to delete section");
+      toast.error(tCommon("somethingWentWrong"));
     } else {
-      toast.success("Section deleted");
+      toast.success(tCommon("deletedSuccessfully"));
       router.push(`/dashboard/courses/${params.courseId}`);
     }
     setIsLoading(false);
@@ -142,7 +146,7 @@ export default function SectionPage() {
       }),
     );
     if (error) {
-      toast.error("Cannot create lesson");
+      toast.error(tCommon("somethingWentWrong"));
       return;
     }
 
@@ -174,7 +178,9 @@ export default function SectionPage() {
       <Breadcrumb>
         <BreadcrumbList>
           <BreadcrumbItem>
-            <BreadcrumbLink href="/dashboard/courses">Courses</BreadcrumbLink>
+            <BreadcrumbLink href="/dashboard/courses">
+              {t("title")}
+            </BreadcrumbLink>
           </BreadcrumbItem>
           <BreadcrumbSeparator />
           <BreadcrumbItem>
@@ -197,8 +203,10 @@ export default function SectionPage() {
             </Button>
           </Link>
           <div>
-            <h1 className="text-2xl font-bold">Edit Section</h1>
-            <p className="text-muted-foreground">Course: {course.data.title}</p>
+            <h1 className="text-2xl font-bold">{tCommon("edit")}</h1>
+            <p className="text-muted-foreground">
+              {t("course")}: {course.data.title}
+            </p>
           </div>
         </div>
         <AlertDialog>
@@ -206,25 +214,24 @@ export default function SectionPage() {
             <AlertDialogTrigger asChild>
               <Button className="mt-2 md:mt-0" variant="destructive">
                 <Trash2 className="mr-2 h-4 w-4" />
-                Delete Section
+                {tCommon("delete")} {t("section")}
               </Button>
             </AlertDialogTrigger>
           </div>
           <AlertDialogContent>
             <AlertDialogHeader>
-              <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+              <AlertDialogTitle>{tCommon("areYouSure")}?</AlertDialogTitle>
               <AlertDialogDescription>
-                This action cannot be undone. This will mark the section as
-                deleted and remove it from the course.
+                {tCommon("deleteDescription")}
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
-              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogCancel>{tCommon("cancel")}</AlertDialogCancel>
               <AlertDialogAction
                 className={buttonVariants({ variant: "destructive" })}
                 onClick={handleDeleteSection}
               >
-                Delete
+                {tCommon("delete")}
               </AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>
@@ -241,9 +248,11 @@ export default function SectionPage() {
                 <Pencil className="text-primary h-5 w-5" />
               </div>
               <div>
-                <CardTitle className="text-xl">Section Details</CardTitle>
+                <CardTitle className="text-xl">
+                  {tCommon("details")} {t("section")}
+                </CardTitle>
                 <p className="text-muted-foreground text-sm">
-                  Basic information about your section
+                  {tCommon("basicInformation")}
                 </p>
               </div>
             </div>
@@ -251,13 +260,13 @@ export default function SectionPage() {
           <CardContent className="pt-6">
             <div className="grid gap-4">
               <div className="grid gap-2">
-                <Label htmlFor="title">Title</Label>
+                <Label htmlFor="title">{tCommon("title")}</Label>
                 <div className="flex gap-2">
                   <Input
                     id="title"
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
-                    placeholder="Enter section title"
+                    placeholder={tCommon("titlePlaceholder")}
                     className="flex-1"
                   />
                   <Button
@@ -268,7 +277,7 @@ export default function SectionPage() {
                     {isLoading ? (
                       <Loader2 className="h-4 w-4 animate-spin" />
                     ) : (
-                      "Save"
+                      tCommon("save")
                     )}
                   </Button>
                 </div>
@@ -284,9 +293,9 @@ export default function SectionPage() {
                 <Video className="text-primary h-5 w-5" />
               </div>
               <div>
-                <CardTitle className="text-xl">Section Content</CardTitle>
+                <CardTitle className="text-xl">{tCommon("content")}</CardTitle>
                 <p className="text-muted-foreground text-sm">
-                  Add lessons with videos and quizzes
+                  {tLessons("createLesson")}
                 </p>
               </div>
             </div>
@@ -304,7 +313,7 @@ export default function SectionPage() {
               className="mt-4 w-full"
             >
               <Plus className="mr-2 h-4 w-4" />
-              Add Lesson
+              {tLessons("createLesson")}
             </Button>
           </CardContent>
         </Card>

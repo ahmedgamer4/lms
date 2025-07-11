@@ -11,6 +11,7 @@ import { attempt } from "@/lib/utils";
 import { Droppable, Draggable, DragDropContext } from "@hello-pangea/dnd";
 import { useQueryClient } from "@tanstack/react-query";
 import { GripVertical, Pencil, Trash2 } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useParams, useRouter } from "next/navigation";
 import { Dispatch, SetStateAction } from "react";
 import { toast } from "sonner";
@@ -23,7 +24,6 @@ type LessonsListProps = {
 };
 
 export const LessonsList = ({
-  course,
   sectionData,
   setSectionData,
   setIsLoading,
@@ -31,6 +31,8 @@ export const LessonsList = ({
   const params = useParams();
   const queryClient = useQueryClient();
   const router = useRouter();
+  const tLessons = useTranslations("lessons");
+  const tCommon = useTranslations("common");
 
   async function handleDragEnd(result: any) {
     if (!result.destination || !sectionData) return;
@@ -165,8 +167,8 @@ export const LessonsList = ({
                         <div className="flex items-center gap-2">
                           <span className="font-medium">{lesson.title}</span>
                           <Badge variant="secondary">
-                            {lesson.videos.length} videos,{" "}
-                            {lesson.quizzes.length} quizzes
+                            {lesson.videos.length} {tLessons("videos")},{" "}
+                            {lesson.quizzes.length} {tLessons("quizzes")}
                           </Badge>
                         </div>
                       </div>
@@ -188,7 +190,7 @@ export const LessonsList = ({
                             )
                           }
                         >
-                          Edit Lesson
+                          {tLessons("editLesson")}
                         </Button>
                       </div>
                     </div>
