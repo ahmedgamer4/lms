@@ -189,7 +189,7 @@ export default function LessonPage() {
               href={`/courses`}
               className={cn(buttonVariants({ variant: "outline" }))}
             >
-              <ArrowLeft className="h-24 w-24" />
+              <ArrowLeft className="rotate-rtl h-4 w-4" />
               <span>Back to Courses</span>
             </Link>
           </div>
@@ -245,7 +245,7 @@ export default function LessonPage() {
                   buttonVariants({ variant: "outline" }),
                 )}
               >
-                <ArrowLeft />
+                <ArrowLeft className="rotate-rtl" />
               </Link>
             )}
             {nav.next && (
@@ -256,7 +256,7 @@ export default function LessonPage() {
                   buttonVariants({ variant: "outline" }),
                 )}
               >
-                <ArrowRight />
+                <ArrowRight className="rotate-rtl" />
               </Link>
             )}
           </div>

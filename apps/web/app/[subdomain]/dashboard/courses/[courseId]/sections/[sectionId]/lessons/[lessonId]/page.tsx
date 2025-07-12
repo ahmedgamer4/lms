@@ -210,7 +210,7 @@ export default function LessonPage() {
             href={`/dashboard/courses/${params.courseId}/sections/${params.sectionId}`}
           >
             <Button variant="ghost" size="icon">
-              <ArrowLeft className="h-4 w-4" />
+              <ArrowLeft className="rotate-rtl h-4 w-4" />
             </Button>
           </Link>
           <div>

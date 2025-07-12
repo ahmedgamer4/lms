@@ -14,11 +14,12 @@ import {
   List,
   QrCode,
   Settings2,
+  ArrowLeft,
 } from "lucide-react";
-import { TitleForm } from "./_components/title-form";
-import { DescriptionForm } from "./_components/description-form";
-import { PriceForm } from "./_components/price-form";
-import { ImageForm } from "./_components/image-form";
+import { TitleForm } from "./title-form";
+import { DescriptionForm } from "./description-form";
+import { PriceForm } from "./price-form";
+import { ImageForm } from "./image-form";
 import { toast } from "sonner";
 import {
   Dialog,
@@ -30,11 +31,11 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { useState } from "react";
-import { ChaptersList } from "./_components/chapters-list";
+import { ChaptersList } from "./chapters-list";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import Link from "next/link";
-import { attempt } from "@/lib/utils";
+import { attempt, cn } from "@/lib/utils";
 import { useTranslations } from "next-intl";
 
 export default function CourseEdit({ course }: { course: any }) {
@@ -76,13 +77,21 @@ export default function CourseEdit({ course }: { course: any }) {
   return (
     <div className="mx-auto mt-4 space-y-4">
       <div className="items-center justify-between md:flex">
-        <div className="space-y-1">
-          <h1 className="text-2xl font-bold tracking-tight">
-            {t("courseSettings")}
-          </h1>
-          <p className="text-muted-foreground text-sm">
-            {t("courseSettingsDescription")}
-          </p>
+        <div className="flex items-center gap-2 space-y-1">
+          <Link
+            href={`/dashboard/courses/${course.id}/analytics`}
+            className={cn(buttonVariants({ variant: "ghost", size: "icon" }))}
+          >
+            <ArrowLeft className="rotate-rtl h-4 w-4" />
+          </Link>
+          <div>
+            <h1 className="text-2xl font-bold tracking-tight">
+              {t("courseSettings")}
+            </h1>
+            <p className="text-muted-foreground text-sm">
+              {t("courseSettingsDescription")}
+            </p>
+          </div>
         </div>
         <div className="mt-3 flex items-center gap-2 md:mt-0">
           <Button

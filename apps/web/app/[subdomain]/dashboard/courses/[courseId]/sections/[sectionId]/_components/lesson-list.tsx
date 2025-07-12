@@ -32,7 +32,6 @@ export const LessonsList = ({
   const queryClient = useQueryClient();
   const router = useRouter();
   const tLessons = useTranslations("lessons");
-  const tCommon = useTranslations("common");
 
   async function handleDragEnd(result: any) {
     if (!result.destination || !sectionData) return;
@@ -153,7 +152,7 @@ export const LessonsList = ({
                     {...provided.draggableProps}
                     className="bg-card rounded-lg border p-4 transition-all hover:shadow-md"
                   >
-                    <div className="flex items-center justify-between">
+                    <div className="items-center justify-between space-y-2 md:flex md:space-y-0">
                       <div className="flex items-center gap-2">
                         <div
                           {...provided.dragHandleProps}
@@ -184,6 +183,7 @@ export const LessonsList = ({
                         <Button
                           variant="outline"
                           size="sm"
+                          className="flex-1"
                           onClick={() =>
                             router.push(
                               `/dashboard/courses/${params.courseId}/sections/${params.sectionId}/lessons/${lesson.id}`,

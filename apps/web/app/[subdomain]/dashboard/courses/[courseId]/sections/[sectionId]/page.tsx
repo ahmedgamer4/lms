@@ -199,7 +199,7 @@ export default function SectionPage() {
         <div className="flex items-center gap-4">
           <Link href={`/dashboard/courses/${params.courseId}`}>
             <Button variant="ghost" size="icon">
-              <ArrowLeft className="h-4 w-4" />
+              <ArrowLeft className="rotate-rtl h-4 w-4" />
             </Button>
           </Link>
           <div>
@@ -261,7 +261,7 @@ export default function SectionPage() {
             <div className="grid gap-4">
               <div className="grid gap-2">
                 <Label htmlFor="title">{tCommon("title")}</Label>
-                <div className="flex gap-2">
+                <div className="flex flex-col gap-2 md:flex-row">
                   <Input
                     id="title"
                     value={title}
@@ -272,7 +272,7 @@ export default function SectionPage() {
                   <Button
                     onClick={handleUpdateTitle}
                     disabled={isLoading}
-                    className="w-[100px]"
+                    className="w-full md:w-[100px]"
                   >
                     {isLoading ? (
                       <Loader2 className="h-4 w-4 animate-spin" />

@@ -65,7 +65,7 @@ export default function CoursePage() {
         href={`/courses`}
         className={buttonVariants({ variant: "outline" })}
       >
-        <ArrowLeft className="h-4 w-4" />
+        <ArrowLeft className="rotate-rtl h-4 w-4" />
         Back to courses
       </Link>
       <div className="flex flex-col gap-4 md:flex-row md:items-start">
