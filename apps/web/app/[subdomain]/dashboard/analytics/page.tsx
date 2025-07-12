@@ -43,6 +43,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useTranslations } from "next-intl";
 
 const mockData = {
   overview: {
@@ -162,38 +163,44 @@ const MetricCard = ({
   change: number;
   icon: any;
   trend?: "up" | "down";
-}) => (
-  <Card className="relative overflow-hidden">
-    <CardContent className="p-6">
-      <div className="flex items-center justify-between">
-        <div className="space-y-2">
-          <p className="text-muted-foreground text-sm font-medium">{title}</p>
-          <p className="text-2xl font-bold">{value}</p>
-          <div className="flex items-center space-x-1">
-            {trend === "up" ? (
-              <ArrowUpRight className="h-4 w-4 text-green-500" />
-            ) : (
-              <ArrowDownRight className="h-4 w-4 text-red-500" />
-            )}
-            <span
-              className={`text-sm font-medium ${trend === "up" ? "text-green-500" : "text-red-500"}`}
-            >
-              {Math.abs(change)}%
-            </span>
-            <span className="text-muted-foreground text-sm">
-              from last month
-            </span>
+}) => {
+  const t = useTranslations("analytics");
+
+  return (
+    <Card className="relative overflow-hidden">
+      <CardContent className="p-6">
+        <div className="flex items-center justify-between">
+          <div className="space-y-2">
+            <p className="text-muted-foreground text-sm font-medium">{title}</p>
+            <p className="text-2xl font-bold">{value}</p>
+            <div className="flex items-center space-x-1">
+              {trend === "up" ? (
+                <ArrowUpRight className="h-4 w-4 text-green-500" />
+              ) : (
+                <ArrowDownRight className="h-4 w-4 text-red-500" />
+              )}
+              <span
+                className={`text-sm font-medium ${trend === "up" ? "text-green-500" : "text-red-500"}`}
+              >
+                {Math.abs(change)}%
+              </span>
+              <span className="text-muted-foreground text-sm">
+                {t("metrics.fromLastMonth")}
+              </span>
+            </div>
+          </div>
+          <div className="bg-primary/10 flex h-12 w-12 items-center justify-center rounded-lg">
+            <Icon className="text-primary h-6 w-6" />
           </div>
         </div>
-        <div className="bg-primary/10 flex h-12 w-12 items-center justify-center rounded-lg">
-          <Icon className="text-primary h-6 w-6" />
-        </div>
-      </div>
-    </CardContent>
-  </Card>
-);
+      </CardContent>
+    </Card>
+  );
+};
 
 const ActivityItem = ({ activity }: { activity: any }) => {
+  const t = useTranslations("analytics");
+
   const getActivityIcon = (type: string) => {
     switch (type) {
       case "enrollment":
@@ -212,15 +219,15 @@ const ActivityItem = ({ activity }: { activity: any }) => {
   const getActivityText = (type: string, student: string, course: string) => {
     switch (type) {
       case "enrollment":
-        return `${student} enrolled in ${course}`;
+        return `${student} ${t("activity.enrolledIn")} ${course}`;
       case "completion":
-        return `${student} completed ${course}`;
+        return `${student} ${t("activity.completed")} ${course}`;
       case "review":
-        return `${student} reviewed ${course}`;
+        return `${student} ${t("activity.reviewed")} ${course}`;
       case "purchase":
-        return `${student} purchased ${course}`;
+        return `${student} ${t("activity.purchased")} ${course}`;
       default:
-        return `${student} performed an action on ${course}`;
+        return `${student} ${t("activity.performedActionOn")} ${course}`;
     }
   };
 
@@ -255,6 +262,7 @@ const ActivityItem = ({ activity }: { activity: any }) => {
 export default function AnalyticsPage() {
   const [timeRange, setTimeRange] = useState("6m");
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const t = useTranslations("analytics");
 
   const timeRangeToPeriod = {
     "90d": 3,
@@ -287,7 +295,7 @@ export default function AnalyticsPage() {
       <div className="flex h-screen flex-col items-center justify-center gap-4">
         <div className="text-red-500">{error.message}</div>
         <Button variant="outline" onClick={handleRefresh}>
-          Refresh
+          {t("refresh")}
         </Button>
       </div>
     );
@@ -306,12 +314,8 @@ export default function AnalyticsPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">
-            Analytics Dashboard
-          </h1>
-          <p className="text-muted-foreground">
-            Track your platform performance and student engagement
-          </p>
+          <h1 className="text-3xl font-bold tracking-tight">{t("title")}</h1>
+          <p className="text-muted-foreground">{t("subtitle")}</p>
         </div>
         <div className="flex items-center space-x-2">
           <DropdownMenu>
@@ -319,23 +323,23 @@ export default function AnalyticsPage() {
               <Button variant="outline" size="sm">
                 <Calendar className="mr-2 h-4 w-4" />
                 {timeRange === "90d"
-                  ? "Last 90 days"
+                  ? t("timeRanges.last90Days")
                   : timeRange === "6m"
-                    ? "Last 6 months"
+                    ? t("timeRanges.last6Months")
                     : timeRange === "1y"
-                      ? "Last 1 year"
-                      : "Custom"}
+                      ? t("timeRanges.last1Year")
+                      : t("timeRanges.custom")}
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuItem onClick={() => setTimeRange("90d")}>
-                Last 90 days
+                {t("timeRanges.last90Days")}
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => setTimeRange("6m")}>
-                Last 6 months
+                {t("timeRanges.last6Months")}
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => setTimeRange("1y")}>
-                Last 1 year
+                {t("timeRanges.last1Year")}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -348,7 +352,7 @@ export default function AnalyticsPage() {
             <RefreshCw
               className={`mr-2 h-4 w-4 ${isRefreshing ? "animate-spin" : ""}`}
             />
-            Refresh
+            {t("refresh")}
           </Button>
         </div>
       </div>
@@ -356,30 +360,30 @@ export default function AnalyticsPage() {
       {/* Overview Metrics */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <MetricCard
-          title="Total Students"
+          title={t("metrics.totalStudents")}
           value={overview?.totalStudents || 0}
           change={Number(overview?.studentGrowth) || 0}
           icon={Users}
           trend="up"
         />
         <MetricCard
-          title="Total Courses"
+          title={t("metrics.totalCourses")}
           value={overview?.totalCourses || 0}
           change={Number(overview?.courseGrowth) || 0}
           icon={BookOpen}
           trend="up"
         />
         <MetricCard
-          title="Total Revenue"
+          title={t("metrics.totalRevenue")}
           value={`$${overview?.totalRevenue?.toLocaleString()}`}
           change={Number(overview?.revenueGrowth) || 0}
           icon={DollarSign}
           trend="up"
         />
         <MetricCard
-          title="Completion Rate"
-          value={`${mockData.overview.avgCompletionRate}%`}
-          change={mockData.overview.completionGrowth}
+          title={t("metrics.completionRate")}
+          value={`${overview?.avgCompletionRate}%`}
+          change={Number(overview?.completionGrowth) || 0}
           icon={Target}
           trend="down"
         />
@@ -388,10 +392,10 @@ export default function AnalyticsPage() {
       {/* Main Content Tabs */}
       <Tabs defaultValue="overview" className="space-y-6">
         <TabsList className="grid w-full grid-cols-4">
-          <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="courses">Courses</TabsTrigger>
-          <TabsTrigger value="students">Students</TabsTrigger>
-          <TabsTrigger value="revenue">Revenue</TabsTrigger>
+          <TabsTrigger value="overview">{t("tabs.overview")}</TabsTrigger>
+          <TabsTrigger value="courses">{t("tabs.courses")}</TabsTrigger>
+          <TabsTrigger value="students">{t("tabs.students")}</TabsTrigger>
+          <TabsTrigger value="revenue">{t("tabs.revenue")}</TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview" className="space-y-6">
@@ -401,7 +405,7 @@ export default function AnalyticsPage() {
               <CardHeader>
                 <CardTitle className="flex items-center space-x-2">
                   <TrendingUp className="h-5 w-5" />
-                  <span>Student Growth</span>
+                  <span>{t("charts.studentGrowth")}</span>
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -428,7 +432,6 @@ export default function AnalyticsPage() {
                       </linearGradient>
                     </defs>
                     <CartesianGrid
-                      // color="hsl(var(--chart-1))"
                       strokeDasharray="3 3"
                       className="stroke-muted"
                     />
@@ -452,7 +455,7 @@ export default function AnalyticsPage() {
                               <div className="grid grid-cols-2 gap-2">
                                 <div className="flex flex-col">
                                   <span className="text-muted-foreground text-[0.70rem] uppercase">
-                                    Students
+                                    {t("metrics.totalStudents")}
                                   </span>
                                   <span className="text-muted-foreground font-bold">
                                     {payload[0].value}
@@ -482,7 +485,7 @@ export default function AnalyticsPage() {
               <CardHeader>
                 <CardTitle className="flex items-center space-x-2">
                   <DollarSign className="h-5 w-5" />
-                  <span>Revenue Trend</span>
+                  <span>{t("charts.revenueTrend")}</span>
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -512,7 +515,7 @@ export default function AnalyticsPage() {
                               <div className="grid grid-cols-2 gap-2">
                                 <div className="flex flex-col">
                                   <span className="text-muted-foreground text-[0.70rem] uppercase">
-                                    Revenue
+                                    {t("metrics.totalRevenue")}
                                   </span>
                                   <span className="text-muted-foreground font-bold">
                                     ${payload[0].value?.toLocaleString()}
@@ -551,7 +554,7 @@ export default function AnalyticsPage() {
               <CardHeader>
                 <CardTitle className="flex items-center space-x-2">
                   <Target className="h-5 w-5" />
-                  <span>Completion Rate</span>
+                  <span>{t("charts.completionRate")}</span>
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -560,7 +563,7 @@ export default function AnalyticsPage() {
                     <span className="text-2xl font-bold">
                       {Number(overview?.avgCompletionRate).toFixed(2) || 0}%
                     </span>
-                    <Badge variant="secondary">Target: 85%</Badge>
+                    <Badge variant="secondary">{t("charts.target")}: 85%</Badge>
                   </div>
                   <Progress
                     value={Number(overview?.avgCompletionRate) || 0}
@@ -568,8 +571,8 @@ export default function AnalyticsPage() {
                   />
                   <p className="text-muted-foreground text-sm">
                     {Number(overview?.avgCompletionRate) >= 85
-                      ? "Above target"
-                      : "Below target"}
+                      ? t("charts.aboveTarget")
+                      : t("charts.belowTarget")}
                   </p>
                 </div>
               </CardContent>
@@ -581,7 +584,7 @@ export default function AnalyticsPage() {
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
                 <Activity className="h-5 w-5" />
-                <span>Recent Activity</span>
+                <span>{t("activity.recentActivity")}</span>
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -601,7 +604,7 @@ export default function AnalyticsPage() {
               <CardHeader>
                 <CardTitle className="flex items-center space-x-2">
                   <BarChart3 className="h-5 w-5" />
-                  <span>Top Performing Courses</span>
+                  <span>{t("charts.topPerformingCourses")}</span>
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -614,7 +617,10 @@ export default function AnalyticsPage() {
                       <div className="space-y-1">
                         <p className="font-medium">{course.courseName}</p>
                         <div className="text-muted-foreground flex items-center space-x-4 text-sm">
-                          <span>{course.students} students</span>
+                          <span>
+                            {course.students}{" "}
+                            {t("courses.students").toLowerCase()}
+                          </span>
                           <span>${course.revenue.toLocaleString()}</span>
                           <div className="flex items-center space-x-1">
                             <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
@@ -634,7 +640,7 @@ export default function AnalyticsPage() {
               <CardHeader>
                 <CardTitle className="flex items-center space-x-2">
                   <PieChart className="h-5 w-5" />
-                  <span>Course Performance</span>
+                  <span>{t("charts.coursePerformance")}</span>
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -671,7 +677,7 @@ export default function AnalyticsPage() {
                               <div className="grid grid-cols-2 gap-2">
                                 <div className="flex flex-col">
                                   <span className="text-muted-foreground text-[0.70rem] uppercase">
-                                    Students
+                                    {t("courses.students")}
                                   </span>
                                   <span className="text-muted-foreground font-bold">
                                     {payload[0].value}
@@ -701,24 +707,30 @@ export default function AnalyticsPage() {
             {/* Student Demographics */}
             <Card>
               <CardHeader>
-                <CardTitle>Student Demographics</CardTitle>
+                <CardTitle>{t("students.studentDemographics")}</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
-                    <span className="text-sm">Age 18-25</span>
+                    <span className="text-sm">
+                      {t("students.ageGroups.age18to25")}
+                    </span>
                     <span className="font-medium">45%</span>
                   </div>
                   <Progress value={45} className="h-2" />
 
                   <div className="flex items-center justify-between">
-                    <span className="text-sm">Age 26-35</span>
+                    <span className="text-sm">
+                      {t("students.ageGroups.age26to35")}
+                    </span>
                     <span className="font-medium">32%</span>
                   </div>
                   <Progress value={32} className="h-2" />
 
                   <div className="flex items-center justify-between">
-                    <span className="text-sm">Age 36+</span>
+                    <span className="text-sm">
+                      {t("students.ageGroups.age36plus")}
+                    </span>
                     <span className="font-medium">23%</span>
                   </div>
                   <Progress value={23} className="h-2" />
@@ -729,24 +741,30 @@ export default function AnalyticsPage() {
             {/* Geographic Distribution */}
             <Card>
               <CardHeader>
-                <CardTitle>Geographic Distribution</CardTitle>
+                <CardTitle>{t("students.geographicDistribution")}</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
-                    <span className="text-sm">North America</span>
+                    <span className="text-sm">
+                      {t("students.regions.northAmerica")}
+                    </span>
                     <span className="font-medium">52%</span>
                   </div>
                   <Progress value={52} className="h-2" />
 
                   <div className="flex items-center justify-between">
-                    <span className="text-sm">Europe</span>
+                    <span className="text-sm">
+                      {t("students.regions.europe")}
+                    </span>
                     <span className="font-medium">28%</span>
                   </div>
                   <Progress value={28} className="h-2" />
 
                   <div className="flex items-center justify-between">
-                    <span className="text-sm">Asia Pacific</span>
+                    <span className="text-sm">
+                      {t("students.regions.asiaPacific")}
+                    </span>
                     <span className="font-medium">20%</span>
                   </div>
                   <Progress value={20} className="h-2" />
@@ -757,14 +775,14 @@ export default function AnalyticsPage() {
             {/* Engagement Metrics */}
             <Card>
               <CardHeader>
-                <CardTitle>Engagement Metrics</CardTitle>
+                <CardTitle>{t("students.engagementMetrics")}</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-6">
                   <div className="text-center">
                     <div className="text-primary text-2xl font-bold">78.5%</div>
                     <div className="text-muted-foreground text-sm">
-                      Average Completion Rate
+                      {t("students.averageCompletionRate")}
                     </div>
                   </div>
                   <div className="text-center">
@@ -772,13 +790,13 @@ export default function AnalyticsPage() {
                       4.7/5
                     </div>
                     <div className="text-muted-foreground text-sm">
-                      Average Rating
+                      {t("students.averageRating")}
                     </div>
                   </div>
                   <div className="text-center">
                     <div className="text-2xl font-bold text-blue-600">2.3</div>
                     <div className="text-muted-foreground text-sm">
-                      Courses per Student
+                      {t("students.coursesPerStudent")}
                     </div>
                   </div>
                 </div>
@@ -794,25 +812,29 @@ export default function AnalyticsPage() {
               <CardHeader>
                 <CardTitle className="flex items-center space-x-2">
                   <DollarSign className="h-5 w-5" />
-                  <span>Revenue Breakdown</span>
+                  <span>{t("revenue.revenueBreakdown")}</span>
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
-                    <span className="text-sm">Course Sales</span>
+                    <span className="text-sm">{t("revenue.courseSales")}</span>
                     <span className="font-medium">$38,450</span>
                   </div>
                   <Progress value={84} className="h-2" />
 
                   <div className="flex items-center justify-between">
-                    <span className="text-sm">Subscriptions</span>
+                    <span className="text-sm">
+                      {t("revenue.subscriptions")}
+                    </span>
                     <span className="font-medium">$5,228</span>
                   </div>
                   <Progress value={11} className="h-2" />
 
                   <div className="flex items-center justify-between">
-                    <span className="text-sm">Certifications</span>
+                    <span className="text-sm">
+                      {t("revenue.certifications")}
+                    </span>
                     <span className="font-medium">$2,000</span>
                   </div>
                   <Progress value={5} className="h-2" />
@@ -825,7 +847,7 @@ export default function AnalyticsPage() {
               <CardHeader>
                 <CardTitle className="flex items-center space-x-2">
                   <LineChartIcon className="h-5 w-5" />
-                  <span>Revenue Trend</span>
+                  <span>{t("charts.revenueTrend")}</span>
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -875,7 +897,7 @@ export default function AnalyticsPage() {
                               <div className="grid grid-cols-2 gap-2">
                                 <div className="flex flex-col">
                                   <span className="text-muted-foreground text-[0.70rem] uppercase">
-                                    Revenue
+                                    {t("metrics.totalRevenue")}
                                   </span>
                                   <span className="text-muted-foreground font-bold">
                                     ${payload[0].value?.toLocaleString()}

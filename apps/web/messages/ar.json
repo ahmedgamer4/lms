@@ -207,6 +207,77 @@
     "answers": "الإجابات",
     "addQuestion": "إضافة سؤال",
     "questionCreatedSuccessfully": "تم إنشاء السؤال بنجاح",
-    "answerUpdatedSuccessfully": "تم تحديث الإجابة بنجاح"
+    "answerUpdatedSuccessfully": "تم تحديث الإجابة بنجاح",
+    "quizUpdatedSuccessfully": "تم تحديث الاختبار بنجاح"
+  },
+  "analytics": {
+    "title": "لوحة التحليلات",
+    "subtitle": "تتبع أداء منصتك ومشاركة الطلاب",
+    "refresh": "تحديث",
+    "timeRanges": {
+      "last90Days": "آخر 90 يوم",
+      "last6Months": "آخر 6 أشهر",
+      "last1Year": "آخر سنة",
+      "custom": "مخصص"
+    },
+    "metrics": {
+      "totalStudents": "إجمالي الطلاب",
+      "totalCourses": "إجمالي الدورات",
+      "totalRevenue": "إجمالي الإيرادات",
+      "completionRate": "معدل الإكمال",
+      "fromLastMonth": "من الشهر الماضي"
+    },
+    "tabs": {
+      "overview": "نظرة عامة",
+      "courses": "الدورات",
+      "students": "الطلاب",
+      "revenue": "الإيرادات"
+    },
+    "charts": {
+      "studentGrowth": "نمو الطلاب",
+      "revenueTrend": "اتجاه الإيرادات",
+      "completionRate": "معدل الإكمال",
+      "topPerformingCourses": "أفضل الدورات أداءً",
+      "coursePerformance": "أداء الدورات",
+      "revenueBreakdown": "تفصيل الإيرادات",
+      "target": "الهدف",
+      "aboveTarget": "فوق الهدف",
+      "belowTarget": "أقل من الهدف"
+    },
+    "activity": {
+      "recentActivity": "النشاط الأخير",
+      "enrolledIn": "سجل في",
+      "completed": "أكمل",
+      "reviewed": "قيم",
+      "purchased": "اشترى",
+      "performedActionOn": "أجرى إجراء على"
+    },
+    "students": {
+      "studentDemographics": "ديموغرافية الطلاب",
+      "geographicDistribution": "التوزيع الجغرافي",
+      "engagementMetrics": "مقاييس المشاركة",
+      "averageCompletionRate": "متوسط معدل الإكمال",
+      "averageRating": "متوسط التقييم",
+      "coursesPerStudent": "الدورات لكل طالب",
+      "ageGroups": {
+        "age18to25": "العمر 18-25",
+        "age26to35": "العمر 26-35",
+        "age36plus": "العمر 36+"
+      },
+      "regions": {
+        "northAmerica": "أمريكا الشمالية",
+        "europe": "أوروبا",
+        "asiaPacific": "آسيا والمحيط الهادئ"
+      }
+    },
+    "revenue": {
+      "revenueBreakdown": "تفصيل الإيرادات",
+      "courseSales": "مبيعات الدورات",
+      "subscriptions": "الاشتراكات",
+      "certifications": "الشهادات"
+    },
+    "courses": {
+      "students": "طلاب"
+    }
   }
 }

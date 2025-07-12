@@ -212,6 +212,77 @@
     "answers": "Answers",
     "addQuestion": "Add Question",
     "questionCreatedSuccessfully": "Question created successfully",
-    "answerUpdatedSuccessfully": "Answer updated successfully"
+    "answerUpdatedSuccessfully": "Answer updated successfully",
+    "quizUpdatedSuccessfully": "Quiz updated successfully"
+  },
+  "analytics": {
+    "title": "Analytics Dashboard",
+    "subtitle": "Track your platform performance and student engagement",
+    "refresh": "Refresh",
+    "timeRanges": {
+      "last90Days": "Last 90 days",
+      "last6Months": "Last 6 months",
+      "last1Year": "Last 1 year",
+      "custom": "Custom"
+    },
+    "metrics": {
+      "totalStudents": "Total Students",
+      "totalCourses": "Total Courses",
+      "totalRevenue": "Total Revenue",
+      "completionRate": "Completion Rate",
+      "fromLastMonth": "from last month"
+    },
+    "tabs": {
+      "overview": "Overview",
+      "courses": "Courses",
+      "students": "Students",
+      "revenue": "Revenue"
+    },
+    "charts": {
+      "studentGrowth": "Student Growth",
+      "revenueTrend": "Revenue Trend",
+      "completionRate": "Completion Rate",
+      "topPerformingCourses": "Top Performing Courses",
+      "coursePerformance": "Course Performance",
+      "revenueBreakdown": "Revenue Breakdown",
+      "target": "Target",
+      "aboveTarget": "Above target",
+      "belowTarget": "Below target"
+    },
+    "activity": {
+      "recentActivity": "Recent Activity",
+      "enrolledIn": "enrolled in",
+      "completed": "completed",
+      "reviewed": "reviewed",
+      "purchased": "purchased",
+      "performedActionOn": "performed an action on"
+    },
+    "students": {
+      "studentDemographics": "Student Demographics",
+      "geographicDistribution": "Geographic Distribution",
+      "engagementMetrics": "Engagement Metrics",
+      "averageCompletionRate": "Average Completion Rate",
+      "averageRating": "Average Rating",
+      "coursesPerStudent": "Courses per Student",
+      "ageGroups": {
+        "age18to25": "Age 18-25",
+        "age26to35": "Age 26-35",
+        "age36plus": "Age 36+"
+      },
+      "regions": {
+        "northAmerica": "North America",
+        "europe": "Europe",
+        "asiaPacific": "Asia Pacific"
+      }
+    },
+    "revenue": {
+      "revenueBreakdown": "Revenue Breakdown",
+      "courseSales": "Course Sales",
+      "subscriptions": "Subscriptions",
+      "certifications": "Certifications"
+    },
+    "courses": {
+      "students": "Students"
+    }
   }
 }
