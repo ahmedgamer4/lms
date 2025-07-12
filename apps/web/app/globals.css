@@ -176,6 +176,10 @@ body {
   letter-spacing: var(--tracking-normal);
 }
 
+html[dir="rtl"] .rotate-rtl {
+  transform: rotate(180deg);
+}
+
 @media print {
   body {
     display: none;
