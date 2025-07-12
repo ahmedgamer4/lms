@@ -10,11 +10,20 @@ import { LowerSidebar } from "./courses/_components/lower-sidebar";
 import { cookies } from "next/headers";
 import SidebarHeaderContent from "./sidebar-header-content";
 
-export default async function DashboardLayout({ children }: PropsWithChildren) {
+export default async function DashboardLayout({
+  children,
+  params,
+}: PropsWithChildren<{ params: { subdomain: string } }>) {
   const session = await getSession();
   console.log(session);
-  if (!session || !session.user || session.user.role !== "teacher")
+  if (
+    !session ||
+    !session.user ||
+    session.user.role !== "teacher" ||
+    session.user.subdomain !== params.subdomain
+  )
     redirect("/login-teacher");
+
   const cookieStore = await cookies();
   const locale = cookieStore.get("NEXT_LOCALE")?.value || "ar";
   const side = locale === "ar" ? "right" : "left";
