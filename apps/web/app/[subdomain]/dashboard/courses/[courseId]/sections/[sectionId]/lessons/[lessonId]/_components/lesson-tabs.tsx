@@ -135,7 +135,7 @@ export const LessonTabs = ({ lesson }: LessonTabsProps) => {
                 <div>
                   <h3 className="font-medium">{quiz.title}</h3>
                   <p className="text-muted-foreground text-sm">
-                    {quizData?.questions.length || 0} {t("questions")} •{" "}
+                    {quizData?.questions.length || 0} {tCommon("questions")} •{" "}
                     {quiz.duration} {tCommon("minutes")}
                   </p>
                 </div>
