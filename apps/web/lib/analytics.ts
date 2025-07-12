@@ -13,6 +13,7 @@ export const getOverview = async () => {
       studentGrowth: number;
       revenueGrowth: number;
       courseGrowth: number;
+      completionGrowth: number;
     };
   }>(`${baseUrl}/overview`);
 };

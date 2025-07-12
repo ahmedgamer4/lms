@@ -103,7 +103,7 @@ export class AnalyticsService {
     }
     const studentGrowth =
       (studentCountResult[0].count - studentCountBeforeMonth[0].count) /
-      studentCountBeforeMonth[0].count;
+      (studentCountBeforeMonth[0].count || 1);
 
     let [beforeMonthRevenue] = await attempt(
       db
@@ -113,14 +113,11 @@ export class AnalyticsService {
         .where(
           and(
             eq(courses.teacherId, teacherId),
-            lt(
-              enrollments.enrolledAt,
-              dayjs().subtract(1, 'month').startOf('month').toDate(),
-            ),
             gte(
               enrollments.enrolledAt,
               dayjs().subtract(1, 'month').endOf('month').toDate(),
             ),
+            lt(enrollments.enrolledAt, dayjs().startOf('month').toDate()),
           ),
         ),
     );
@@ -167,15 +164,42 @@ export class AnalyticsService {
       (courseCountResult[0].count - (courseCountBeforeMonth?.[0]?.count || 0)) /
       (courseCountBeforeMonth?.[0]?.count || 1);
 
+    let [completionGrowthBeforeMonth, completionGrowthBeforeMonthError] =
+      await attempt(
+        db
+          .select({ avg: avg(enrollments.progress) })
+          .from(enrollments)
+          .innerJoin(courses, eq(enrollments.courseId, courses.id))
+          .where(
+            and(
+              eq(courses.teacherId, teacherId),
+              gte(
+                enrollments.completedAt,
+                dayjs().subtract(1, 'month').toDate(),
+              ),
+            ),
+          ),
+      );
+
+    if (completionGrowthBeforeMonthError || !completionGrowthBeforeMonth) {
+      completionGrowthBeforeMonth = [{ avg: '0.00' }];
+    }
+
+    const completionGrowth =
+      (Number(completionGrowthBeforeMonth?.[0]?.avg) ||
+        0 - (Number(avgCompletionRate?.[0]?.avg) || 0)) /
+      (Number(avgCompletionRate?.[0]?.avg) || 1);
+
     return {
       overview: {
         totalStudents: studentCountResult[0].count,
         totalCourses: courseCountResult[0].count,
-        totalRevenue: totalRevenue[0].sum,
+        totalRevenue: totalRevenue[0].sum || '0.00',
         avgCompletionRate: avgCompletionRate?.[0]?.avg || '0.00',
         studentGrowth,
         revenueGrowth,
         courseGrowth,
+        completionGrowth,
       },
     };
   }
@@ -200,6 +224,7 @@ export class AnalyticsService {
             and(
               gte(students.createdAt, startDate.toDate()),
               lt(students.createdAt, endDate.toDate()),
+              eq(students.teacherId, teacherId),
             ),
           ),
       );
@@ -263,8 +288,10 @@ export class AnalyticsService {
         db
           .select({ count: count(enrollments.id) })
           .from(enrollments)
+          .innerJoin(courses, eq(courses.id, enrollments.courseId))
           .where(
             and(
+              eq(courses.teacherId, teacherId),
               gte(enrollments.enrolledAt, startDate.toDate()),
               lt(enrollments.enrolledAt, endDate.toDate()),
               eq(enrollments.status, 'active'),
@@ -433,20 +460,6 @@ export class AnalyticsService {
 
     const diffInMonths = Math.floor(diffInDays / 30);
     return `${diffInMonths} month${diffInMonths > 1 ? 's' : ''} ago`;
-  }
-
-  async getRevenue(teacherId: number) {
-    const [revenue, revenueError] = await attempt(
-      db
-        .select({ sum: sum(courses.price) })
-        .from(enrollments)
-        .innerJoin(courses, eq(enrollments.courseId, courses.id))
-        .where(eq(courses.teacherId, teacherId)),
-    );
-    if (revenueError || !revenue) {
-      throw new InternalServerErrorException('Cannot process revenue');
-    }
-    return { revenue: revenue[0].sum || '0.00' };
   }
 
   async getRevenueBreakdown(teacherId: number, months: number = 6) {
