@@ -28,6 +28,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { attempt } from "@/lib/utils";
+import { useTranslations } from "next-intl";
 type QuestionDialogProps = {
   quizId: string;
   questionLength: number;
@@ -47,6 +48,8 @@ export const QuestionDialog = ({
   const resolver = useMemo(() => {
     return classValidatorResolver(CreateQuizQuestionDto);
   }, []);
+
+  const t = useTranslations();
 
   const form = useForm<CreateQuizQuestionDto>({
     resolver,
@@ -69,17 +72,17 @@ export const QuestionDialog = ({
     try {
       const [response, error] = await attempt(createQuestion(quizId, data));
       if (error) {
-        toast.error("Failed to create question");
+        toast.error(t("quizzes.failedToCreateQuestion"));
         return;
       }
       setQuestions((questions: QuizQuestion[]) => [
         ...questions,
         response.data!,
       ]);
-      toast.success("Question created successfully");
+      toast.success(t("quizzes.questionCreatedSuccessfully"));
       form.reset();
     } catch (error) {
-      toast.error("An error occurred");
+      toast.error(t("quizzes.failedToCreateQuestion"));
     }
   };
 
@@ -90,7 +93,7 @@ export const QuestionDialog = ({
           {trigger || (
             <Button className="mt-2 gap-2 md:mt-0">
               <Plus className="h-4 w-4" />
-              Add Question
+              {t("quizzes.addQuestion")}
             </Button>
           )}
         </DialogTrigger>
@@ -99,9 +102,9 @@ export const QuestionDialog = ({
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <DialogHeader>
-              <DialogTitle>Add New Question</DialogTitle>
+              <DialogTitle>{t("quizzes.createQuestion")}</DialogTitle>
               <DialogDescription>
-                Create a new question with multiple answers
+                {t("quizzes.createQuestionDescription")}
               </DialogDescription>
             </DialogHeader>
 
@@ -111,9 +114,12 @@ export const QuestionDialog = ({
                 name="questionText"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Question</FormLabel>
+                    <FormLabel>{t("quizzes.question")}</FormLabel>
                     <FormControl>
-                      <Textarea placeholder="Enter your question" {...field} />
+                      <Textarea
+                        placeholder={t("common.titlePlaceholder")}
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -122,7 +128,7 @@ export const QuestionDialog = ({
 
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <Label>Answers</Label>
+                  <Label>{t("quizzes.answers")}</Label>
                   <Button
                     type="button"
                     variant="outline"
@@ -131,7 +137,7 @@ export const QuestionDialog = ({
                     className="gap-2"
                   >
                     <Plus className="h-4 w-4" />
-                    Add Answer
+                    {t("quizzes.addAnswer")}
                   </Button>
                 </div>
 
@@ -147,10 +153,12 @@ export const QuestionDialog = ({
                           name={`answers.${index}.answerText`}
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel>Answer {index + 1}</FormLabel>
+                              <FormLabel>
+                                {t("quizzes.answer")} {index + 1}
+                              </FormLabel>
                               <FormControl>
                                 <Input
-                                  placeholder="Enter answer text"
+                                  placeholder={t("quizzes.answerPlaceholder")}
                                   {...field}
                                 />
                               </FormControl>
@@ -171,7 +179,7 @@ export const QuestionDialog = ({
                                   onCheckedChange={field.onChange}
                                 />
                               </FormControl>
-                              <FormLabel>Correct</FormLabel>
+                              <FormLabel>{t("quizzes.correct")}</FormLabel>
                             </FormItem>
                           )}
                         />
@@ -194,7 +202,9 @@ export const QuestionDialog = ({
 
             <DialogFooter>
               <Button type="submit" disabled={isSubmitting || !isValid}>
-                {isSubmitting ? "Creating..." : "Create Question"}
+                {isSubmitting
+                  ? t("common.submitting")
+                  : t("quizzes.createQuestion")}
               </Button>
             </DialogFooter>
           </form>

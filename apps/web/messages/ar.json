@@ -52,7 +52,10 @@
     "durationPlaceholder": "أدخل المدة",
     "creating": "يتم إنشاء",
     "uploading": "يتم الرفع",
-    "upload": "رفع"
+    "upload": "رفع",
+    "questions": "أسئلة",
+    "answers": "إجابات",
+    "submitting": "يتم إرسال"
   },
   "navigation": {
     "home": "الرئيسية",
@@ -175,6 +178,35 @@
     "score": "الدرجة",
     "correctAnswers": "الإجابات الصحيحة",
     "totalQuestions": "إجمالي الأسئلة",
-    "timeRemaining": "الوقت المتبقي"
+    "timeRemaining": "الوقت المتبقي",
+    "editQuizTitle": "تعديل الاختبار",
+    "editQuizDescription": "إدارة أسئلة وإجابات الاختبار",
+    "question": "السؤال",
+    "questionDetails": "تفاصيل السؤال",
+    "addAnswer": "إضافة إجابة",
+    "correct": "صحيح",
+    "answerText": "نص الإجابة",
+    "noQuestionsYet": "لا توجد أسئلة بعد",
+    "addQuestionsToYourQuiz": "أضف أسئلة إلى اختبارك",
+    "questionOrderUpdated": "تم تحديث ترتيب الأسئلة",
+    "failedToUpdateQuestionOrder": "فشل في تحديث ترتيب الأسئلة",
+    "failedToDeleteQuestion": "فشل في حذف السؤال",
+    "questionDeletedSuccessfully": "تم حذف السؤال بنجاح",
+    "failedToUpdateQuestion": "فشل في تحديث السؤال",
+    "failedToAddAnswer": "فشل في إضافة الإجابة",
+    "failedToDeleteAnswer": "فشل في حذف الإجابة",
+    "failedToUpdateAnswer": "فشل في تحديث الإجابة",
+    "errorFetchingQuiz": "فشل في جلب أسئلة الاختبار",
+    "errorFetchingCourse": "خطأ في جلب الدورة",
+    "errorFetchingSection": "خطأ في جلب الفصل",
+    "errorFetchingLesson": "خطأ في جلب الدرس",
+    "createQuestionDescription": "إنشاء سؤال جديد مع أكثر من إجابة",
+    "createQuestion": "إنشاء سؤال",
+    "answer": "الإجابة",
+    "answerPlaceholder": "أدخل نص الإجابة",
+    "answers": "الإجابات",
+    "addQuestion": "إضافة سؤال",
+    "questionCreatedSuccessfully": "تم إنشاء السؤال بنجاح",
+    "answerUpdatedSuccessfully": "تم تحديث الإجابة بنجاح"
   }
 }

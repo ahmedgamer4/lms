@@ -52,7 +52,10 @@
     "durationPlaceholder": "Enter duration",
     "creating": "Creating",
     "upload": "Upload",
-    "uploading": "Uploading"
+    "uploading": "Uploading",
+    "questions": "Questions",
+    "answers": "Answers",
+    "submitting": "Submitting"
   },
   "navigation": {
     "home": "Home",
@@ -180,6 +183,35 @@
     "score": "Score",
     "correctAnswers": "Correct Answers",
     "totalQuestions": "Total Questions",
-    "timeRemaining": "Time Remaining"
+    "timeRemaining": "Time Remaining",
+    "editQuizTitle": "Edit Quiz",
+    "editQuizDescription": "Manage quiz questions and answers",
+    "question": "Question",
+    "questionDetails": "Question Details",
+    "addAnswer": "Add Answer",
+    "correct": "Correct",
+    "answerText": "Answer text",
+    "noQuestionsYet": "No questions yet",
+    "addQuestionsToYourQuiz": "Add questions to your quiz",
+    "questionOrderUpdated": "Question order updated",
+    "failedToUpdateQuestionOrder": "Failed to update question order",
+    "failedToDeleteQuestion": "Failed to delete question",
+    "questionDeletedSuccessfully": "Question deleted successfully",
+    "failedToUpdateQuestion": "Failed to update question",
+    "failedToAddAnswer": "Failed to add answer",
+    "failedToDeleteAnswer": "Failed to delete answer",
+    "failedToUpdateAnswer": "Failed to update answer",
+    "errorFetchingQuiz": "Failed to fetch quiz questions",
+    "errorFetchingCourse": "Error fetching course",
+    "errorFetchingSection": "Error fetching section",
+    "errorFetchingLesson": "Error fetching lesson",
+    "createQuestionDescription": "Create a new question with multiple answers",
+    "createQuestion": "Create Question",
+    "answer": "Answer",
+    "answerPlaceholder": "Enter answer text",
+    "answers": "Answers",
+    "addQuestion": "Add Question",
+    "questionCreatedSuccessfully": "Question created successfully",
+    "answerUpdatedSuccessfully": "Answer updated successfully"
   }
 }

@@ -3,7 +3,7 @@
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { Pencil } from "lucide-react";
+import { Pencil, X } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
@@ -19,6 +19,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { updateQuestion } from "@/lib/quizzes";
 import { attempt } from "@/lib/utils";
+import { useTranslations } from "next-intl";
 
 interface QuestionTitleFormProps {
   initialData: {
@@ -44,6 +45,8 @@ export const QuestionTitleForm = ({
 
   const router = useRouter();
 
+  const t = useTranslations();
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: initialData,
@@ -61,25 +64,28 @@ export const QuestionTitleForm = ({
         return;
       }
       setQuestionText(values.questionText);
-      toast.success("Quiz updated");
+      toast.success(t("quizzes.quizUpdatedSuccessfully"));
       toggleEdit();
       router.refresh();
     } catch {
-      toast.error("Something went wrong");
+      toast.error(t("common.somethingWentWrong"));
     }
   };
 
   return (
     <div className="bg-primary/5 rounded-lg border p-4">
       <div className="flex items-center justify-between font-medium">
-        Question title
+        {t("quizzes.question")}
         <Button onClick={toggleEdit} variant="ghost">
           {isEditing ? (
-            <>Cancel</>
+            <>
+              <X className="mr-0.5 h-4 w-4" />
+              {t("common.cancel")}
+            </>
           ) : (
             <>
               <Pencil className="mr-0.5 h-4 w-4" />
-              Edit
+              {t("common.edit")}
             </>
           )}
         </Button>
@@ -99,7 +105,7 @@ export const QuestionTitleForm = ({
                   <FormControl>
                     <Input
                       disabled={isSubmitting}
-                      placeholder="e.g. 'Advanced web development'"
+                      placeholder={t("common.titlePlaceholder")}
                       {...field}
                     />
                   </FormControl>
@@ -109,7 +115,7 @@ export const QuestionTitleForm = ({
             />
             <div className="flex items-center gap-x-2">
               <Button disabled={!isValid || isSubmitting} type="submit">
-                Save
+                {t("common.save")}
               </Button>
             </div>
           </form>

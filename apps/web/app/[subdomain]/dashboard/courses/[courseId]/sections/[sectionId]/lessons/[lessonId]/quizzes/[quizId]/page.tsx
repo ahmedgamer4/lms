@@ -47,12 +47,14 @@ import { UpdateQuizQuestionDto } from "@lms-saas/shared-lib/dtos";
 import { QuestionTitleForm } from "./_components/question-title-form";
 import { AnswerEditForm } from "./_components/answer-edit-form";
 import { attempt } from "@/lib/utils";
+import { useTranslations } from "next-intl";
 
 export default function QuizEditPage() {
   const [isLoading, setIsLoading] = useState(false);
   const params = useParams();
   const router = useRouter();
   const [questions, setQuestions] = useState<QuizQuestion[]>([]);
+  const t = useTranslations();
 
   const { data: course } = useQuery({
     queryKey: ["course", params.courseId],
@@ -61,7 +63,7 @@ export default function QuizEditPage() {
         getCourse(Number(params.courseId)),
       );
       if (error) {
-        toast.error("Error fetching course");
+        toast.error(t("quizzes.errorFetchingCourse"));
         return;
       }
       return response;
@@ -75,7 +77,7 @@ export default function QuizEditPage() {
         findCourseSection(Number(params.courseId), Number(params.sectionId)),
       );
       if (error) {
-        toast.error("Error fetching section");
+        toast.error(t("quizzes.errorFetchingSection"));
         return;
       }
       return response;
@@ -97,7 +99,7 @@ export default function QuizEditPage() {
         ),
       );
       if (error) {
-        toast.error("Error fetching lesson");
+        toast.error(t("quizzes.errorFetchingLesson"));
         return;
       }
       return response;
@@ -115,7 +117,7 @@ export default function QuizEditPage() {
         findQuiz(params.quizId as string),
       );
       if (error) {
-        toast.error("Failed to fetch quiz questions");
+        toast.error(t("quizzes.errorFetchingQuiz"));
       }
       setQuestions(response?.data?.questions || []);
       return response?.data;
@@ -126,13 +128,13 @@ export default function QuizEditPage() {
     try {
       const [, error] = await attempt(deleteQuestion(questionId));
       if (error) {
-        toast.error("Failed to delete question");
+        toast.error(t("quizzes.failedToDeleteQuestion"));
         return;
       }
       setQuestions((prev) => prev.filter((q) => q.id !== questionId));
-      toast.success("Question deleted successfully");
+      toast.success(t("quizzes.questionDeletedSuccessfully"));
     } catch (error) {
-      toast.error("Failed to delete question");
+      toast.error(t("quizzes.failedToDeleteQuestion"));
     }
   };
 
@@ -143,26 +145,26 @@ export default function QuizEditPage() {
     try {
       const [response, error] = await attempt(updateQuestion(questionId, data));
       if (error) {
-        toast.error("Failed to update question");
+        toast.error(t("quizzes.failedToUpdateQuestion"));
         return;
       }
       setQuestions((prev) =>
         prev.map((q) => (q.id === questionId ? response.data! : q)),
       );
     } catch (error) {
-      toast.error("Failed to update question");
+      toast.error(t("quizzes.failedToUpdateQuestion"));
     }
   };
 
   const handleAddAnswer = async (questionId: number) => {
     const [response, error] = await attempt(
       addAnswer(questionId, {
-        answerText: "Answer text",
+        answerText: t("quizzes.answerText"),
         isCorrect: false,
       }),
     );
     if (error) {
-      toast.error("Failed to add answer");
+      toast.error(t("quizzes.failedToAddAnswer"));
       return;
     }
 
@@ -182,7 +184,7 @@ export default function QuizEditPage() {
   const handleDeleteAnswer = async (questionId: number, answerId: number) => {
     const [, error] = await attempt(deleteAnswer(answerId));
     if (error) {
-      toast.error("Failed to delete answer");
+      toast.error(t("quizzes.failedToDeleteAnswer"));
       return;
     }
 
@@ -206,7 +208,7 @@ export default function QuizEditPage() {
   ) => {
     const [, error] = await attempt(updateAnswer(answerId, data));
     if (error) {
-      toast.error("Failed to update answer");
+      toast.error(t("quizzes.failedToUpdateAnswer"));
       return;
     }
 
@@ -246,12 +248,12 @@ export default function QuizEditPage() {
       }),
     );
     if (error) {
-      toast.error("Failed to update question order");
+      toast.error(t("quizzes.failedToUpdateQuestionOrder"));
       return;
     }
 
     setQuestions(updatedQuestions);
-    toast.success("Question order updated");
+    toast.success(t("quizzes.questionOrderUpdated"));
     // Update the order in the backend
     try {
       setIsLoading(true);
@@ -261,13 +263,13 @@ export default function QuizEditPage() {
         }),
       );
       if (error) {
-        toast.error("Failed to update question order");
+        toast.error(t("quizzes.failedToUpdateQuestionOrder"));
         return;
       }
-      toast.success("Question order updated");
+      toast.success(t("quizzes.questionOrderUpdated"));
       setIsLoading(false);
     } catch (error) {
-      toast.error("Failed to update question order");
+      toast.error(t("quizzes.failedToUpdateQuestionOrder"));
     }
   };
 
@@ -284,7 +286,9 @@ export default function QuizEditPage() {
       <Breadcrumb>
         <BreadcrumbList>
           <BreadcrumbItem>
-            <BreadcrumbLink href="/dashboard/courses">Courses</BreadcrumbLink>
+            <BreadcrumbLink href="/dashboard/courses">
+              {t("navigation.courses")}
+            </BreadcrumbLink>
           </BreadcrumbItem>
           <BreadcrumbSeparator />
           <BreadcrumbItem>
@@ -310,7 +314,7 @@ export default function QuizEditPage() {
           </BreadcrumbItem>
           <BreadcrumbSeparator />
           <BreadcrumbItem>
-            <BreadcrumbPage>Edit Quiz</BreadcrumbPage>
+            <BreadcrumbPage>{t("quizzes.editQuizTitle")}</BreadcrumbPage>
           </BreadcrumbItem>
         </BreadcrumbList>
       </Breadcrumb>
@@ -323,12 +327,12 @@ export default function QuizEditPage() {
             onClick={() => router.back()}
             className="h-8 w-8"
           >
-            <ArrowLeft className="h-4 w-4" />
+            <ArrowLeft className="rotate-rtl h-4 w-4" />
           </Button>
           <div>
-            <h1 className="text-2xl font-bold">Edit Quiz</h1>
+            <h1 className="text-2xl font-bold">{t("quizzes.editQuizTitle")}</h1>
             <p className="text-muted-foreground">
-              Manage quiz questions and answers
+              {t("quizzes.editQuizDescription")}
             </p>
           </div>
         </div>
@@ -370,7 +374,7 @@ export default function QuizEditPage() {
                                   <GripVertical className="text-muted-foreground h-5 w-5" />
                                 </div>
                                 <CardTitle className="text-lg">
-                                  Question {questionIndex + 1}:{" "}
+                                  {t("quizzes.question")} {questionIndex + 1}:{" "}
                                   {question.questionText}
                                 </CardTitle>
                               </div>
@@ -391,7 +395,7 @@ export default function QuizEditPage() {
                               <Accordion type="single" collapsible>
                                 <AccordionItem value="title">
                                   <AccordionTrigger className="text-sm font-medium">
-                                    Question Details
+                                    {t("quizzes.questionDetails")}
                                   </AccordionTrigger>
                                   <AccordionContent>
                                     <QuestionTitleForm
@@ -408,7 +412,7 @@ export default function QuizEditPage() {
                                     >
                                       <AccordionItem value="answers">
                                         <AccordionTrigger className="text-sm font-medium">
-                                          Answers
+                                          {t("quizzes.answers")}
                                         </AccordionTrigger>
                                         <AccordionContent>
                                           <div className="space-y-4">
@@ -422,7 +426,7 @@ export default function QuizEditPage() {
                                                 className="gap-2"
                                               >
                                                 <Plus className="h-4 w-4" />
-                                                Add Answer
+                                                {t("quizzes.addAnswer")}
                                               </Button>
                                             </div>
 
@@ -464,7 +468,7 @@ export default function QuizEditPage() {
                                                         <Label
                                                           htmlFor={`correct-${answer.id}`}
                                                         >
-                                                          Correct
+                                                          {t("quizzes.correct")}
                                                         </Label>
                                                       </div>
                                                       <Button
@@ -509,9 +513,11 @@ export default function QuizEditPage() {
             <div className="bg-primary/10 flex h-12 w-12 items-center justify-center rounded-full">
               <Plus className="text-primary h-6 w-6" />
             </div>
-            <h3 className="mt-4 text-lg font-medium">No questions yet</h3>
+            <h3 className="mt-4 text-lg font-medium">
+              {t("quizzes.noQuestionsYet")}
+            </h3>
             <p className="text-muted-foreground mt-2 text-sm">
-              Add questions to your quiz
+              {t("quizzes.addQuestionsToYourQuiz")}
             </p>
           </div>
         )}
