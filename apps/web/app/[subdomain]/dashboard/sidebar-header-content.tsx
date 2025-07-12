@@ -25,7 +25,13 @@ export default function SidebarHeaderContent() {
       <SidebarHeader className="text-xl font-bold">
         <div className="flex items-center justify-between">
           <div className="flex items-center">
-            <Image src="/logo.svg" alt="logo" width={70} height={30} />
+            <Image
+              className="dark:invert"
+              src="/logo.png"
+              alt="logo"
+              width={50}
+              height={30}
+            />
           </div>
           <div className="flex items-center gap-2">
             <LanguageSwitcher />
