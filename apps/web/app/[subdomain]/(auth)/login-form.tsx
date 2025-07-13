@@ -17,6 +17,7 @@ import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { loginUser } from "@/lib/auth";
 import { Loader2 } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 export function LoginForm({
   subdomain,
@@ -26,6 +27,8 @@ export function LoginForm({
   role: string;
 }) {
   const router = useRouter();
+  const t = useTranslations();
+
   const resolver = useMemo(() => {
     return classValidatorResolver(LoginUserDto);
   }, []);
@@ -67,9 +70,13 @@ export function LoginForm({
           name="email"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Email</FormLabel>
+              <FormLabel>{t("login.email")}</FormLabel>
               <FormControl>
-                <Input placeholder="Enter your email" type="email" {...field} />
+                <Input
+                  placeholder={t("login.email_placeholder")}
+                  type="email"
+                  {...field}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -80,10 +87,10 @@ export function LoginForm({
           name="password"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Password</FormLabel>
+              <FormLabel>{t("login.password")}</FormLabel>
               <FormControl>
                 <Input
-                  placeholder="Enter your password"
+                  placeholder={t("login.password_placeholder")}
                   type="password"
                   {...field}
                 />
@@ -100,10 +107,10 @@ export function LoginForm({
           {isSubmitting ? (
             <span className="flex items-center justify-center">
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Signing In...
+              {t("login.signing_in")}
             </span>
           ) : (
-            "Sign In"
+            t("login.sign_in")
           )}
         </Button>
       </form>

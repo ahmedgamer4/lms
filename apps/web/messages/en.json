@@ -284,5 +284,30 @@
     "courses": {
       "students": "Students"
     }
+  },
+  "signup": {
+    "title": "Create a new account",
+    "description": "Create an account to access your platform",
+    "already_have_account": "Already have an account?",
+    "sign_in": "Sign In",
+    "username": "Username",
+    "username_placeholder": "Enter your username",
+    "email": "Email",
+    "email_placeholder": "Enter your email",
+    "password": "Password",
+    "password_placeholder": "Enter your password",
+    "sign_up": "Sign Up"
+  },
+  "login": {
+    "title": "Login to your account",
+    "description": "Login to your account to access your platform",
+    "dont_have_account": "Don't have an account?",
+    "sign_up": "Sign Up",
+    "signing_in": "Signing in...",
+    "email": "Email",
+    "email_placeholder": "Enter your email",
+    "password": "Password",
+    "password_placeholder": "Enter your password",
+    "sign_in": "Sign In"
   }
 }

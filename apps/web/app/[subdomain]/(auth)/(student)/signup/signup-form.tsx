@@ -17,9 +17,12 @@ import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { signupStudent } from "@/lib/auth";
 import { attempt } from "@/lib/utils";
+import { useTranslations } from "next-intl";
 
 export function SignupForm({ subdomain }: { subdomain: string }) {
   const router = useRouter();
+  const t = useTranslations();
+
   const resolver = useMemo(() => {
     return classValidatorResolver(CreateStudentDto);
   }, []);
@@ -59,9 +62,12 @@ export function SignupForm({ subdomain }: { subdomain: string }) {
           name="name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Username</FormLabel>
+              <FormLabel>{t("signup.username")}</FormLabel>
               <FormControl>
-                <Input placeholder="Enter your username" {...field} />
+                <Input
+                  placeholder={t("signup.username_placeholder")}
+                  {...field}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -72,9 +78,13 @@ export function SignupForm({ subdomain }: { subdomain: string }) {
           name="email"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Email</FormLabel>
+              <FormLabel>{t("signup.email")}</FormLabel>
               <FormControl>
-                <Input placeholder="Enter your email" type="email" {...field} />
+                <Input
+                  placeholder={t("signup.email_placeholder")}
+                  type="email"
+                  {...field}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -85,10 +95,10 @@ export function SignupForm({ subdomain }: { subdomain: string }) {
           name="password"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Password</FormLabel>
+              <FormLabel>{t("signup.password")}</FormLabel>
               <FormControl>
                 <Input
-                  placeholder="Enter your password"
+                  placeholder={t("signup.password_placeholder")}
                   type="password"
                   {...field}
                 />
@@ -97,7 +107,7 @@ export function SignupForm({ subdomain }: { subdomain: string }) {
             </FormItem>
           )}
         />
-        <Button className="w-full">Sign Up</Button>
+        <Button className="w-full">{t("signup.sign_up")}</Button>
       </form>
     </Form>
   );
