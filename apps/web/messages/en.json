@@ -145,7 +145,13 @@
     "section": "Section",
     "newSection": "New Section",
     "noSectionsCreatedYet": "No sections created yet",
-    "getStartedByCreatingYourFirstCourseSection": "Get started by creating your first course section"
+    "getStartedByCreatingYourFirstCourseSection": "Get started by creating your first course section",
+    "all": "All",
+    "enrolled": "Enrolled",
+    "noCoursesAvailable": "No courses available at the moment",
+    "progress": "Progress",
+    "enrollNow": "Enroll Now",
+    "description": "Explore our wide range of courses and start your learning journey today."
   },
   "lessons": {
     "title": "Lessons",
