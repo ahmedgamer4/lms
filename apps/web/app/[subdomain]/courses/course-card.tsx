@@ -12,9 +12,11 @@ import { Badge } from "@/components/ui/badge";
 import { useRouter } from "next/navigation";
 import { CourseWithEnrollments } from "@/lib/courses";
 import Image from "next/image";
+import { useTranslations } from "next-intl";
 
 export function CourseCard({ course }: { course: CourseWithEnrollments }) {
   const router = useRouter();
+  const t = useTranslations();
 
   return (
     <Card className="hover:border-primary/50 overflow-hidden rounded-lg border transition-all duration-300 hover:shadow-lg">
@@ -48,29 +50,32 @@ export function CourseCard({ course }: { course: CourseWithEnrollments }) {
         <div className="space-y-1">
           <h3 className="line-clamp-1 text-lg font-semibold">{course.title}</h3>
           <p className="text-muted-foreground line-clamp-1 text-sm">
-            {course.description || "No description available for this course."}
+            {course.description || t("courses.noDescriptionAvailable")}
           </p>
         </div>
 
         <div className="mt-auto flex items-center gap-4 text-sm text-gray-500">
           <div className="flex items-center gap-1">
             <Users className="h-4 w-4" />
-            <span>0 students</span>
+            {course.studentsCount}
+            <span>{t("courses.students")}</span>
           </div>
           <div className="flex items-center gap-1">
             <Clock className="h-4 w-4" />
-            <span>0 hours</span>
+            {course.lessonsCount}
+            <span>{t("courses.lessons")}</span>
           </div>
           <div className="flex items-center gap-1">
+            {/* TODO: Add rating */}
             <Star className="h-4 w-4" />
-            <span>0.0</span>
+            <span>{t("courses.rating")}</span>
           </div>
         </div>
 
         {course.enrollments?.[0] ? (
           <div>
             <div className="text-muted-foreground mb-2 flex items-center justify-between text-sm">
-              <span>Progress</span>
+              <span>{t("courses.progress")}</span>
               <span>{course.enrollments[0].progress}%</span>
             </div>
             <div className="bg-secondary h-2 w-full rounded-full">
@@ -88,7 +93,7 @@ export function CourseCard({ course }: { course: CourseWithEnrollments }) {
               onClick={() => router.push(`/courses/${course.id}/enroll`)}
             >
               <BookOpen className="h-4 w-4" />
-              Enroll Now
+              {t("courses.enrollNow")}
             </Button>
           </div>
         )}
@@ -101,7 +106,7 @@ export function CourseCard({ course }: { course: CourseWithEnrollments }) {
           onClick={() => router.push(`/courses/${course.id}`)}
         >
           <BookOpen className="h-4 w-4" />
-          Course Details
+          {t("courses.courseDetails")}
         </Button>
       </CardFooter>
     </Card>

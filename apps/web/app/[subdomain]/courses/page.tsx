@@ -18,7 +18,10 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { toast } from "sonner";
 import { attempt } from "@/lib/utils";
+import { useTranslations } from "next-intl";
+
 export default function StudentHomePage() {
+  const t = useTranslations();
   const [page, setPage] = useState(1);
   const [coursesType, setCoursesType] = useState<"enrolled" | "all">("all");
 
@@ -60,7 +63,7 @@ export default function StudentHomePage() {
     );
 
   if (enrolledCoursesError) {
-    toast.error("Error fetching enrolled courses");
+    toast.error(t("common.somethingWentWrong"));
   }
 
   const courses = coursesType === "all" ? data.courses : enrolledCourses.data;
@@ -76,10 +79,8 @@ export default function StudentHomePage() {
   return (
     <div className="container mx-auto gap-8 space-y-4 px-4 py-8">
       <div className="mb-4">
-        <h1 className="text-3xl font-bold">Available Courses</h1>
-        <p className="text-muted-foreground mt-2">
-          Explore our collection of courses and start learning today
-        </p>
+        <h1 className="text-3xl font-bold">{t("courses.title")}</h1>
+        <p className="text-muted-foreground mt-2">{t("courses.description")}</p>
       </div>
 
       <div className="mt-4 mb-2">
@@ -88,14 +89,14 @@ export default function StudentHomePage() {
           className={coursesType === "all" ? "underline" : ""}
           onClick={() => setCoursesType("all")}
         >
-          All
+          {t("courses.all")}
         </Button>
         <Button
           variant={"link"}
           className={coursesType === "enrolled" ? "underline" : ""}
           onClick={() => setCoursesType("enrolled")}
         >
-          Enrolled
+          {t("courses.enrolled")}
         </Button>
       </div>
 
@@ -104,7 +105,7 @@ export default function StudentHomePage() {
       <div className="grid grid-cols-[repeat(auto-fill,_minmax(320px,_1fr))] gap-6">
         {courses && courses.length === 0 ? (
           <div className="text-muted-foreground col-span-full text-center">
-            No courses available at the moment
+            {t("courses.noCoursesAvailable")}
           </div>
         ) : (
           courses?.map((course) => (

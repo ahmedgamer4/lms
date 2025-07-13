@@ -140,7 +140,13 @@
     "newSection": "فصل جديد",
     "noSectionsCreatedYet": "لا يوجد فصول منشأة بعد",
     "getStartedByCreatingYourFirstCourseSection": "ابدأ بإنشاء فصل لديك الأول",
-    "section": "فصل"
+    "section": "فصل",
+    "all": "الكل",
+    "enrolled": "مسجل",
+    "noCoursesAvailable": "لا يوجد دورات متاحة",
+    "progress": "التقدم",
+    "enrollNow": "تسجيل الآن",
+    "description": "استكشف مجموعة واسعة من الدورات وابدأ رحلتك في التعلم اليوم."
   },
   "lessons": {
     "title": "الدروس",
