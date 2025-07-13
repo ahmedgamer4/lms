@@ -24,9 +24,9 @@ export default function SignupPage() {
           </h1>
           <SignupForm subdomain={subdomain as string} />
           <div className="mt-2 flex justify-between text-sm">
-            <p>{t("signup.already_have_account")}</p>
+            <p>{t("signup.alreadyHaveAccount")}</p>
             <Link className="underline" href={"/login"}>
-              {t("signup.sign_in")}
+              {t("signup.signIn")}
             </Link>
           </div>
         </div>

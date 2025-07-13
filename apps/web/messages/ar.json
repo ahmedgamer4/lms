@@ -289,26 +289,26 @@
   "signup": {
     "title": "إنشاء حساب جديد",
     "description": "إنشاء حساب للدخول إلى منصتك الخاصة",
-    "already_have_account": "لديك حساب بالفعل؟",
-    "sign_in": "تسجيل الدخول",
+    "alreadyHaveAccount": "لديك حساب بالفعل؟",
+    "signIn": "تسجيل الدخول",
     "username": "اسم المستخدم",
-    "username_placeholder": "أدخل اسم المستخدم",
+    "usernamePlaceholder": "أدخل اسم المستخدم",
     "email": "البريد الإلكتروني",
-    "email_placeholder": "أدخل البريد الإلكتروني",
+    "emailPlaceholder": "أدخل البريد الإلكتروني",
     "password": "كلمة المرور",
-    "password_placeholder": "أدخل كلمة المرور",
-    "sign_up": "إنشاء حساب"
+    "passwordPlaceholder": "أدخل كلمة المرور",
+    "signUp": "إنشاء حساب"
   },
   "login": {
     "title": "تسجيل الدخول إلى حسابك",
     "description": "تسجيل الدخول إلى حسابك للوصول إلى منصتك",
-    "dont_have_account": "ليس لديك حساب؟",
-    "sign_up": "إنشاء حساب",
-    "signing_in": "يتم تسجيل الدخول...",
+    "dontHaveAccount": "ليس لديك حساب؟",
+    "signUp": "إنشاء حساب",
+    "signingIn": "يتم تسجيل الدخول...",
     "email": "البريد الإلكتروني",
-    "email_placeholder": "أدخل البريد الإلكتروني",
+    "emailPlaceholder": "أدخل البريد الإلكتروني",
     "password": "كلمة المرور",
-    "password_placeholder": "أدخل كلمة المرور",
-    "sign_in": "تسجيل الدخول"
+    "passwordPlaceholder": "أدخل كلمة المرور",
+    "signIn": "تسجيل الدخول"
   }
 }

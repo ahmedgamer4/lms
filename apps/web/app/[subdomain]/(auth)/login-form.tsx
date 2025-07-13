@@ -73,7 +73,7 @@ export function LoginForm({
               <FormLabel>{t("login.email")}</FormLabel>
               <FormControl>
                 <Input
-                  placeholder={t("login.email_placeholder")}
+                  placeholder={t("login.emailPlaceholder")}
                   type="email"
                   {...field}
                 />
@@ -90,7 +90,7 @@ export function LoginForm({
               <FormLabel>{t("login.password")}</FormLabel>
               <FormControl>
                 <Input
-                  placeholder={t("login.password_placeholder")}
+                  placeholder={t("login.passwordPlaceholder")}
                   type="password"
                   {...field}
                 />
@@ -107,10 +107,10 @@ export function LoginForm({
           {isSubmitting ? (
             <span className="flex items-center justify-center">
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              {t("login.signing_in")}
+              {t("login.signingIn")}
             </span>
           ) : (
-            t("login.sign_in")
+            t("login.signIn")
           )}
         </Button>
       </form>

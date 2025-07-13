@@ -65,7 +65,7 @@ export function SignupForm({ subdomain }: { subdomain: string }) {
               <FormLabel>{t("signup.username")}</FormLabel>
               <FormControl>
                 <Input
-                  placeholder={t("signup.username_placeholder")}
+                  placeholder={t("signup.usernamePlaceholder")}
                   {...field}
                 />
               </FormControl>
@@ -81,7 +81,7 @@ export function SignupForm({ subdomain }: { subdomain: string }) {
               <FormLabel>{t("signup.email")}</FormLabel>
               <FormControl>
                 <Input
-                  placeholder={t("signup.email_placeholder")}
+                  placeholder={t("signup.emailPlaceholder")}
                   type="email"
                   {...field}
                 />
@@ -98,7 +98,7 @@ export function SignupForm({ subdomain }: { subdomain: string }) {
               <FormLabel>{t("signup.password")}</FormLabel>
               <FormControl>
                 <Input
-                  placeholder={t("signup.password_placeholder")}
+                  placeholder={t("signup.passwordPlaceholder")}
                   type="password"
                   {...field}
                 />
@@ -107,7 +107,7 @@ export function SignupForm({ subdomain }: { subdomain: string }) {
             </FormItem>
           )}
         />
-        <Button className="w-full">{t("signup.sign_up")}</Button>
+        <Button className="w-full">{t("signup.signUp")}</Button>
       </form>
     </Form>
   );

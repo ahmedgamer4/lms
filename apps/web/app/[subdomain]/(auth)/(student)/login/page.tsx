@@ -19,9 +19,9 @@ export default function StudentLoginPage() {
         </p>
         <LoginForm subdomain={subdomain as string} role="student" />
         <div className="mt-4 flex justify-between text-sm">
-          <p>{t("login.dont_have_account")}</p>
+          <p>{t("login.dontHaveAccount")}</p>
           <Link className="underline" href={"/signup"}>
-            {t("login.sign_up")}
+            {t("login.signUp")}
           </Link>
         </div>
       </div>

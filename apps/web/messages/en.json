@@ -294,26 +294,26 @@
   "signup": {
     "title": "Create a new account",
     "description": "Create an account to access your platform",
-    "already_have_account": "Already have an account?",
-    "sign_in": "Sign In",
+    "alreadyHaveAccount": "Already have an account?",
+    "signIn": "Sign In",
     "username": "Username",
-    "username_placeholder": "Enter your username",
+    "usernamePlaceholder": "Enter your username",
     "email": "Email",
-    "email_placeholder": "Enter your email",
+    "emailPlaceholder": "Enter your email",
     "password": "Password",
-    "password_placeholder": "Enter your password",
-    "sign_up": "Sign Up"
+    "passwordPlaceholder": "Enter your password",
+    "signUp": "Sign Up"
   },
   "login": {
     "title": "Login to your account",
     "description": "Login to your account to access your platform",
-    "dont_have_account": "Don't have an account?",
-    "sign_up": "Sign Up",
-    "signing_in": "Signing in...",
+    "dontHaveAccount": "Don't have an account?",
+    "signUp": "Sign Up",
+    "signingIn": "Signing in...",
     "email": "Email",
-    "email_placeholder": "Enter your email",
+    "emailPlaceholder": "Enter your email",
     "password": "Password",
-    "password_placeholder": "Enter your password",
-    "sign_in": "Sign In"
+    "passwordPlaceholder": "Enter your password",
+    "signIn": "Sign In"
   }
 }
