@@ -1,5 +1,6 @@
 "use client";
 
+import LanguageSwitcher from "@/components/language-switcher";
 import { ModeToggle } from "@/components/mode-toggle";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -42,7 +43,8 @@ export function Topbar() {
           <h1 className="text-xl font-bold">{params.subdomain} Platform</h1>
         </div>
 
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2">
+          <LanguageSwitcher />
           <ModeToggle />
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
