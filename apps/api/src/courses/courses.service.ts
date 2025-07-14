@@ -1,3 +1,4 @@
+import { attempt } from '@/utils/error-handling';
 import {
   CourseEditDto,
   courses,
@@ -10,7 +11,11 @@ import {
   lessons,
   studentLessonCompletions,
 } from '@lms-saas/shared-lib';
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { and, count, desc, eq, inArray } from 'drizzle-orm';
 
 type WithClause = {
@@ -205,6 +210,21 @@ export class CoursesService {
         ...withClause,
       },
     });
+
+    const [studentsCount, error] = await attempt(
+      db
+        .select({ count: count(enrollments.id) })
+        .from(enrollments)
+        .where(eq(enrollments.courseId, courseId)),
+    );
+
+    if (error) {
+      throw new InternalServerErrorException('Error fetching student count');
+    }
+
+    if (data) {
+      data['studentsCount'] = studentsCount[0].count;
+    }
 
     return data;
   }
