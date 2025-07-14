@@ -13,6 +13,7 @@ import { Loader2, Clock, CheckCircle } from "lucide-react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { attempt } from "@/lib/utils";
 import { useLocalStorage } from "@uidotdev/usehooks";
+import { useTranslations } from "next-intl";
 
 const LoadingSpinner = () => (
   <div className="flex min-h-[calc(100vh-200px)] items-center justify-center">
@@ -44,6 +45,7 @@ const TimerDisplay = ({
   timeRemaining: number;
   isTimerExpired: boolean;
 }) => {
+  const t = useTranslations();
   const formatTime = useCallback((seconds: number) => {
     const minutes = Math.floor(seconds / 60);
     const remainingSeconds = seconds % 60;
@@ -60,14 +62,16 @@ const TimerDisplay = ({
     <div className="mb-4 flex items-center justify-between">
       <div className="flex items-center gap-2">
         <Clock className="h-5 w-5" />
-        <span className="text-sm font-medium">Time Remaining:</span>
+        <span className="text-sm font-medium">
+          {t("quizzes.timeRemaining")} :
+        </span>
         <span className={`text-lg font-bold ${getTimeColor(timeRemaining)}`}>
           {formatTime(timeRemaining)}
         </span>
       </div>
       {isTimerExpired && (
         <div className="text-sm font-medium text-red-500">
-          Time's up! Submitting...
+          {t("quizzes.timeIsUpSubmittingQuizAutomatically")}
         </div>
       )}
     </div>
@@ -87,6 +91,7 @@ const QuestionPagination = ({
   onQuestionSelect: (index: number) => void;
   isTimerExpired: boolean;
 }) => {
+  const t = useTranslations();
   const answeredCount = Object.keys(selectedAnswers).length;
   const totalQuestions = questions.length;
 
@@ -94,10 +99,11 @@ const QuestionPagination = ({
     <div className="mb-6">
       <div className="mb-2 flex items-center justify-between">
         <span className="text-muted-foreground text-sm font-medium">
-          Navigate to question:
+          {t("quizzes.navigateToQuestion")}
         </span>
         <span className="text-muted-foreground text-xs">
-          {answeredCount} of {totalQuestions} answered
+          {t("quizzes.of")} {answeredCount} {t("quizzes.of")} {totalQuestions}{" "}
+          {t("quizzes.answered")}
         </span>
       </div>
       <div className="flex flex-wrap gap-2">
@@ -135,6 +141,7 @@ export default function QuizPage() {
   const params = useParams();
   const router = useRouter();
   const queryClient = useQueryClient();
+  const t = useTranslations();
   const courseId = Number(params.courseId);
   const quizId = params.quizId as string;
   const [quizEndTimeDetails, setQuizEndTimeDetails] = useLocalStorage<{
@@ -285,11 +292,11 @@ export default function QuizPage() {
               );
 
               if (submitError) {
-                toast.error("Failed to submit previous quiz");
+                toast.error(t("quizzes.failedToSubmitPreviousQuiz"));
                 return;
               }
 
-              toast.info("Previous quiz was automatically submitted");
+              toast.info(t("quizzes.previousQuizWasAutomaticallySubmitted"));
             }
 
             // Set up new quiz timer
@@ -306,7 +313,7 @@ export default function QuizPage() {
             setSelectedAnswers({});
             setCurrentQuestionIndex(0);
           } catch (error) {
-            toast.error("Failed to switch quizzes");
+            toast.error(t("quizzes.failedToSwitchQuizzes"));
           }
         };
 
@@ -364,14 +371,14 @@ export default function QuizPage() {
       );
 
       if (error) {
-        toast.error("Failed to submit quiz. Please try again.");
+        toast.error(t("quizzes.failedToSubmitQuiz"));
         return;
       }
 
       // Reset local storage timer
       setQuizEndTimeDetails(null);
 
-      toast.success("Quiz submitted successfully");
+      toast.success(t("quizzes.quizSubmittedSuccessfully"));
 
       // Invalidate quiz completion status
       queryClient.invalidateQueries({
@@ -380,7 +387,7 @@ export default function QuizPage() {
 
       router.push(`/courses/${courseId}/quiz/${quizId}/results`);
     } catch (error) {
-      toast.error("An unexpected error occurred. Please try again.");
+      toast.error(t("common.somethingWentWrong"));
     } finally {
       setIsSubmitting(false);
     }
@@ -398,7 +405,7 @@ export default function QuizPage() {
   // Auto-submit when timer expires
   useEffect(() => {
     if (isTimerExpired && !isSubmitting && !quizCompleted) {
-      toast.warning("Time's up! Submitting your quiz automatically.");
+      toast.warning(t("quizzes.timeIsUpSubmittingQuizAutomatically"));
       handleSubmit();
     }
   }, [isTimerExpired, isSubmitting, quizCompleted, handleSubmit]);
@@ -437,8 +444,8 @@ export default function QuizPage() {
   if (quizError) {
     return (
       <ErrorState
-        title="Failed to load quiz"
-        buttonText="Back to Course"
+        title={t("quizzes.failedToLoadQuiz")}
+        buttonText={t("quizzes.backToCourse")}
         onButtonClick={() => router.push(`/courses/${courseId}`)}
       />
     );
@@ -447,8 +454,8 @@ export default function QuizPage() {
   if (completionError?.message === "Not enrolled in course") {
     return (
       <ErrorState
-        title="You are not enrolled in this course"
-        buttonText="Enroll Now"
+        title={t("quizzes.notEnrolledInCourse")}
+        buttonText={t("quizzes.enrollNow")}
         onButtonClick={() => router.push(`/courses/${courseId}/enroll`)}
       />
     );
@@ -457,8 +464,8 @@ export default function QuizPage() {
   if (completionError) {
     return (
       <ErrorState
-        title="Failed to load course data"
-        buttonText="Back to Course"
+        title={t("quizzes.failedToLoadCourseData")}
+        buttonText={t("quizzes.backToCourse")}
         onButtonClick={() => router.push(`/courses/${courseId}`)}
       />
     );
@@ -471,8 +478,8 @@ export default function QuizPage() {
   if (!enrollmentId) {
     return (
       <ErrorState
-        title="You are not enrolled in this course"
-        buttonText="Enroll Now"
+        title={t("quizzes.notEnrolledInCourse")}
+        buttonText={t("quizzes.enrollNow")}
         onButtonClick={() => router.push(`/courses/${courseId}/enroll`)}
       />
     );
@@ -481,8 +488,8 @@ export default function QuizPage() {
   if (!quiz) {
     return (
       <ErrorState
-        title="Quiz not found"
-        buttonText="Back to Course"
+        title={t("quizzes.quizNotFound")}
+        buttonText={t("quizzes.backToCourse")}
         onButtonClick={() => router.push(`/courses/${courseId}`)}
       />
     );
@@ -491,8 +498,8 @@ export default function QuizPage() {
   if (!currentQuestion) {
     return (
       <ErrorState
-        title="No questions available"
-        buttonText="Back to Course"
+        title={t("quizzes.noQuestionsAvailable")}
+        buttonText={t("quizzes.backToCourse")}
         onButtonClick={() => router.push(`/courses/${courseId}`)}
       />
     );
@@ -505,8 +512,8 @@ export default function QuizPage() {
     }
     return (
       <ErrorState
-        title="Quiz already completed"
-        buttonText="View Results"
+        title={t("quizzes.quizAlreadyCompleted")}
+        buttonText={t("quizzes.viewResults")}
         onButtonClick={() =>
           router.push(`/courses/${courseId}/quiz/${quizId}/results`)
         }
@@ -526,7 +533,8 @@ export default function QuizPage() {
           {/* Progress and question count */}
           <div className="mb-2 flex items-center justify-between">
             <div className="text-2xl font-bold">
-              Question {currentQuestionIndex + 1} of {totalQuestions}
+              {t("quizzes.question")} {currentQuestionIndex + 1}{" "}
+              {t("quizzes.of")} {totalQuestions}
             </div>
             <div className="text-sm font-medium">{progressText}</div>
           </div>
@@ -587,7 +595,7 @@ export default function QuizPage() {
               disabled={currentQuestionIndex === 0 || isTimerExpired}
               className="min-w-[100px]"
             >
-              Previous
+              {t("common.previous")}
             </Button>
             {currentQuestionIndex === totalQuestions - 1 ? (
               <Button
@@ -602,10 +610,10 @@ export default function QuizPage() {
                 {isSubmitting ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Submitting...
+                    {t("common.submitting")}
                   </>
                 ) : (
-                  "Submit Quiz"
+                  t("quizzes.submitQuiz")
                 )}
               </Button>
             ) : (
@@ -616,7 +624,7 @@ export default function QuizPage() {
                   !selectedAnswers[currentQuestion.id] || isTimerExpired
                 }
               >
-                Next
+                {t("common.next")}
               </Button>
             )}
           </div>

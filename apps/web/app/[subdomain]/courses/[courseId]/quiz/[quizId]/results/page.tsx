@@ -5,19 +5,22 @@ import { getQuizResults, isQuizCompleted } from "@/lib/quizzes";
 import { attempt, cn } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
+import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { toast } from "sonner";
 
 export default function ResultsPage() {
   const { courseId, quizId } = useParams();
+  const t = useTranslations();
+
   const { data: quizResultsData, isLoading: isQuizResultsLoading } = useQuery({
     queryKey: ["quizResults", quizId],
     queryFn: async () => {
       const [response, error] = await attempt(getQuizResults(quizId as string));
 
       if (error) {
-        toast.error("Failed to get quiz results");
+        toast.error(t("common.somethingWentWrong"));
         return null;
       }
       return response.data;
@@ -33,7 +36,7 @@ export default function ResultsPage() {
         );
 
         if (error) {
-          toast.error("Failed to check quiz completion");
+          toast.error(t("common.somethingWentWrong"));
           return null;
         }
 
@@ -53,7 +56,9 @@ export default function ResultsPage() {
   if (!quizCompletion?.completed) {
     return (
       <div className="flex min-h-[calc(100vh-200px)] flex-col items-center justify-center">
-        <h2 className="text-2xl font-semibold">Quiz not completed</h2>
+        <h2 className="text-2xl font-semibold">
+          {t("quizzes.quizNotCompleted")}
+        </h2>
         <Link
           href={`/courses/${courseId}/quiz/${quizId}`}
           className={cn(
@@ -61,7 +66,7 @@ export default function ResultsPage() {
             "mt-4",
           )}
         >
-          Start Quiz
+          {t("quizzes.startQuiz")}
         </Link>
       </div>
     );
@@ -73,7 +78,9 @@ export default function ResultsPage() {
 
   return (
     <div className="mx-auto mt-10 max-w-2xl rounded-lg p-6 shadow">
-      <h1 className="mb-2 text-center text-2xl font-bold">Quiz Results</h1>
+      <h1 className="mb-2 text-center text-2xl font-bold">
+        {t("quizzes.quizResults")}
+      </h1>
       <h2 className="text-muted-foreground mb-3 text-center text-lg">
         {results.quiz.title}
       </h2>
@@ -87,24 +94,27 @@ export default function ResultsPage() {
           {percentage}%
         </div>
         <div className="text-muted-foreground mt-2 text-sm">
-          {percentage >= 70 ? "Great job!" : "Keep practicing!"}
+          {percentage >= 70
+            ? t("quizzes.greatJob")
+            : t("quizzes.keepPracticing")}
         </div>
       </div>
       <div className="mb-6">
-        <h3 className="mb-2 font-semibold">Summary</h3>
+        <h3 className="mb-2 font-semibold">{t("quizzes.summary")}</h3>
         <div className="flex gap-4">
           <span className="text-green-600">
-            Correct: {Math.round(Number(results.score) * questionsCount)}
+            {t("quizzes.correct")}:{" "}
+            {Math.round(Number(results.score) * questionsCount)}
           </span>
           <span className="text-red-600">
-            Incorrect:{" "}
+            {t("quizzes.incorrect")}:{" "}
             {questionsCount -
               Math.round(Number(results.score) * questionsCount)}
           </span>
         </div>
       </div>
       <div className="mb-8">
-        <h3 className="mb-2 font-semibold">Detailed Answers</h3>
+        <h3 className="mb-2 font-semibold">{t("quizzes.detailedAnswers")}</h3>
         <ul className="space-y-4">
           {results.questions.map((q, idx) => (
             <li
@@ -112,10 +122,12 @@ export default function ResultsPage() {
               className={`rounded border-2 p-4 ${q.submittedAnswer.id === q.correctAnswer.id ? "bg-accent/50 border-green-300" : "bg-accent/50 border-red-300"}`}
             >
               <div className="font-medium">
-                Q{idx + 1}: {q.questionText}
+                {t("quizzes.question")} {idx + 1}: {q.questionText}
               </div>
               <div className="ml-2">
-                <span className="font-semibold">Your answer:</span>{" "}
+                <span className="font-semibold">
+                  {t("quizzes.yourAnswer")}:
+                </span>{" "}
                 <span
                   className={
                     q.submittedAnswer.id === q.correctAnswer.id
@@ -128,7 +140,9 @@ export default function ResultsPage() {
               </div>
               {q.submittedAnswer.id !== q.correctAnswer.id && (
                 <div className="text-muted-foreground ml-2 text-sm">
-                  <span className="font-semibold">Correct answer:</span>{" "}
+                  <span className="font-semibold">
+                    {t("quizzes.correctAnswer")}:
+                  </span>{" "}
                   {q.correctAnswer.answerText}
                 </div>
               )}
@@ -141,7 +155,7 @@ export default function ResultsPage() {
           className={cn(buttonVariants({ variant: "outline" }), "w-full")}
           href={`/courses/${courseId}`}
         >
-          Back to Course
+          {t("quizzes.backToCourse")}
         </Link>
       </div>
     </div>
