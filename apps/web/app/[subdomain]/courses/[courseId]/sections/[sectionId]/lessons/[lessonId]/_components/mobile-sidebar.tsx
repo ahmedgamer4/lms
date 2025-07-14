@@ -1,7 +1,8 @@
 import { SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { SidebarContent } from "./sidebar-content";
 import { CourseWithSectionsAndEnrollments } from "@/lib/courses";
-import { useEffect, useState } from "react";
+import { useAtom } from "jotai";
+import { localeAtom } from "@/lib/atoms";
 
 export function MobileSidebar({
   course,
@@ -10,23 +11,13 @@ export function MobileSidebar({
   course: CourseWithSectionsAndEnrollments;
   lessonId: number;
 }) {
-  const [locale, setLocale] = useState<string | undefined>(undefined);
-
-  useEffect(() => {
-    const cookie = document.cookie;
-    const locale = cookie
-      .split("; ")
-      .find((ele) => ele.startsWith("NEXT_LOCALE="))
-      ?.split("=")[1];
-    setLocale(locale);
-  }, []);
+  const [locale] = useAtom(localeAtom);
 
   return (
     <SheetContent side={locale === "ar" ? "right" : "left"}>
-      <SheetHeader>
-        <SheetTitle className="text-primary">{course.title}</SheetTitle>
-      </SheetHeader>
-      <div className="px-4">
+      <SheetHeader></SheetHeader>
+      <div className="overflow-y-scroll px-4">
+        <h3 className="text-primary text-xl font-semibold">{course.title}</h3>
         <SidebarContent course={course} lessonId={lessonId} />
       </div>
     </SheetContent>

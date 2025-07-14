@@ -31,6 +31,8 @@ import { checkIfQuizCompleted } from "@/lib/quizzes";
 import { useParams } from "next/navigation";
 import { toast } from "sonner";
 import { useTranslations } from "next-intl";
+import { useAtom } from "jotai";
+import { localeAtom } from "@/lib/atoms";
 
 interface SidebarContentProps {
   course: CourseWithSectionsAndEnrollments;
@@ -280,14 +282,15 @@ function SectionAccordion({
   const hasActiveLesson = section.lessons?.some(
     (lesson) => lesson.id === lessonId,
   );
+  const [locale] = useAtom(localeAtom);
   const t = useTranslations();
 
   return (
     <Card
       key={section.id}
       className={cn(
-        "border-0 shadow-sm",
-        isCurrentSection && "ring-primary/20 bg-primary/5 ring-2",
+        "shadow-sm",
+        isCurrentSection && "ring-primary/20 bg-primary/5 border-0 ring-2",
       )}
     >
       <Accordion defaultValue={defaultValue} type="single" collapsible>
@@ -309,7 +312,12 @@ function SectionAccordion({
               >
                 <BookOpen className="h-4 w-4" />
               </div>
-              <div className="flex-1 text-left">
+              <div
+                className={cn(
+                  "flex-1 text-right",
+                  locale === "en" && "text-left",
+                )}
+              >
                 <div className="font-medium">{section.title}</div>
                 <div className="text-muted-foreground mt-0.5 text-xs">
                   {section.lessons?.length || 0} {t("courses.lessons")}
@@ -346,8 +354,8 @@ export function SidebarContent({ course, lessonId }: SidebarContentProps) {
   const t = useTranslations();
 
   return (
-    <div className="space-y-3 p-1">
-      <div className="px-2 py-3">
+    <div className="space-y-2 lg:px-2">
+      <div className="py-3">
         <h2 className="text-foreground mb-1 text-lg font-semibold">
           {t("courses.courseContent")}
         </h2>
