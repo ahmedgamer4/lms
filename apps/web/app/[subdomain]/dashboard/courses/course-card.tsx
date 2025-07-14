@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { SelectCourse } from "@lms-saas/shared-lib";
-import { Pen, Users, Clock, Star } from "lucide-react";
+import { Pen, Users, Star, BookOpen } from "lucide-react";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import Image from "next/image";
@@ -25,9 +25,9 @@ export function CourseCard({
     <Card className="group hover:border-primary/50 flex flex-col overflow-hidden rounded-xl border transition-all duration-300 hover:shadow-lg">
       <CardHeader className="relative p-0">
         <Image
-          width={600}
+          width={300}
           height={192}
-          src={course.imageUrl || "https://picsum.photos/600/400"}
+          src={course.imageUrl || "https://picsum.photos/300/192"}
           alt={course.title}
           className="h-48 w-full object-cover transition-transform duration-300 group-hover:scale-105"
         />
@@ -59,7 +59,7 @@ export function CourseCard({
             </span>
           </div>
           <div className="flex items-center gap-1">
-            <Clock className="h-4 w-4" />
+            <BookOpen className="h-4 w-4" />
             <span>
               {course.lessonsCount} {t("lessons")}
             </span>

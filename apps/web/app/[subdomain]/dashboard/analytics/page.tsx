@@ -382,8 +382,8 @@ export default function AnalyticsPage() {
         />
         <MetricCard
           title={t("metrics.completionRate")}
-          value={`${overview?.avgCompletionRate}%`}
-          change={Number(overview?.completionGrowth) || 0}
+          value={`${Number(overview?.avgCompletionRate).toFixed(2)}%`}
+          change={overview?.completionGrowth || 0}
           icon={Target}
           trend="down"
         />
