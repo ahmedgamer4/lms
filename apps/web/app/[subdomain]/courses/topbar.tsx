@@ -17,10 +17,12 @@ import { getSession } from "@/lib/session";
 import { LogOut, User } from "lucide-react";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 
 export function Topbar() {
   const params = useParams();
   const [user, setUser] = useState<{ name: string } | null>(null);
+  const t = useTranslations();
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -40,7 +42,7 @@ export function Topbar() {
     <div className="bg-muted border-b">
       <div className="mx-auto flex h-16 items-center justify-between px-4">
         <div className="flex items-center gap-2">
-          <h1 className="text-xl font-bold">{params.subdomain} Platform</h1>
+          <h1 className="text-xl font-bold">{params.subdomain}</h1>
         </div>
 
         <div className="flex items-center gap-2">
@@ -71,7 +73,7 @@ export function Topbar() {
                 onClick={handleLogout}
               >
                 <LogOut className="h-5 w-5" />
-                Logout
+                {t("navigation.logout")}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
