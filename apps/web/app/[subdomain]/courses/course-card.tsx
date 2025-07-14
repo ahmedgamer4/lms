@@ -20,18 +20,18 @@ export function CourseCard({ course }: { course: CourseWithEnrollments }) {
 
   return (
     <Card className="hover:border-primary/50 overflow-hidden rounded-lg border transition-all duration-300 hover:shadow-lg">
-      <CardHeader className="relative p-0">
-        <div className="relative aspect-video">
+      <CardHeader className="border-border relative border-b p-0">
+        <div className="relative mb-0 aspect-video h-full">
           {course.imageUrl ? (
             <Image
               src={course.imageUrl}
               alt={course.title}
-              className="h-48 w-full object-cover"
-              width={600}
+              className="h-full w-full object-cover"
+              width={300}
               height={192}
             />
           ) : (
-            <div className="bg-muted flex h-48 w-full items-center justify-center">
+            <div className="bg-muted flex h-full w-full items-center justify-center">
               <BookOpen className="text-muted-foreground h-12 w-12" />
             </div>
           )}
@@ -61,7 +61,7 @@ export function CourseCard({ course }: { course: CourseWithEnrollments }) {
             <span>{t("courses.students")}</span>
           </div>
           <div className="flex items-center gap-1">
-            <Clock className="h-4 w-4" />
+            <BookOpen className="h-4 w-4" />
             {course.lessonsCount}
             <span>{t("courses.lessons")}</span>
           </div>
