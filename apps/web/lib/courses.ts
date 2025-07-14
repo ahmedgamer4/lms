@@ -50,6 +50,7 @@ export type CourseWithSectionsAndEnrollments = SelectCourse & {
     progress: number;
     enrolledAt: Date;
   }[];
+  studentsCount: number;
 };
 
 export async function getCoursesByTeacherId(
