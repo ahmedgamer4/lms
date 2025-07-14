@@ -7,13 +7,15 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { localeAtom } from "@/lib/atoms";
+import { useAtom } from "jotai";
 import { Globe } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 
 export default function LanguageSwitcher() {
   const router = useRouter();
-  const [locale, setLocale] = useState("ar");
+  const [locale, setLocale] = useAtom(localeAtom);
 
   useEffect(() => {
     const currentLocale =
@@ -21,7 +23,7 @@ export default function LanguageSwitcher() {
         .split("; ")
         .find((row) => row.startsWith("NEXT_LOCALE="))
         ?.split("=")[1] || "ar";
-    setLocale(currentLocale);
+    setLocale(currentLocale as "ar" | "en");
   }, []);
 
   const languages = [
@@ -30,9 +32,8 @@ export default function LanguageSwitcher() {
   ];
 
   const handleLanguageChange = (newLocale: string) => {
-    // Set cookie
     document.cookie = `NEXT_LOCALE=${newLocale}; path=/; max-age=${60 * 60 * 24 * 365}`;
-    setLocale(newLocale);
+    setLocale(newLocale as "ar" | "en");
     router.refresh();
   };
 
