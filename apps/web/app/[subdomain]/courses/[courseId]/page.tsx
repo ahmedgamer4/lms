@@ -83,13 +83,13 @@ export default function CoursePage() {
 
             <div className="flex flex-wrap gap-4 text-sm text-gray-500">
               <div className="flex items-center gap-1">
-                {course.studentsCount || 0}
                 <Users className="h-4 w-4" />
+                {course.studentsCount || 0}
                 <span>{t("courses.students")}</span>
               </div>
               <div className="flex items-center gap-1">
+                <BookOpen className="h-4 w-4" />
                 {course.lessonsCount || 0}
-                <Clock className="h-4 w-4" />
                 <span>{t("courses.lessons")}</span>
               </div>
               <div className="flex items-center gap-1">

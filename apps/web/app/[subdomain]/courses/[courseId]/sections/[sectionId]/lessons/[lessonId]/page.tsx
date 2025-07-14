@@ -169,7 +169,7 @@ export default function LessonPage() {
           userSelect: "none",
         }}
       >
-        <aside className="border-border/70 bg-muted sticky top-0 hidden h-full w-80 border-r border-l p-2 lg:block">
+        <aside className="border-border/70 bg-muted sticky top-0 hidden h-full w-90 border-r border-l p-2 lg:block">
           <div className="p-2">
             <h2 className="text-primary text-2xl font-semibold text-wrap">
               {course.title}
@@ -181,10 +181,11 @@ export default function LessonPage() {
         <div className="flex w-full flex-col items-center justify-center px-4 py-2 md:flex-1 md:p-8">
           <div className="mb-2 flex w-full max-w-6xl items-center gap-2">
             <div className="lg:hidden">
-              <SheetTrigger asChild>
-                <Button variant="outline" className="" size="icon">
-                  <Menu size={24} />
-                </Button>
+              <SheetTrigger
+                className={cn(buttonVariants({ variant: "outline" }))}
+              >
+                <Menu size={24} />
+                <span>{t("courses.courseContent")}</span>
               </SheetTrigger>
             </div>
             <Link
