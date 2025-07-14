@@ -37,7 +37,7 @@ export function Topbar() {
   };
 
   return (
-    <div className="bg-background border-b">
+    <div className="bg-muted border-b">
       <div className="mx-auto flex h-16 items-center justify-between px-4">
         <div className="flex items-center gap-2">
           <h1 className="text-xl font-bold">{params.subdomain} Platform</h1>
