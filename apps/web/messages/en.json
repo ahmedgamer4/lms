@@ -55,7 +55,8 @@
     "uploading": "Uploading",
     "questions": "Questions",
     "answers": "Answers",
-    "submitting": "Submitting"
+    "submitting": "Submitting",
+    "current": "Current"
   },
   "navigation": {
     "home": "Home",
@@ -151,7 +152,17 @@
     "noCoursesAvailable": "No courses available at the moment",
     "progress": "Progress",
     "enrollNow": "Enroll Now",
-    "description": "Explore our wide range of courses and start your learning journey today."
+    "description": "Explore our wide range of courses and start your learning journey today.",
+    "enrollInCourse": "Enroll in Course",
+    "pleaseEnterCourseCode": "Please enter the course code to enroll in the course.",
+    "courseCode": "Course Code",
+    "courseCodePlaceholder": "Enter course code",
+    "enrolling": "Enrolling...",
+    "notEnrolled": "You are not enrolled in this course",
+    "backToCourses": "Back to courses",
+    "yourProgress": "Your Progress",
+    "sections": "Sections",
+    "lesson": "lesson"
   },
   "lessons": {
     "title": "Lessons",
@@ -174,7 +185,13 @@
     "createQuizToTestYourStudentsKnowledge": "Create a quiz to test your students' knowledge",
     "addNewQuizToTestYourStudentsKnowledge": "Add a new quiz to test your students' knowledge",
     "quiz": "Quiz",
-    "video": "Video"
+    "video": "Video",
+    "videoCompleted": "Video completed",
+    "markCompleted": "Mark as Completed",
+    "lessonResources": "Lesson Resources",
+    "watchVideo": "Watch Video",
+    "takeQuiz": "Take Quiz",
+    "lessonNumber": "Lesson Number"
   },
   "quizzes": {
     "title": "Quizzes",

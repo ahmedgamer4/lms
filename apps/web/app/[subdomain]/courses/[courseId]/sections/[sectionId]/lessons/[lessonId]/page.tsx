@@ -25,6 +25,7 @@ import purify from "dompurify";
 import { Separator } from "@/components/ui/separator";
 import { toast } from "sonner";
 import { checkIfVideoCompleted, completeVideo } from "@/lib/videos";
+import { useTranslations } from "next-intl";
 
 export default function LessonPage() {
   const queryClient = useQueryClient();
@@ -33,13 +34,14 @@ export default function LessonPage() {
   const sectionId = Number(params.sectionId);
   const lessonId = Number(params.lessonId);
   const [blur, setBlur] = useState(false);
+  const t = useTranslations();
 
   const { data: courseResponse, isLoading: courseLoading } = useQuery({
     queryKey: ["student-course", courseId],
     queryFn: async () => {
       const [response, error] = await attempt(getCourse(courseId, true, true));
       if (error) {
-        toast.error("Failed to fetch course");
+        toast.error(t("common.somethingWentWrong"));
         return;
       }
       return response;
@@ -53,7 +55,7 @@ export default function LessonPage() {
         findLesson(courseId, sectionId, lessonId),
       );
       if (error) {
-        toast.error("Failed to fetch lesson");
+        toast.error(t("common.somethingWentWrong"));
         return;
       }
       return response;
@@ -76,7 +78,7 @@ export default function LessonPage() {
         ),
       );
       if (error) {
-        toast.error("Failed to check if video is completed");
+        toast.error(t("common.somethingWentWrong"));
         return;
       }
       return response?.data;
@@ -117,7 +119,7 @@ export default function LessonPage() {
     );
 
     if (error) {
-      toast.error("Failed to complete video");
+      toast.error(t("common.somethingWentWrong"));
       return;
     }
 
@@ -129,7 +131,7 @@ export default function LessonPage() {
       queryKey: ["lesson-completed", lessonId],
     });
 
-    toast.success("Video completed");
+    toast.success(t("lessons.videoCompleted"));
   };
 
   const nav = useMemo(() => {
@@ -167,9 +169,9 @@ export default function LessonPage() {
           userSelect: "none",
         }}
       >
-        <aside className="bg-muted/60 sticky top-0 hidden h-full overflow-y-auto border-r p-2 lg:block">
+        <aside className="border-border/70 bg-muted sticky top-0 hidden h-full w-80 border-r border-l p-2 lg:block">
           <div className="p-2">
-            <h2 className="text-primary mb-4 text-2xl font-semibold text-wrap">
+            <h2 className="text-primary text-2xl font-semibold text-wrap">
               {course.title}
             </h2>
           </div>
@@ -190,7 +192,7 @@ export default function LessonPage() {
               className={cn(buttonVariants({ variant: "outline" }))}
             >
               <ArrowLeft className="rotate-rtl h-4 w-4" />
-              <span>Back to Courses</span>
+              <span>{t("courses.backToCourses")}</span>
             </Link>
           </div>
 
@@ -234,7 +236,9 @@ export default function LessonPage() {
                 ) : (
                   <Video className="h-3 w-3" />
                 )}
-                {isVideoCompleted?.completed ? "Completed" : "Mark Completed"}
+                {isVideoCompleted?.completed
+                  ? t("lessons.completed")
+                  : t("lessons.markCompleted")}
               </Button>
             )}
             {nav.prev && (

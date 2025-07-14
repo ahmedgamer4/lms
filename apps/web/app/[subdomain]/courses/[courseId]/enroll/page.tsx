@@ -39,9 +39,10 @@ import {
   FormItem,
 } from "@/components/ui/form";
 import { validateCourseCode } from "@/lib/course-codes";
-
+import { useTranslations } from "next-intl";
 export default function CourseEnrollPage() {
   const params = useParams();
+  const t = useTranslations();
   const courseId = Number(params.courseId);
 
   const { data: courseResponse, isLoading } = useQuery({
@@ -72,7 +73,7 @@ export default function CourseEnrollPage() {
         <div className="flex-1">
           <h1 className="mb-2 text-3xl font-bold">{course.title}</h1>
           <p className="text-muted-foreground mb-6 max-w-xl">
-            {course.description}
+            {course.description || t("courses.noDescriptionAvailable")}
           </p>
           <div className="overflow-hidden rounded-md">
             <div className="space-y-6">
@@ -82,15 +83,18 @@ export default function CourseEnrollPage() {
                     <div className="bg-primary/10 flex h-10 w-10 items-center justify-center rounded-full">
                       <BookOpen className="text-primary h-5 w-5" />
                     </div>
-                    <h2 className="text-xl font-semibold">Course Content</h2>
+                    <h2 className="text-xl font-semibold">
+                      {t("courses.courseContent")}
+                    </h2>
                   </div>
                   <p className="text-muted-foreground text-sm">
-                    {course.courseSections?.length || 0} chapters •{" "}
+                    {course.courseSections?.length || 0} {t("courses.chapters")}{" "}
+                    •{" "}
                     {course.courseSections?.reduce(
                       (acc, section) => acc + (section.lessons?.length || 0),
                       0,
                     )}{" "}
-                    lessons
+                    {t("courses.lessons")}
                   </p>
                 </div>
               </div>
@@ -159,19 +163,22 @@ export default function CourseEnrollPage() {
                   {course.title}
                 </h3>
                 <p className="text-muted-foreground line-clamp-2 text-sm">
-                  {course.description ||
-                    "No description available for this course."}
+                  {course.description || t("courses.noDescriptionAvailable")}
                 </p>
               </div>
 
               <div className="text-muted-foreground mt-auto flex items-center gap-4 text-sm">
                 <div className="flex items-center gap-1">
                   <Users className="h-4 w-4" />
-                  <span>0 students</span>
+                  <span>
+                    {course.studentsCount} {t("courses.students")}
+                  </span>
                 </div>
                 <div className="flex items-center gap-1">
                   <Clock className="h-4 w-4" />
-                  <span>0 hours</span>
+                  <span>
+                    {course.lessonsCount} {t("courses.lessons")}
+                  </span>
                 </div>
                 <div className="flex items-center gap-1">
                   <Star className="h-4 w-4" />
@@ -182,7 +189,7 @@ export default function CourseEnrollPage() {
               {course.enrollments?.[0] && (
                 <div>
                   <div className="text-muted-foreground mb-1 flex items-center justify-between text-sm">
-                    <span>Progress</span>
+                    <span>{t("courses.progress")}</span>
                     <span>{course.enrollments[0].progress}%</span>
                   </div>
                   <div className="bg-secondary h-2 w-full rounded-full">
@@ -205,7 +212,7 @@ export default function CourseEnrollPage() {
                   )}
                 >
                   <BookOpen className="h-4 w-4" />
-                  Course Details
+                  {t("courses.courseDetails")}
                 </Link>
               ) : (
                 <DialogTrigger asChild>
@@ -214,7 +221,7 @@ export default function CourseEnrollPage() {
                     className="w-full gap-2 text-sm transition-colors"
                   >
                     <BookOpen className="h-4 w-4" />
-                    Enroll Now
+                    {t("courses.enrollNow")}
                   </Button>
                 </DialogTrigger>
               )}
@@ -229,8 +236,8 @@ export default function CourseEnrollPage() {
 
 const EnrollDialogContent = ({ courseId }: { courseId: number }) => {
   const router = useRouter();
-  const queryClient = useQueryClient();
   const resolver = useMemo(() => classValidatorResolver(ValidateCodeDto), []);
+  const t = useTranslations();
   const form = useForm<ValidateCodeDto>({
     resolver,
     defaultValues: {
@@ -256,10 +263,10 @@ const EnrollDialogContent = ({ courseId }: { courseId: number }) => {
   return (
     <DialogContent>
       <DialogHeader>
-        <DialogTitle>Enroll in Course</DialogTitle>
+        <DialogTitle>{t("courses.enrollInCourse")}</DialogTitle>
       </DialogHeader>
       <DialogDescription>
-        Please enter the course code to enroll in the course.
+        {t("courses.pleaseEnterCourseCode")}
       </DialogDescription>
       <DialogFooter>
         <Form {...form}>
@@ -272,9 +279,13 @@ const EnrollDialogContent = ({ courseId }: { courseId: number }) => {
               name="code"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Course Code</FormLabel>
+                  <FormLabel>{t("courses.courseCode")}</FormLabel>
                   <FormControl>
-                    <Input type="text" placeholder="Course Code" {...field} />
+                    <Input
+                      type="text"
+                      placeholder={t("courses.courseCodePlaceholder")}
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -284,7 +295,9 @@ const EnrollDialogContent = ({ courseId }: { courseId: number }) => {
               type="submit"
               disabled={form.formState.isSubmitting || !form.formState.isValid}
             >
-              {form.formState.isSubmitting ? "Enrolling..." : "Enroll"}
+              {form.formState.isSubmitting
+                ? t("courses.enrolling")
+                : t("courses.enroll")}
             </Button>
           </form>
         </Form>

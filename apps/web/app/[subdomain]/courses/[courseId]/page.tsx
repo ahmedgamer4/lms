@@ -11,6 +11,7 @@ import {
   Users,
   ChevronRight,
   ArrowLeft,
+  List,
 } from "lucide-react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button, buttonVariants } from "@/components/ui/button";
@@ -19,17 +20,21 @@ import { Separator } from "@/components/ui/separator";
 import Link from "next/link";
 import { attempt } from "@/lib/utils";
 import { toast } from "sonner";
+import { useTranslations } from "next-intl";
+import Image from "next/image";
 
 export default function CoursePage() {
   const params = useParams();
   const courseId = Number(params.courseId);
+
+  const t = useTranslations();
 
   const { data: courseResponse, isLoading } = useQuery({
     queryKey: ["student-course", courseId],
     queryFn: async () => {
       const [response, error] = await attempt(getCourse(courseId, true, true));
       if (error) {
-        toast.error("Error fetching course");
+        toast.error(t("common.somethingWentWrong"));
         return;
       }
       return response;
@@ -49,11 +54,9 @@ export default function CoursePage() {
   if (!course.enrollments?.[0]) {
     return (
       <div className="flex h-[calc(100vh-200px)] flex-col items-center justify-center gap-4 px-4">
-        <h1 className="text-2xl font-bold">
-          You are not enrolled in this course
-        </h1>
+        <h1 className="text-2xl font-bold">{t("courses.notEnrolled")}</h1>
         <Link href={`/courses/${courseId}/enroll`}>
-          <Button>Enroll Now</Button>
+          <Button>{t("courses.enrollNow")}</Button>
         </Link>
       </div>
     );
@@ -66,7 +69,7 @@ export default function CoursePage() {
         className={buttonVariants({ variant: "outline" })}
       >
         <ArrowLeft className="rotate-rtl h-4 w-4" />
-        Back to courses
+        {t("courses.backToCourses")}
       </Link>
       <div className="flex flex-col gap-4 md:flex-row md:items-start">
         <div className="flex flex-1 flex-col gap-4">
@@ -74,29 +77,31 @@ export default function CoursePage() {
             <div>
               <h1 className="text-3xl font-bold">{course.title}</h1>
               <p className="text-muted-foreground mt-2">
-                {course.description || "No description provided."}
+                {course.description || t("courses.noDescriptionAvailable")}
               </p>
             </div>
 
             <div className="flex flex-wrap gap-4 text-sm text-gray-500">
               <div className="flex items-center gap-1">
+                {course.studentsCount || 0}
                 <Users className="h-4 w-4" />
-                <span>0 students</span>
+                <span>{t("courses.students")}</span>
               </div>
               <div className="flex items-center gap-1">
+                {course.lessonsCount || 0}
                 <Clock className="h-4 w-4" />
-                <span>0 hours</span>
+                <span>{t("courses.lessons")}</span>
               </div>
               <div className="flex items-center gap-1">
                 <Star className="h-4 w-4" />
-                <span>0.0</span>
+                <span>{t("courses.rating")}</span>
               </div>
             </div>
           </div>
 
           <div>
             <div className="mb-1 flex items-center justify-between text-sm text-gray-600">
-              <span>Your Progress</span>
+              <span>{t("courses.yourProgress")}</span>
               <span>{course.enrollments[0].progress}%</span>
             </div>
             <div className="bg-secondary h-2 w-full rounded-full">
@@ -110,9 +115,10 @@ export default function CoursePage() {
 
         <Card className="w-full md:w-[350px]">
           <CardHeader className="relative p-0">
-            <div className="relative aspect-video">
+            <div className="relative aspect-video h-48">
               {course.imageUrl ? (
-                <img
+                <Image
+                  fill
                   src={course.imageUrl}
                   alt={course.title}
                   className="h-full w-full object-cover"
@@ -142,17 +148,19 @@ export default function CoursePage() {
           <div className="space-y-1">
             <div className="flex items-center gap-3">
               <div className="bg-primary/10 flex h-10 w-10 items-center justify-center rounded-full">
-                <BookOpen className="text-primary h-5 w-5" />
+                <List className="text-primary h-5 w-5" />
               </div>
-              <h2 className="text-xl font-semibold">Course Content</h2>
+              <h2 className="text-xl font-semibold">
+                {t("courses.courseContent")}
+              </h2>
             </div>
             <p className="text-muted-foreground text-sm">
-              {course.courseSections?.length || 0} chapters •{" "}
+              {course.courseSections?.length || 0} {t("courses.chapters")} •{" "}
               {course.courseSections?.reduce(
                 (acc, section) => acc + (section.lessons?.length || 0),
                 0,
               )}{" "}
-              lessons
+              {t("courses.lessons")}
             </p>
           </div>
         </div>
@@ -177,7 +185,7 @@ export default function CoursePage() {
                         </div>
                         <span>{lesson.title}</span>
                       </div>
-                      <ChevronRight className="text-muted-foreground h-4 w-4" />
+                      <ChevronRight className="text-muted-foreground rotate-rtl h-4 w-4" />
                     </Link>
                   ))}
                 </div>

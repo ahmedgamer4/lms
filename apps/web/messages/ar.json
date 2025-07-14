@@ -55,7 +55,8 @@
     "upload": "رفع",
     "questions": "أسئلة",
     "answers": "إجابات",
-    "submitting": "يتم إرسال"
+    "submitting": "يتم إرسال",
+    "current": "حالي"
   },
   "navigation": {
     "home": "الرئيسية",
@@ -146,7 +147,17 @@
     "noCoursesAvailable": "لا يوجد دورات متاحة",
     "progress": "التقدم",
     "enrollNow": "تسجيل الآن",
-    "description": "استكشف مجموعة واسعة من الدورات وابدأ رحلتك في التعلم اليوم."
+    "description": "استكشف مجموعة واسعة من الدورات وابدأ رحلتك في التعلم اليوم.",
+    "enrollInCourse": "تسجيل في الدورة",
+    "pleaseEnterCourseCode": "يرجى إدخال كود الدورة",
+    "courseCode": "كود الدورة",
+    "courseCodePlaceholder": "أدخل كود الدورة",
+    "enrolling": "يتم تسجيل الدخول...",
+    "notEnrolled": "أنت لست مسجل في هذه الدورة",
+    "backToCourses": "رجوع إلى الدورات",
+    "yourProgress": "تقدمك",
+    "sections": "الفصول",
+    "lesson": "الدرس"
   },
   "lessons": {
     "title": "الدروس",
@@ -169,7 +180,13 @@
     "createQuizToTestYourStudentsKnowledge": "إنشاء اختبار لاختبار معلومات الطلاب",
     "addNewQuizToTestYourStudentsKnowledge": "إضافة اختبار جديد لاختبار معلومات الطلاب",
     "quiz": "اختبار",
-    "video": "فيديو"
+    "video": "فيديو",
+    "videoCompleted": "تم الانتهاء من الفيديو",
+    "markCompleted": "تحديد كمكتمل",
+    "lessonResources": "موارد الدرس",
+    "watchVideo": "مشاهدة الفيديو",
+    "takeQuiz": "إجراء الاختبار",
+    "lessonNumber": "الدرس رقم"
   },
   "quizzes": {
     "title": "الاختبارات",

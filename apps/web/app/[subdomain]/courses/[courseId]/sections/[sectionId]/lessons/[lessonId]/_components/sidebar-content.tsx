@@ -30,6 +30,7 @@ import { checkIfVideoCompleted } from "@/lib/videos";
 import { checkIfQuizCompleted } from "@/lib/quizzes";
 import { useParams } from "next/navigation";
 import { toast } from "sonner";
+import { useTranslations } from "next-intl";
 
 interface SidebarContentProps {
   course: CourseWithSectionsAndEnrollments;
@@ -67,13 +68,13 @@ const generateQuizUrl = (courseId: number, quizId: string) =>
   `/courses/${courseId}/quiz/${quizId}`;
 
 function LoadingSpinner() {
+  const t = useTranslations();
+
   return (
     <div className="flex h-full items-center justify-center">
       <div className="flex flex-col items-center gap-3">
         <Loader2 className="text-primary h-8 w-8 animate-spin" />
-        <p className="text-muted-foreground text-sm">
-          Loading course content...
-        </p>
+        <p className="text-muted-foreground text-sm">{t("common.loading")}</p>
       </div>
     </div>
   );
@@ -92,9 +93,9 @@ function LessonResources({
   sectionId: number;
   lessonId: number;
 }) {
+  const t = useTranslations();
   const hasVideos = lesson.videos && lesson.videos.length > 0;
   const hasQuizzes = lesson.quizzes && lesson.quizzes.length > 0;
-
   const videoId = lesson.videos?.[0]?.id;
   const quizId = lesson.quizzes?.[0]?.id;
 
@@ -109,7 +110,7 @@ function LessonResources({
         checkIfVideoCompleted(lessonId, videoId, enrollmentId),
       );
       if (error || !response) {
-        throw error || new Error("Failed to check if lesson is completed");
+        throw error || new Error(t("common.somethingWentWrong"));
       }
       return response?.data;
     },
@@ -124,7 +125,7 @@ function LessonResources({
         checkIfQuizCompleted(quizId, enrollmentId),
       );
       if (error || !response) {
-        throw error || new Error("Failed to check if lesson is completed");
+        throw error || new Error(t("common.somethingWentWrong"));
       }
       return response.data;
     },
@@ -137,7 +138,7 @@ function LessonResources({
   return (
     <div className="mt-3 space-y-2">
       <div className="text-muted-foreground mb-2 text-xs font-medium">
-        Lesson Resources
+        {t("lessons.lessonResources")}
       </div>
       <div className="flex flex-col gap-2">
         {hasVideos && (
@@ -155,7 +156,7 @@ function LessonResources({
             ) : (
               <Video className="h-3 w-3" />
             )}
-            <span>Watch Video</span>
+            <span>{t("lessons.watchVideo")}</span>
             <Badge variant="secondary" className="ml-auto text-xs">
               {lesson.videos?.length || 0}
             </Badge>
@@ -176,7 +177,7 @@ function LessonResources({
             ) : (
               <FileText className="h-3 w-3" />
             )}
-            <span>Take Quiz</span>
+            <span>{t("lessons.takeQuiz")}</span>
             <Badge variant="secondary" className="ml-auto text-xs">
               {lesson.quizzes?.length || 0}
             </Badge>
@@ -196,6 +197,7 @@ function LessonItem({
   const { lessonId } = useParams();
   const isActive = lesson.id === Number(lessonId);
   const lessonUrl = generateLessonUrl(courseId, sectionId, lesson.id);
+  const t = useTranslations();
 
   const { data: isLessonCompleted, isLoading: isLessonCompletedLoading } =
     useQuery({
@@ -206,7 +208,7 @@ function LessonItem({
         );
 
         if (error || !response) {
-          toast.error("Failed to check if lesson is completed");
+          toast.error(t("common.somethingWentWrong"));
           return { completed: false };
         }
 
@@ -243,7 +245,9 @@ function LessonItem({
           <div className="mt-1 flex items-center gap-2">
             <div className="text-muted-foreground flex items-center gap-1 text-xs">
               <Clock className="h-3 w-3" />
-              <span>Lesson {lesson.orderIndex + 1}</span>
+              <span>
+                {t("courses.lesson")} {lesson.orderIndex + 1}
+              </span>
             </div>
           </div>
         </div>
@@ -276,6 +280,7 @@ function SectionAccordion({
   const hasActiveLesson = section.lessons?.some(
     (lesson) => lesson.id === lessonId,
   );
+  const t = useTranslations();
 
   return (
     <Card
@@ -307,12 +312,12 @@ function SectionAccordion({
               <div className="flex-1 text-left">
                 <div className="font-medium">{section.title}</div>
                 <div className="text-muted-foreground mt-0.5 text-xs">
-                  {section.lessons?.length || 0} lessons
+                  {section.lessons?.length || 0} {t("courses.lessons")}
                 </div>
               </div>
               {hasActiveLesson && (
                 <Badge variant="default" className="mr-1.5 text-xs">
-                  Current
+                  {t("common.current")}
                 </Badge>
               )}
             </div>
@@ -338,19 +343,21 @@ function SectionAccordion({
 }
 
 export function SidebarContent({ course, lessonId }: SidebarContentProps) {
+  const t = useTranslations();
+
   return (
     <div className="space-y-3 p-1">
       <div className="px-2 py-3">
         <h2 className="text-foreground mb-1 text-lg font-semibold">
-          Course Content
+          {t("courses.courseContent")}
         </h2>
         <p className="text-muted-foreground text-sm">
-          {course.courseSections?.length || 0} sections •{" "}
+          {course.courseSections?.length || 0} {t("courses.sections")} •{" "}
           {course.courseSections?.reduce(
             (total, section) => total + (section.lessons?.length || 0),
             0,
           ) || 0}{" "}
-          lessons
+          {t("courses.lessons")}
         </p>
       </div>
 
