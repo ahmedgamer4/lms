@@ -7,6 +7,7 @@ import {
 } from '@nestjs/common';
 import {
   courses,
+  courseSections,
   CreateLessonDto,
   db,
   enrollments,
@@ -93,10 +94,30 @@ export class LessonsService {
 
   async delete(lessonId: number) {
     try {
-      return db
-        .delete(lessons)
-        .where(eq(lessons.id, lessonId))
-        .returning({ id: lessons.id });
+      const lesson = await this.findOne(lessonId);
+
+      if (!lesson) {
+        throw new NotFoundException('Lesson not found');
+      }
+
+      const sectionId = lesson?.sectionId;
+      const section = await db.query.courseSections.findFirst({
+        where: eq(courseSections.id, sectionId),
+      });
+
+      if (!section) {
+        throw new NotFoundException('Section not found');
+      }
+
+      const courseId = section?.courseId;
+      await db
+        .update(courses)
+        .set({
+          lessonsCount: sql`lessons_count - 1`,
+        })
+        .where(eq(courses.id, courseId));
+
+      await db.delete(lessons).where(eq(lessons.id, lessonId));
     } catch (error) {
       throw new InternalServerErrorException(`Cannot delete lesson. ${error}`);
     }
