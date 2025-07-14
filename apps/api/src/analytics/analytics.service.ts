@@ -102,8 +102,9 @@ export class AnalyticsService {
       studentCountBeforeMonth = [{ count: 0 }];
     }
     const studentGrowth =
-      (studentCountResult[0].count - studentCountBeforeMonth[0].count) /
-      (studentCountBeforeMonth[0].count || 1);
+      ((studentCountResult[0].count - studentCountBeforeMonth[0].count) /
+        (studentCountBeforeMonth[0].count || 1)) *
+      100;
 
     let [beforeMonthRevenue] = await attempt(
       db
@@ -138,9 +139,10 @@ export class AnalyticsService {
 
     // delta / previous month revenue
     const revenueGrowth =
-      ((Number(currentMonthRevenue?.[0]?.sum) || 0) -
+      (((Number(currentMonthRevenue?.[0]?.sum) || 0) -
         (Number(beforeMonthRevenue?.[0]?.sum) || 0)) /
-      (Number(beforeMonthRevenue?.[0]?.sum) || 1);
+        (Number(beforeMonthRevenue?.[0]?.sum) || 1)) *
+      100;
 
     const [courseCountBeforeMonth] = await attempt(
       db
@@ -161,8 +163,10 @@ export class AnalyticsService {
         ),
     );
     const courseGrowth =
-      (courseCountResult[0].count - (courseCountBeforeMonth?.[0]?.count || 0)) /
-      (courseCountBeforeMonth?.[0]?.count || 1);
+      ((courseCountResult[0].count -
+        (courseCountBeforeMonth?.[0]?.count || 0)) /
+        (courseCountBeforeMonth?.[0]?.count || 1)) *
+      100;
 
     let [completionGrowthBeforeMonth, completionGrowthBeforeMonthError] =
       await attempt(
@@ -186,9 +190,10 @@ export class AnalyticsService {
     }
 
     const completionGrowth =
-      (Number(completionGrowthBeforeMonth?.[0]?.avg) ||
-        0 - (Number(avgCompletionRate?.[0]?.avg) || 0)) /
-      (Number(avgCompletionRate?.[0]?.avg) || 1);
+      (((Number(completionGrowthBeforeMonth?.[0]?.avg) || 0) -
+        (Number(avgCompletionRate?.[0]?.avg) || 0)) /
+        (Number(avgCompletionRate?.[0]?.avg) || 1)) *
+      100;
 
     return {
       overview: {
