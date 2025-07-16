@@ -154,7 +154,7 @@ export default function LessonPage() {
 
   if (courseLoading || lessonLoading || isVideoLoading || !course || !lesson) {
     return (
-      <div className="flex h-full items-center justify-center">
+      <div className="flex h-[calc(100vh-100px)] items-center justify-center">
         <Loader className="text-muted-foreground h-8 w-8 animate-spin" />
       </div>
     );
