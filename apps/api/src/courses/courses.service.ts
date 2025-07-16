@@ -39,6 +39,11 @@ type WithClause = {
   enrollments?: {
     columns: { id: true; progress: true; enrolledAt: true };
     where: any;
+    with: {
+      studentLessonCompletions: {
+        columns: { id: true };
+      };
+    };
   };
   teacher?: {
     columns: { name: true };
@@ -71,6 +76,11 @@ export class CoursesService {
       withClause.enrollments = {
         columns: { id: true, progress: true, enrolledAt: true },
         where: eq(enrollments.studentId, studentId),
+        with: {
+          studentLessonCompletions: {
+            columns: { id: true },
+          },
+        },
       };
     }
 
@@ -193,6 +203,13 @@ export class CoursesService {
           id: true,
           progress: true,
           enrolledAt: true,
+        },
+        with: {
+          studentLessonCompletions: {
+            columns: {
+              id: true,
+            },
+          },
         },
         where: eq(enrollments.studentId, studentId),
       };

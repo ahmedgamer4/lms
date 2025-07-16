@@ -49,6 +49,9 @@ export type CourseWithSectionsAndEnrollments = SelectCourse & {
     id: number;
     progress: number;
     enrolledAt: Date;
+    studentLessonCompletions: {
+      id: number;
+    }[];
   }[];
   studentsCount: number;
 };
