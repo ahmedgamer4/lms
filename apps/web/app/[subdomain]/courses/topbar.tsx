@@ -50,7 +50,11 @@ export function Topbar() {
           <ModeToggle />
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon">
+              <Button
+                variant="ghost"
+                className="bg-background ring-border/70 rounded-full p-2 ring"
+                size="icon"
+              >
                 <User className="h-5 w-5" />
               </Button>
             </DropdownMenuTrigger>
