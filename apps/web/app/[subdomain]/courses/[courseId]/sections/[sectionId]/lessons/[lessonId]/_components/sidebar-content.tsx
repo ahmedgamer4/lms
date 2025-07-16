@@ -318,7 +318,13 @@ function SectionAccordion({
                 </div>
               </div>
               {hasActiveLesson && (
-                <Badge variant="default" className="mr-1.5 text-xs">
+                <Badge
+                  variant="default"
+                  className={cn(
+                    locale === "ar" ? "ml-1.5" : "mr-1.5",
+                    "text-xs",
+                  )}
+                >
                   {t("common.current")}
                 </Badge>
               )}
@@ -348,7 +354,7 @@ export function SidebarContent({ course, lessonId }: SidebarContentProps) {
   const t = useTranslations();
 
   return (
-    <div className="space-y-2 lg:px-2">
+    <div className="space-y-2 pb-4 lg:px-2">
       <div className="py-3">
         <h2 className="text-foreground text-lg font-semibold">
           {t("courses.courseContent")}

@@ -24,7 +24,7 @@ export function MobileSidebar({
       <SheetHeader>
         <SheetTitle>{""}</SheetTitle>
       </SheetHeader>
-      <div className="overflow-y-scroll px-4">
+      <div className="overflow-y-auto px-4">
         <div className="flex items-center gap-2 p-2">
           {course.imageUrl ? (
             <Image

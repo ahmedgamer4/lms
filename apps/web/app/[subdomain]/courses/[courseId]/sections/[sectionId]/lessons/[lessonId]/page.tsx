@@ -191,7 +191,7 @@ export default function LessonPage() {
               <h2 className="text-primary text-2xl font-semibold text-wrap">
                 {course.title}
               </h2>
-              <p className="text-muted-foreground text-sm">
+              <p className="text-muted-foreground line-clamp-1 text-sm">
                 {course.description || t("courses.noDescriptionAvailable")}
               </p>
             </div>
@@ -201,15 +201,14 @@ export default function LessonPage() {
               <p>{t("courses.yourProgress")}</p>
               <div className="flex items-center gap-2">
                 {course.enrollments?.[0]?.studentLessonCompletions.length}/
-                {course.courseSections?.[0]?.lessons?.length}{" "}
-                {t("courses.lessons")}
+                {course.lessonsCount} {t("courses.lessons")}
               </div>
             </div>
             <div className="flex items-center gap-2">
               <div className="flex w-full flex-col gap-2">
                 <Progress value={course.enrollments?.[0]?.progress || 0} />
                 <p className="text-muted-foreground text-sm">
-                  {course.enrollments?.[0]?.progress || 0}%{" "}
+                  {course.enrollments?.[0]?.progress.toFixed(2) || "0.00"}%{" "}
                   {t("courses.complete")}
                 </p>
               </div>
@@ -219,7 +218,7 @@ export default function LessonPage() {
           <SidebarContent course={course} lessonId={lessonId} />
         </aside>
 
-        <div className="flex w-full flex-col items-center justify-center px-4 py-2 md:flex-1 md:p-4">
+        <div className="flex w-full flex-1 flex-col items-center p-4 md:flex-1">
           <div className="mb-2 flex w-full max-w-6xl items-center gap-2">
             <div className="lg:hidden">
               <SheetTrigger
@@ -251,8 +250,8 @@ export default function LessonPage() {
             )}
           </div>
           <div className="border-border mb-8 w-full max-w-6xl rounded-lg border p-4">
-            <h1 className="mb-4 text-3xl font-bold">{lesson?.title}</h1>
-            {lesson.description && (
+            <h1 className="text-3xl font-bold">{lesson?.title}</h1>
+            {lesson.description.trim().length !== 0 && (
               <>
                 <Separator className="my-4" />
                 <p
@@ -267,7 +266,7 @@ export default function LessonPage() {
             )}
           </div>
 
-          <div className="mt-auto flex w-full max-w-6xl justify-end gap-4">
+          <div className="flex w-full max-w-6xl justify-end gap-4">
             {lesson.videos?.[0] && (
               <Button
                 onClick={handleCompleteVideo}

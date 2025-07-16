@@ -39,20 +39,22 @@ export function Topbar() {
   };
 
   return (
-    <div className="bg-muted border-b">
+    <div className="border-b">
       <div className="mx-auto flex h-16 items-center justify-between px-4">
         <div className="flex items-center gap-2">
           <h1 className="text-xl font-bold">{params.subdomain}</h1>
         </div>
 
-        <div className="flex items-center gap-2">
-          <LanguageSwitcher />
-          <ModeToggle />
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2">
+            <LanguageSwitcher />
+            <ModeToggle />
+          </div>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button
                 variant="ghost"
-                className="bg-background ring-border/70 rounded-full p-2 ring"
+                className="bg-background border-input rounded-full border p-2"
                 size="icon"
               >
                 <User className="h-5 w-5" />
