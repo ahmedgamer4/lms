@@ -67,16 +67,14 @@ export default function CoursesPage() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <div className="container mx-auto">
-        <div className="w-full justify-between md:flex">
-          <h2 className="text-2xl font-bold">{t("title")}</h2>
-          <div className="flex items-center justify-end gap-2">
-            <DialogTrigger asChild>
-              <Button className="mt-2 md:mt-0" variant={"video"}>
-                <Plus />
-                {t("createCourse")}
-              </Button>
-            </DialogTrigger>
-          </div>
+        <div className="flex w-full flex-col justify-between md:flex-row">
+          <h2 className="text-3xl font-bold">{t("title")}</h2>
+          <DialogTrigger asChild className="place-self-end">
+            <Button className="mt-2 md:mt-0" variant={"video"}>
+              <Plus />
+              {t("createCourse")}
+            </Button>
+          </DialogTrigger>
         </div>
 
         <div>

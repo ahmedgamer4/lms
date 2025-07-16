@@ -232,7 +232,7 @@ const ActivityItem = ({ activity }: { activity: any }) => {
   };
 
   return (
-    <div className="hover:bg-muted/50 flex items-center space-x-4 rounded-lg p-4 transition-colors">
+    <div className="hover:bg-muted/50 flex items-center space-x-4 rounded-lg p-2 transition-colors">
       <Avatar className="h-10 w-10">
         <AvatarImage src={activity.student.avatar} />
         <AvatarFallback>
@@ -312,12 +312,12 @@ export default function AnalyticsPage() {
   return (
     <div className="container mx-auto space-y-8">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col justify-between gap-4 lg:flex-row">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">{t("title")}</h1>
           <p className="text-muted-foreground">{t("subtitle")}</p>
         </div>
-        <div className="flex items-center space-x-2">
+        <div className="flex items-center space-x-2 place-self-end">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" size="sm">
@@ -358,7 +358,7 @@ export default function AnalyticsPage() {
       </div>
 
       {/* Overview Metrics */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         <MetricCard
           title={t("metrics.totalStudents")}
           value={overview?.totalStudents || 0}
@@ -399,7 +399,7 @@ export default function AnalyticsPage() {
         </TabsList>
 
         <TabsContent value="overview" className="space-y-6">
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-6 lg:grid-cols-2 xl:grid-cols-3">
             {/* Growth Chart */}
             <Card>
               <CardHeader>
