@@ -248,8 +248,8 @@ export default function SectionPage() {
 
       <Separator />
 
-      <div className="grid gap-6">
-        <Card className="shadow-none">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+        <Card className="col-span-2 h-64 shadow-none lg:col-span-1 lg:h-50">
           <CardHeader className="bg-primary/5 border-b">
             <div className="flex items-center gap-3">
               <div className="bg-primary/10 flex h-10 w-10 items-center justify-center rounded-full">
@@ -294,7 +294,7 @@ export default function SectionPage() {
           </CardContent>
         </Card>
 
-        <Card className="shadow-none">
+        <Card className="col-span-2 shadow-none">
           <CardHeader className="bg-primary/5 border-b">
             <div className="flex items-center gap-3">
               <div className="bg-primary/10 flex h-10 w-10 items-center justify-center rounded-full">
