@@ -3,7 +3,7 @@
 import { useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { Loader2 } from "lucide-react";
+import { Loader } from "lucide-react";
 
 function SubdomainContent() {
   const searchParams = useSearchParams();
@@ -37,7 +37,7 @@ export default function SubdomainPage() {
     <Suspense
       fallback={
         <div className="flex min-h-screen flex-col items-center justify-center p-4">
-          <Loader2 className="size-10 animate-spin" />
+          <Loader className="text-muted-foreground size-10 animate-spin" />
         </div>
       }
     >

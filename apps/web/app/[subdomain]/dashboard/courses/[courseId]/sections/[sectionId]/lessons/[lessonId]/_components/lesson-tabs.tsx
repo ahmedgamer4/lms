@@ -1,5 +1,5 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Video, FileQuestion, Trash2, Loader2 } from "lucide-react";
+import { Video, FileQuestion, Trash2, Loader } from "lucide-react";
 import { Lesson } from "@/lib/courses";
 import { toast } from "sonner";
 import { deleteVideo, Video as VideoInterface } from "@/lib/videos";
@@ -82,7 +82,7 @@ export const LessonTabs = ({ lesson }: LessonTabsProps) => {
   if (isQuizLoading)
     return (
       <div className="flex h-full items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin" />
+        <Loader className="text-muted-foreground h-8 w-8 animate-spin" />
       </div>
     );
   if (isQuizError) return <div>{tCommon("somethingWentWrong")}</div>;

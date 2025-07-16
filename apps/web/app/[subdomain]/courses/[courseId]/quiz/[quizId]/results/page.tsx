@@ -4,7 +4,7 @@ import { buttonVariants } from "@/components/ui/button";
 import { getQuizResults, isQuizCompleted } from "@/lib/quizzes";
 import { attempt, cn } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
-import { Loader2 } from "lucide-react";
+import { Loader } from "lucide-react";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { useParams } from "next/navigation";
@@ -48,7 +48,7 @@ export default function ResultsPage() {
   if (isQuizResultsLoading || isQuizCompletionLoading) {
     return (
       <div className="flex h-full min-h-[calc(100vh-200px)] items-center justify-center">
-        <Loader2 className="h-10 w-10 animate-spin" />
+        <Loader className="text-muted-foreground h-10 w-10 animate-spin" />
       </div>
     );
   }

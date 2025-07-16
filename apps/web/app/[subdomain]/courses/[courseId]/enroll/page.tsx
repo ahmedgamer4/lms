@@ -4,7 +4,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { getCourse } from "@/lib/courses";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { useParams, useRouter } from "next/navigation";
-import { BookOpen, Clock, Loader2, Star, Users } from "lucide-react";
+import { BookOpen, Clock, Loader, Star, Users } from "lucide-react";
 import { toast } from "sonner";
 import {
   Card,
@@ -62,7 +62,7 @@ export default function CourseEnrollPage() {
   if (isLoading || !course) {
     return (
       <div className="flex h-[calc(100vh-200px)] items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin" />
+        <Loader className="text-muted-foreground h-8 w-8 animate-spin" />
       </div>
     );
   }

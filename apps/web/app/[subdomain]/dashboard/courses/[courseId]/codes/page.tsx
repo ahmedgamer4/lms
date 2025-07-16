@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/table";
 import { useParams } from "next/navigation";
 import { generateCourseCodes, getCourseCodes } from "@/lib/course-codes";
-import { Loader2 } from "lucide-react";
+import { Loader } from "lucide-react";
 import { attempt } from "@/lib/utils";
 
 export default function CourseCodesPage() {
@@ -59,7 +59,7 @@ export default function CourseCodesPage() {
   if (isLoading)
     return (
       <div className="flex h-full items-center justify-center">
-        <Loader2 className="h-10 w-10 animate-spin" />
+        <Loader className="text-muted-foreground h-10 w-10 animate-spin" />
       </div>
     );
 

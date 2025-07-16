@@ -9,7 +9,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { toast } from "sonner";
 import { findQuiz, submitQuiz, isQuizCompleted } from "@/lib/quizzes";
 import { getCourse } from "@/lib/courses";
-import { Loader2, Clock, CheckCircle } from "lucide-react";
+import { Clock, CheckCircle, Loader, Loader2 } from "lucide-react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { attempt } from "@/lib/utils";
 import { useLocalStorage } from "@uidotdev/usehooks";
@@ -17,7 +17,7 @@ import { useTranslations } from "next-intl";
 
 const LoadingSpinner = () => (
   <div className="flex min-h-[calc(100vh-200px)] items-center justify-center">
-    <Loader2 className="h-10 w-10 animate-spin" />
+    <Loader className="text-muted-foreground h-10 w-10 animate-spin" />
   </div>
 );
 

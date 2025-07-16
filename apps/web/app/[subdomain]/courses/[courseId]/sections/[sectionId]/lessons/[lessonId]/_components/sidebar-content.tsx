@@ -8,24 +8,23 @@ import Link from "next/link";
 import {
   checkIfLessonCompleted,
   CourseWithSectionsAndEnrollments,
-  findLesson,
   Lesson,
 } from "@/lib/courses";
 import { useQuery } from "@tanstack/react-query";
 import { attempt, cn } from "@/lib/utils";
 import {
   FileText,
-  Loader2,
   Video,
   PlayCircle,
   BookOpen,
   Circle,
   Clock,
   CheckCircle,
+  Loader,
 } from "lucide-react";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { checkIfVideoCompleted } from "@/lib/videos";
 import { checkIfQuizCompleted } from "@/lib/quizzes";
 import { useParams } from "next/navigation";
@@ -70,14 +69,9 @@ const generateQuizUrl = (courseId: number, quizId: string) =>
   `/courses/${courseId}/quiz/${quizId}`;
 
 function LoadingSpinner() {
-  const t = useTranslations();
-
   return (
     <div className="flex h-full items-center justify-center">
-      <div className="flex flex-col items-center gap-3">
-        <Loader2 className="text-primary h-8 w-8 animate-spin" />
-        <p className="text-muted-foreground text-sm">{t("common.loading")}</p>
-      </div>
+      <Loader className="text-muted-foreground h-5 w-5 animate-spin" />
     </div>
   );
 }
@@ -356,7 +350,7 @@ export function SidebarContent({ course, lessonId }: SidebarContentProps) {
   return (
     <div className="space-y-2 lg:px-2">
       <div className="py-3">
-        <h2 className="text-foreground mb-1 text-lg font-semibold">
+        <h2 className="text-foreground text-lg font-semibold">
           {t("courses.courseContent")}
         </h2>
         <p className="text-muted-foreground text-sm">

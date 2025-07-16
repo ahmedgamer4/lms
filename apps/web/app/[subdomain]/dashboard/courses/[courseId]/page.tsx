@@ -12,7 +12,7 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-import { Loader2 } from "lucide-react";
+import { Loader } from "lucide-react";
 import { attempt } from "@/lib/utils";
 import { toast } from "sonner";
 import { useTranslations } from "next-intl";
@@ -44,7 +44,7 @@ export default function EditCoursePage({}: {}) {
   if (isLoading)
     return (
       <div className="flex h-[calc(100vh-200px)] items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin" />
+        <Loader className="text-muted-foreground h-8 w-8 animate-spin" />
       </div>
     );
 

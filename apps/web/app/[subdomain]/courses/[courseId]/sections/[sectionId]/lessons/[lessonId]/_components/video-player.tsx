@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { getVideo } from "@/lib/videos";
 import { Lesson } from "@/lib/courses";
-import { Loader2 } from "lucide-react";
+import { Loader } from "lucide-react";
 import { attempt } from "@/lib/utils";
 import { toast } from "sonner";
 import { VideoJsPlayer } from "@/components/video-js-player";
@@ -28,7 +28,7 @@ export const VideoPlayer = ({ lesson }: { lesson: Lesson }) => {
   if (videoLoading)
     return (
       <div className="flex h-full items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin" />
+        <Loader className="text-muted-foreground h-8 w-8 animate-spin" />
       </div>
     );
 

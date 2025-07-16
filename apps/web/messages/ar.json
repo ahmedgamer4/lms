@@ -157,7 +157,8 @@
     "backToCourses": "رجوع إلى الدورات",
     "yourProgress": "تقدمك",
     "sections": "الفصول",
-    "lesson": "الدرس"
+    "lesson": "الدرس",
+    "complete": "مكتمل"
   },
   "lessons": {
     "title": "الدروس",

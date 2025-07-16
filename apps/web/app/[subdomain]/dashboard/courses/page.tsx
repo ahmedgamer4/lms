@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { getCoursesByTeacherId } from "@/lib/courses";
 import { useQuery } from "@tanstack/react-query";
-import { Loader2, Plus } from "lucide-react";
+import { Loader, Plus } from "lucide-react";
 import { CourseCard } from "./course-card";
 import {
   Dialog,
@@ -50,7 +50,7 @@ export default function CoursesPage() {
   if (isLoading || !data)
     return (
       <div className="flex h-[calc(100vh-200px)] items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin" />
+        <Loader className="text-muted-foreground h-8 w-8 animate-spin" />
       </div>
     );
 

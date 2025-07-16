@@ -33,7 +33,7 @@ import {
   PieChart,
   LineChart as LineChartIcon,
   RefreshCw,
-  Loader2,
+  Loader,
 } from "lucide-react";
 import { useState } from "react";
 import { useAnalytics } from "@/hooks/use-analytics";
@@ -304,7 +304,7 @@ export default function AnalyticsPage() {
   if (isLoading) {
     return (
       <div className="flex h-screen items-center justify-center">
-        <Loader2 className="h-10 w-10 animate-spin" />
+        <Loader className="text-muted-foreground h-10 w-10 animate-spin" />
       </div>
     );
   }

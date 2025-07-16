@@ -125,7 +125,7 @@
     "noQuizzes": "No quizzes available",
     "noStudents": "No students available",
     "noRatings": "No ratings available",
-    "noDescriptionAvailable": "No description available for this course.",
+    "noDescriptionAvailable": "No description available.",
     "light": "Light",
     "dark": "Dark",
     "system": "System",
@@ -162,7 +162,8 @@
     "backToCourses": "Back to courses",
     "yourProgress": "Your Progress",
     "sections": "Sections",
-    "lesson": "lesson"
+    "lesson": "lesson",
+    "complete": "complete"
   },
   "lessons": {
     "title": "Lessons",

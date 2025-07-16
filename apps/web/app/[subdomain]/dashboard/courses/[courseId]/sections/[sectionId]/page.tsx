@@ -13,7 +13,15 @@ import {
   updateCourseSection,
 } from "@/lib/courses";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { Video, Trash2, Loader2, Plus, Pencil, ArrowLeft } from "lucide-react";
+import {
+  Video,
+  Trash2,
+  Loader2,
+  Loader,
+  Plus,
+  Pencil,
+  ArrowLeft,
+} from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -168,7 +176,7 @@ export default function SectionPage() {
   if (!course?.data || !section?.data) {
     return (
       <div className="flex h-[calc(100vh-200px)] items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin" />
+        <Loader className="h-8 w-8 animate-spin" />
       </div>
     );
   }

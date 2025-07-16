@@ -4,13 +4,14 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { getCourse, findLesson } from "@/lib/courses";
 import { useParams } from "next/navigation";
 import {
-  Loader2,
   ArrowLeft,
   ArrowRight,
   Menu,
   VideoOffIcon,
   CheckCircle,
   Video,
+  Loader,
+  Play,
 } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
@@ -26,6 +27,8 @@ import { Separator } from "@/components/ui/separator";
 import { toast } from "sonner";
 import { checkIfVideoCompleted, completeVideo } from "@/lib/videos";
 import { useTranslations } from "next-intl";
+import Image from "next/image";
+import { Progress } from "@/components/ui/progress";
 
 export default function LessonPage() {
   const queryClient = useQueryClient();
@@ -152,7 +155,7 @@ export default function LessonPage() {
   if (courseLoading || lessonLoading || isVideoLoading || !course || !lesson) {
     return (
       <div className="flex h-full items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin" />
+        <Loader className="text-muted-foreground h-8 w-8 animate-spin" />
       </div>
     );
   }
@@ -169,16 +172,54 @@ export default function LessonPage() {
           userSelect: "none",
         }}
       >
-        <aside className="border-border/70 bg-muted sticky top-0 hidden h-full w-90 border-r border-l p-2 lg:block">
-          <div className="p-2">
-            <h2 className="text-primary text-2xl font-semibold text-wrap">
-              {course.title}
-            </h2>
+        <aside className="border-border/70 bg-muted sticky top-0 hidden h-full w-96 border-r border-l p-2 lg:block">
+          <div className="flex items-center gap-2 p-2">
+            {course.imageUrl ? (
+              <Image
+                src={course.imageUrl}
+                alt={course.title}
+                width={50}
+                height={50}
+                className="rounded-lg"
+              />
+            ) : (
+              <div className="bg-primary/10 flex h-[50px] w-[50px] items-center justify-center rounded-lg">
+                <Play className="text-primary h-5 w-5" />
+              </div>
+            )}
+            <div>
+              <h2 className="text-primary text-2xl font-semibold text-wrap">
+                {course.title}
+              </h2>
+              <p className="text-muted-foreground text-sm">
+                {course.description || t("courses.noDescriptionAvailable")}
+              </p>
+            </div>
           </div>
+          <div className="space-y-2 p-2">
+            <div className="text-muted-foreground flex items-center justify-between text-sm">
+              <p>{t("courses.yourProgress")}</p>
+              <div className="flex items-center gap-2">
+                {course.enrollments?.[0]?.studentLessonCompletions.length}/
+                {course.courseSections?.[0]?.lessons?.length}{" "}
+                {t("courses.lessons")}
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="flex w-full flex-col gap-2">
+                <Progress value={course.enrollments?.[0]?.progress || 0} />
+                <p className="text-muted-foreground text-sm">
+                  {course.enrollments?.[0]?.progress || 0}%{" "}
+                  {t("courses.complete")}
+                </p>
+              </div>
+            </div>
+          </div>
+          <Separator className="my-2" />
           <SidebarContent course={course} lessonId={lessonId} />
         </aside>
 
-        <div className="flex w-full flex-col items-center justify-center px-4 py-2 md:flex-1 md:p-8">
+        <div className="flex w-full flex-col items-center justify-center px-4 py-2 md:flex-1 md:p-4">
           <div className="mb-2 flex w-full max-w-6xl items-center gap-2">
             <div className="lg:hidden">
               <SheetTrigger

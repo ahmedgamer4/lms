@@ -2,8 +2,6 @@
 
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import {
   findCourseSection,
@@ -13,7 +11,7 @@ import {
   updateLesson,
 } from "@/lib/courses";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { Video, Trash2, Loader2, Pencil, ArrowLeft } from "lucide-react";
+import { Video, Trash2, Loader, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -165,7 +163,7 @@ export default function LessonPage() {
   ) {
     return (
       <div className="flex h-[calc(100vh-200px)] items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin" />
+        <Loader className="text-muted-foreground h-8 w-8 animate-spin" />
       </div>
     );
   }

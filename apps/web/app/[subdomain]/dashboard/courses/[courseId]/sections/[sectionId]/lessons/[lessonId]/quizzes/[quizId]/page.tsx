@@ -13,7 +13,7 @@ import {
   updateQuiz,
 } from "@/lib/quizzes";
 import { useQuery } from "@tanstack/react-query";
-import { ArrowLeft, GripVertical, Loader2, Plus, Trash2 } from "lucide-react";
+import { ArrowLeft, GripVertical, Loader, Plus, Trash2 } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import {
   Breadcrumb,
@@ -276,7 +276,7 @@ export default function QuizEditPage() {
   if (isQuizLoading || isLessonLoading)
     return (
       <div className="flex h-[calc(100vh-200px)] items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin" />
+        <Loader className="text-muted-foreground h-8 w-8 animate-spin" />
       </div>
     );
   if (isQuizError || isLessonError) return <div>Error</div>;

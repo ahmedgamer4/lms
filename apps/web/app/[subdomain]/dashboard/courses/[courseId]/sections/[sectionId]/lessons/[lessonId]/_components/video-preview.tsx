@@ -1,4 +1,4 @@
-import { Loader2, Trash, Video, X } from "lucide-react";
+import { Loader, Trash, Video } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useQuery } from "@tanstack/react-query";
 import { getVideo } from "@/lib/videos";
@@ -42,7 +42,7 @@ export const VideoPreview = ({
   if (isLoading)
     return (
       <div className="flex h-full items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin" />
+        <Loader className="text-muted-foreground h-8 w-8 animate-spin" />
       </div>
     );
   if (isError) return <div>{tCommon("somethingWentWrong")}</div>;
