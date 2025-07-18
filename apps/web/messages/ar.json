@@ -1,4 +1,7 @@
 {
+  "metadata": {
+    "platformName": "تعلم"
+  },
   "common": {
     "loading": "جاري التحميل...",
     "error": "حدث خطأ",
@@ -81,7 +84,11 @@
     "invalidCredentials": "البريد الإلكتروني أو كلمة المرور غير صحيحة",
     "passwordMismatch": "كلمات المرور غير متطابقة",
     "emailRequired": "البريد الإلكتروني مطلوب",
-    "passwordRequired": "كلمة المرور مطلوبة"
+    "passwordRequired": "كلمة المرور مطلوبة",
+    "agreeTo": "بالنقر علي تسجيل الدخول, توافق على",
+    "termsOfService": "الشروط والأحكام",
+    "privacyPolicy": "سياسة الخصوصية",
+    "and": "و"
   },
   "sidebar": {
     "platform": "المنصة",

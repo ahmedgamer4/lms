@@ -1,4 +1,7 @@
 {
+  "metadata": {
+    "platformName": "Next LMS"
+  },
   "common": {
     "loading": "Loading...",
     "error": "An error occurred",
@@ -81,7 +84,11 @@
     "invalidCredentials": "Invalid email or password",
     "passwordMismatch": "Passwords do not match",
     "emailRequired": "Email is required",
-    "passwordRequired": "Password is required"
+    "passwordRequired": "Password is required",
+    "agreeTo": "By clicking login, you agree to our",
+    "termsOfService": "terms of service",
+    "privacyPolicy": "privacy policy",
+    "and": "and"
   },
   "sidebar": {
     "platform": "Platform",
