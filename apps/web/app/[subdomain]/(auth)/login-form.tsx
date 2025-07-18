@@ -16,7 +16,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { loginUser } from "@/lib/auth";
-import { Loader2 } from "lucide-react";
+import { IconLoader2 } from "@tabler/icons-react";
 import { useTranslations } from "next-intl";
 
 export function LoginForm({
@@ -106,7 +106,7 @@ export function LoginForm({
         >
           {isSubmitting ? (
             <span className="flex items-center justify-center">
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              <IconLoader2 className="mr-2 h-4 w-4 animate-spin" />
               {t("login.signingIn")}
             </span>
           ) : (
