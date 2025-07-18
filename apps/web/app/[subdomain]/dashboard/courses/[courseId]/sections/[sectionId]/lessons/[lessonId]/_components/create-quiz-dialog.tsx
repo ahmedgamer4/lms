@@ -23,7 +23,7 @@ import { createQuiz, createQuizSchema, Quiz } from "@/lib/quizzes";
 import { attempt } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CreateQuizDto } from "@lms-saas/shared-lib/dtos";
-import { Loader, Plus } from "lucide-react";
+import { IconLoader, IconPlus } from "@tabler/icons-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -73,7 +73,7 @@ export const CreateQuizDialog = ({
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger hidden={quizzesNumber >= 1} asChild>
         <Button hidden={quizzesNumber >= 1} className="gap-2">
-          <Plus className="h-4 w-4" />
+          <IconPlus className="h-4 w-4" />
           {tCommon("create")} {t("quiz")}
         </Button>
       </DialogTrigger>
@@ -131,7 +131,7 @@ export const CreateQuizDialog = ({
               <Button type="submit" disabled={form.formState.isSubmitting}>
                 {form.formState.isSubmitting ? (
                   <div>
-                    <Loader className="animate-spin" />
+                    <IconLoader className="animate-spin" />
                     {tCommon("creating")}...
                   </div>
                 ) : (

@@ -9,13 +9,13 @@ import {
 } from "@/lib/videos";
 import { transcodeToHLS } from "@/lib/transcode-video";
 import { Button } from "@/components/ui/button";
-import { Upload, X } from "lucide-react";
 import { useState, useCallback } from "react";
 import { useDropzone } from "react-dropzone";
 import { toast } from "sonner";
 import { Progress } from "@/components/ui/progress";
 import { attempt } from "@/lib/utils";
 import { useTranslations } from "next-intl";
+import { IconUpload, IconX } from "@tabler/icons-react";
 
 export const VideoUploader = ({
   lessonId,
@@ -176,7 +176,7 @@ export const VideoUploader = ({
       >
         <input {...getInputProps()} />
         <div className="flex flex-col items-center gap-2">
-          <Upload className="text-muted-foreground h-8 w-8" />
+          <IconUpload className="text-muted-foreground h-8 w-8" />
           <p className="text-muted-foreground text-sm">
             {isDragActive
               ? "Drop the video here"
@@ -203,7 +203,7 @@ export const VideoUploader = ({
               onClick={() => setSelectedFile(null)}
               disabled={isUploading || isTranscoding}
             >
-              <X className="h-4 w-4" />
+              <IconX className="h-4 w-4" />
             </Button>
           </div>
 

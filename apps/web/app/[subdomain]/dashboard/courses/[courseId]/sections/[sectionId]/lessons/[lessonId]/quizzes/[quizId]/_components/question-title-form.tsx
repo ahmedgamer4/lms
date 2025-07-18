@@ -3,7 +3,7 @@
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { Pencil, X } from "lucide-react";
+import { IconPencil, IconX } from "@tabler/icons-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
@@ -79,12 +79,12 @@ export const QuestionTitleForm = ({
         <Button onClick={toggleEdit} variant="ghost">
           {isEditing ? (
             <>
-              <X className="mr-0.5 h-4 w-4" />
+              <IconX className="mr-0.5 h-4 w-4" />
               {t("common.cancel")}
             </>
           ) : (
             <>
-              <Pencil className="mr-0.5 h-4 w-4" />
+              <IconPencil className="mr-0.5 h-4 w-4" />
               {t("common.edit")}
             </>
           )}

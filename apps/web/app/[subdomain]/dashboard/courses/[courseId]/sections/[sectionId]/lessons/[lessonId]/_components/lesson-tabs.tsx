@@ -1,5 +1,10 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Video, FileQuestion, Trash2, Loader } from "lucide-react";
+import {
+  IconVideo,
+  IconTrash,
+  IconLoader,
+  IconFileInfo,
+} from "@tabler/icons-react";
 import { Lesson } from "@/lib/courses";
 import { toast } from "sonner";
 import { deleteVideo, Video as VideoInterface } from "@/lib/videos";
@@ -82,7 +87,7 @@ export const LessonTabs = ({ lesson }: LessonTabsProps) => {
   if (isQuizLoading)
     return (
       <div className="flex h-full items-center justify-center">
-        <Loader className="text-muted-foreground h-8 w-8 animate-spin" />
+        <IconLoader className="text-muted-foreground h-8 w-8 animate-spin" />
       </div>
     );
   if (isQuizError) return <div>{tCommon("somethingWentWrong")}</div>;
@@ -91,11 +96,11 @@ export const LessonTabs = ({ lesson }: LessonTabsProps) => {
     <Tabs defaultValue="videos" className="w-full">
       <TabsList className="mb-4">
         <TabsTrigger value="videos" className="gap-2">
-          <Video className="h-4 w-4" />
+          <IconVideo className="h-4 w-4" />
           {t("videos")}
         </TabsTrigger>
         <TabsTrigger value="quizzes" className="gap-2">
-          <FileQuestion className="h-4 w-4" />
+          <IconFileInfo className="h-4 w-4" />
           {t("quizzes")}
         </TabsTrigger>
       </TabsList>
@@ -130,7 +135,7 @@ export const LessonTabs = ({ lesson }: LessonTabsProps) => {
             >
               <div className="flex items-center gap-3">
                 <div className="bg-primary/10 flex h-10 w-10 items-center justify-center rounded-full">
-                  <FileQuestion className="text-primary h-5 w-5" />
+                  <IconFileInfo className="text-primary h-5 w-5" />
                 </div>
                 <div>
                   <h3 className="font-medium">{quiz.title}</h3>
@@ -158,7 +163,7 @@ export const LessonTabs = ({ lesson }: LessonTabsProps) => {
                   size="icon"
                   onClick={() => handleQuizDelete(quizIndex, quiz.id)}
                 >
-                  <Trash2 className="h-4 w-4" />
+                  <IconTrash className="h-4 w-4" />
                 </Button>
               </div>
             </div>
@@ -167,7 +172,7 @@ export const LessonTabs = ({ lesson }: LessonTabsProps) => {
           {lessonQuizzes?.length === 0 ? (
             <div className="flex flex-col items-center justify-center gap-2 rounded-lg border border-dashed p-8 text-center">
               <div className="bg-primary/10 flex h-12 w-12 items-center justify-center rounded-full">
-                <FileQuestion className="text-primary h-6 w-6" />
+                <IconFileInfo className="text-primary h-6 w-6" />
               </div>
               <h3 className="mt-4 text-lg font-medium">{t("noQuizzesYet")}</h3>
               <p className="text-muted-foreground mt-2 text-sm">

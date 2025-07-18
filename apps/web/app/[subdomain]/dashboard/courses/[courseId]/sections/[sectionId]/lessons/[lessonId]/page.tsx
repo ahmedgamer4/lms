@@ -11,7 +11,12 @@ import {
   updateLesson,
 } from "@/lib/courses";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { Video, Trash2, Loader, ArrowLeft } from "lucide-react";
+import {
+  IconVideo,
+  IconTrash,
+  IconLoader,
+  IconArrowLeft,
+} from "@tabler/icons-react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -163,7 +168,7 @@ export default function LessonPage() {
   ) {
     return (
       <div className="flex h-[calc(100vh-200px)] items-center justify-center">
-        <Loader className="text-muted-foreground h-8 w-8 animate-spin" />
+        <IconLoader className="text-muted-foreground h-8 w-8 animate-spin" />
       </div>
     );
   }
@@ -208,7 +213,7 @@ export default function LessonPage() {
             href={`/dashboard/courses/${params.courseId}/sections/${params.sectionId}`}
           >
             <Button variant="ghost" size="icon">
-              <ArrowLeft className="rotate-rtl h-4 w-4" />
+              <IconArrowLeft className="rotate-rtl h-4 w-4" />
             </Button>
           </Link>
           <div>
@@ -224,7 +229,7 @@ export default function LessonPage() {
           <div className="flex w-full justify-end">
             <AlertDialogTrigger asChild>
               <Button className="mt-2 md:mt-0" variant="destructive">
-                <Trash2 className="mr-2 h-4 w-4" />
+                <IconTrash className="mr-2 h-4 w-4" />
                 {tCommon("delete")} {t("lesson")}
               </Button>
             </AlertDialogTrigger>
@@ -273,7 +278,7 @@ export default function LessonPage() {
             <CardHeader className="bg-primary/5 border-b">
               <div className="flex items-center gap-3">
                 <div className="bg-primary/10 flex h-10 w-10 items-center justify-center rounded-full">
-                  <Video className="text-primary h-5 w-5" />
+                  <IconVideo className="text-primary h-5 w-5" />
                 </div>
                 <div>
                   <CardTitle className="text-xl">

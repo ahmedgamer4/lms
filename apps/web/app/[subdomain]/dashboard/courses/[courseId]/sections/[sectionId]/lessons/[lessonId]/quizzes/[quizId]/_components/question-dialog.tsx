@@ -12,7 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Plus, Trash2 } from "lucide-react";
+import { IconPlus, IconTrash } from "@tabler/icons-react";
 import { Dispatch, SetStateAction, useMemo } from "react";
 import { toast } from "sonner";
 import { QuizQuestion, createQuestion } from "@/lib/quizzes";
@@ -92,7 +92,7 @@ export const QuestionDialog = ({
         <DialogTrigger asChild>
           {trigger || (
             <Button className="mt-2 gap-2 md:mt-0">
-              <Plus className="h-4 w-4" />
+              <IconPlus className="h-4 w-4" />
               {t("quizzes.addQuestion")}
             </Button>
           )}
@@ -136,7 +136,7 @@ export const QuestionDialog = ({
                     onClick={() => append({ answerText: "", isCorrect: false })}
                     className="gap-2"
                   >
-                    <Plus className="h-4 w-4" />
+                    <IconPlus className="h-4 w-4" />
                     {t("quizzes.addAnswer")}
                   </Button>
                 </div>
@@ -190,7 +190,7 @@ export const QuestionDialog = ({
                             size="icon"
                             onClick={() => remove(index)}
                           >
-                            <Trash2 className="h-4 w-4" />
+                            <IconTrash className="h-4 w-4" />
                           </Button>
                         )}
                       </div>

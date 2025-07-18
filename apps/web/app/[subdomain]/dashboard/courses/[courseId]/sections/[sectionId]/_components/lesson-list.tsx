@@ -10,7 +10,7 @@ import {
 import { attempt } from "@/lib/utils";
 import { Droppable, Draggable, DragDropContext } from "@hello-pangea/dnd";
 import { useQueryClient } from "@tanstack/react-query";
-import { GripVertical, Pencil, Trash2 } from "lucide-react";
+import { IconGripVertical, IconPencil, IconTrash } from "@tabler/icons-react";
 import { useTranslations } from "next-intl";
 import { useParams, useRouter } from "next/navigation";
 import { Dispatch, SetStateAction } from "react";
@@ -158,10 +158,10 @@ export const LessonsList = ({
                           {...provided.dragHandleProps}
                           className="hover:bg-muted cursor-grab rounded-md p-1"
                         >
-                          <GripVertical className="text-muted-foreground h-4 w-4" />
+                          <IconGripVertical className="text-muted-foreground h-4 w-4" />
                         </div>
                         <div className="bg-primary/10 flex h-8 w-8 items-center justify-center rounded-full">
-                          <Pencil className="text-primary h-4 w-4" />
+                          <IconPencil className="text-primary h-4 w-4" />
                         </div>
                         <div className="flex items-center gap-2">
                           <span className="font-medium">{lesson.title}</span>
@@ -178,7 +178,7 @@ export const LessonsList = ({
                           onClick={() => removeLesson(lessonIndex, lesson.id)}
                           className="hover:bg-destructive/10 hover:text-destructive"
                         >
-                          <Trash2 className="h-4 w-4" />
+                          <IconTrash className="h-4 w-4" />
                         </Button>
                         <Button
                           variant="outline"

@@ -1,5 +1,5 @@
-import { Loader, Trash, Video } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { IconLoader, IconTrash, IconVideo } from "@tabler/icons-react";
 import { useQuery } from "@tanstack/react-query";
 import { getVideo } from "@/lib/videos";
 import { VideoJsPlayer } from "@/components/video-js-player";
@@ -42,7 +42,7 @@ export const VideoPreview = ({
   if (isLoading)
     return (
       <div className="flex h-full items-center justify-center">
-        <Loader className="text-muted-foreground h-8 w-8 animate-spin" />
+        <IconLoader className="text-muted-foreground h-8 w-8 animate-spin" />
       </div>
     );
   if (isError) return <div>{tCommon("somethingWentWrong")}</div>;
@@ -61,7 +61,7 @@ export const VideoPreview = ({
       </div>
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <Video className="text-muted-foreground h-4 w-4" />
+          <IconVideo className="text-muted-foreground h-4 w-4" />
           <span className="text-sm font-medium">{title}</span>
         </div>
         {onDelete && (
@@ -71,7 +71,7 @@ export const VideoPreview = ({
             onClick={onDelete}
             className="hover:bg-destructive/10 hover:text-destructive"
           >
-            <Trash className="mr-2 h-4 w-4" />
+            <IconTrash className="mr-2 h-4 w-4" />
             {tCommon("delete")} {t("video")}
           </Button>
         )}

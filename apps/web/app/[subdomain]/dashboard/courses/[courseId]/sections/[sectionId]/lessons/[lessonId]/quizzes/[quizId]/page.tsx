@@ -13,7 +13,13 @@ import {
   updateQuiz,
 } from "@/lib/quizzes";
 import { useQuery } from "@tanstack/react-query";
-import { ArrowLeft, GripVertical, Loader, Plus, Trash2 } from "lucide-react";
+import {
+  IconArrowLeft,
+  IconGripVertical,
+  IconLoader,
+  IconPlus,
+  IconTrash,
+} from "@tabler/icons-react";
 import { useParams, useRouter } from "next/navigation";
 import {
   Breadcrumb,
@@ -276,7 +282,7 @@ export default function QuizEditPage() {
   if (isQuizLoading || isLessonLoading)
     return (
       <div className="flex h-[calc(100vh-200px)] items-center justify-center">
-        <Loader className="text-muted-foreground h-8 w-8 animate-spin" />
+        <IconLoader className="text-muted-foreground h-8 w-8 animate-spin" />
       </div>
     );
   if (isQuizError || isLessonError) return <div>Error</div>;
@@ -327,7 +333,7 @@ export default function QuizEditPage() {
             onClick={() => router.back()}
             className="h-8 w-8"
           >
-            <ArrowLeft className="rotate-rtl h-4 w-4" />
+            <IconArrowLeft className="rotate-rtl h-4 w-4" />
           </Button>
           <div>
             <h1 className="text-2xl font-bold">{t("quizzes.editQuizTitle")}</h1>
@@ -371,7 +377,7 @@ export default function QuizEditPage() {
                                   {...provided.dragHandleProps}
                                   className="cursor-grab active:cursor-grabbing"
                                 >
-                                  <GripVertical className="text-muted-foreground h-5 w-5" />
+                                  <IconGripVertical className="text-muted-foreground h-5 w-5" />
                                 </div>
                                 <CardTitle className="text-lg">
                                   {t("quizzes.question")} {questionIndex + 1}:{" "}
@@ -386,7 +392,7 @@ export default function QuizEditPage() {
                                   handleDeleteQuestion(question.id)
                                 }
                               >
-                                <Trash2 className="h-4 w-4" />
+                                <IconTrash className="h-4 w-4" />
                               </Button>
                             </div>
                           </CardHeader>
@@ -425,7 +431,7 @@ export default function QuizEditPage() {
                                                 }
                                                 className="gap-2"
                                               >
-                                                <Plus className="h-4 w-4" />
+                                                <IconPlus className="h-4 w-4" />
                                                 {t("quizzes.addAnswer")}
                                               </Button>
                                             </div>
@@ -481,7 +487,7 @@ export default function QuizEditPage() {
                                                           )
                                                         }
                                                       >
-                                                        <Trash2 className="h-4 w-4" />
+                                                        <IconTrash className="h-4 w-4" />
                                                       </Button>
                                                     </div>
                                                   </div>
@@ -511,7 +517,7 @@ export default function QuizEditPage() {
         {(!questions || questions.length === 0) && (
           <div className="flex flex-col items-center justify-center rounded-lg border border-dashed p-8 text-center">
             <div className="bg-primary/10 flex h-12 w-12 items-center justify-center rounded-full">
-              <Plus className="text-primary h-6 w-6" />
+              <IconPlus className="text-primary h-6 w-6" />
             </div>
             <h3 className="mt-4 text-lg font-medium">
               {t("quizzes.noQuestionsYet")}
