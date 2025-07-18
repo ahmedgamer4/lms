@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { SelectCourse } from "@lms-saas/shared-lib";
-import { Pen, Users, Star, BookOpen } from "lucide-react";
+import { IconPencil, IconUsers, IconStar, IconBook } from "@tabler/icons-react";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import Image from "next/image";
@@ -53,19 +53,19 @@ export function CourseCard({
 
         <div className="text-muted-foreground mt-auto flex items-center gap-4 text-sm">
           <div className="flex items-center gap-1">
-            <Users className="h-4 w-4" />
+            <IconUsers className="h-4 w-4" />
             <span>
               {course.studentsCount} {t("students")}
             </span>
           </div>
           <div className="flex items-center gap-1">
-            <BookOpen className="h-4 w-4" />
+            <IconBook className="h-4 w-4" />
             <span>
               {course.lessonsCount} {t("lessons")}
             </span>
           </div>
           <div className="flex items-center gap-1">
-            <Star className="h-4 w-4" />
+            <IconStar className="h-4 w-4" />
             <span>0.0</span>
           </div>
         </div>
@@ -77,7 +77,7 @@ export function CourseCard({
             variant="default"
             className="w-full gap-2 text-sm transition-colors"
           >
-            <Pen className="h-4 w-4" />
+            <IconPencil className="h-4 w-4" />
             {t("editCourse")}
           </Button>
         </Link>

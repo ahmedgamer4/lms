@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { SidebarFooter } from "@/components/ui/sidebar";
 import { logout } from "@/lib/auth";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { LogOut } from "lucide-react";
+import { IconLogout } from "@tabler/icons-react";
 
 export function LowerSidebar({ user }: { user: any }) {
   return (
@@ -19,7 +19,7 @@ export function LowerSidebar({ user }: { user: any }) {
           <span className="font-medium">{user.name}</span>
         </div>
         <Button variant="ghost" size="icon" onClick={logout}>
-          <LogOut size={16} />
+          <IconLogout color="red" />
         </Button>
       </div>
     </SidebarFooter>

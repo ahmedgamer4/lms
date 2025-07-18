@@ -12,10 +12,10 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-import { Loader } from "lucide-react";
 import { attempt } from "@/lib/utils";
 import { toast } from "sonner";
 import { useTranslations } from "next-intl";
+import { IconLoader } from "@tabler/icons-react";
 
 export default function EditCoursePage({}: {}) {
   const t = useTranslations("courses");
@@ -44,7 +44,7 @@ export default function EditCoursePage({}: {}) {
   if (isLoading)
     return (
       <div className="flex h-[calc(100vh-200px)] items-center justify-center">
-        <Loader className="text-muted-foreground h-8 w-8 animate-spin" />
+        <IconLoader className="text-muted-foreground h-8 w-8 animate-spin" />
       </div>
     );
 

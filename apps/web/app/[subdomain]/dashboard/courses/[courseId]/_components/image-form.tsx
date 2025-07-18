@@ -1,7 +1,13 @@
 "use client";
 
 import * as z from "zod";
-import { Pencil, PlusCircle, ImageIcon, Loader2, X } from "lucide-react";
+import {
+  IconPencil,
+  IconPlus,
+  IconImageInPicture,
+  IconLoader2,
+  IconX,
+} from "@tabler/icons-react";
 import { useRef, useState } from "react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
@@ -21,6 +27,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { attempt } from "@/lib/utils";
 import { useTranslations } from "next-intl";
+
 interface ImageFormProps {
   initialData: {
     imageUrl: string;
@@ -80,19 +87,19 @@ export const ImageForm = ({ initialData, courseId }: ImageFormProps) => {
         <Button onClick={toggleEdit} variant="ghost">
           {isEditing && (
             <>
-              <X className="mr-0.5 h-4 w-4" />
+              <IconX className="mr-0.5 h-4 w-4" />
               {tCommon("cancel")}
             </>
           )}
           {!isEditing && !initialData.imageUrl && (
             <>
-              <PlusCircle className="mr-0.5 h-4 w-4" />
+              <IconPlus className="mr-0.5 h-4 w-4" />
               {tCommon("add")}
             </>
           )}
           {!isEditing && initialData.imageUrl && (
             <>
-              <Pencil className="mr-0.5 h-4 w-4" />
+              <IconPencil className="mr-0.5 h-4 w-4" />
               {tCommon("edit")}
             </>
           )}
@@ -101,7 +108,7 @@ export const ImageForm = ({ initialData, courseId }: ImageFormProps) => {
       {!isEditing &&
         (!initialData.imageUrl ? (
           <div className="flex h-60 items-center justify-center rounded-md bg-slate-200">
-            <ImageIcon className="h-10 w-10 text-slate-500" />
+            <IconImageInPicture className="h-10 w-10 text-slate-500" />
           </div>
         ) : (
           <div className="relative mt-2 aspect-video h-10/12 w-full overflow-hidden">
@@ -128,7 +135,7 @@ export const ImageForm = ({ initialData, courseId }: ImageFormProps) => {
                     <Input
                       accept="image/*"
                       type="file"
-                      disabled={isSubmitting}
+                      disabled={isSubmitting || !isValid}
                       ref={fileRef}
                       onChange={(event) => onChange(event.target.files?.[0])}
                       placeholder="e.g. 'Advanced web development'"
@@ -140,9 +147,9 @@ export const ImageForm = ({ initialData, courseId }: ImageFormProps) => {
               )}
             />
             <div className="flex items-center gap-x-2">
-              <Button disabled={!z.isValid || isSubmitting} type="submit">
+              <Button disabled={!isValid || isSubmitting} type="submit">
                 {isSubmitting && (
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  <IconLoader2 className="mr-2 h-4 w-4 animate-spin" />
                 )}
                 {tCommon("save")}
               </Button>

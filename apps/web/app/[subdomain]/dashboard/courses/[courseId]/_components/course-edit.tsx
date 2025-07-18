@@ -5,18 +5,19 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { deleteCourse, updateCourse } from "@/lib/courses";
 import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
-import {
-  LayoutDashboard,
-  Trash,
-  Loader2,
-  Eye,
-  EyeOff,
-  List,
-  QrCode,
-  Settings2,
-  ArrowLeft,
-} from "lucide-react";
 import { TitleForm } from "./title-form";
+import {
+  IconLoader,
+  IconEye,
+  IconEyeOff,
+  IconTrash,
+  IconList,
+  IconQrcode,
+  IconArrowLeft,
+  IconLoader2,
+  IconSettings2,
+  IconLayoutDashboard,
+} from "@tabler/icons-react";
 import { DescriptionForm } from "./description-form";
 import { PriceForm } from "./price-form";
 import { ImageForm } from "./image-form";
@@ -82,7 +83,7 @@ export default function CourseEdit({ course }: { course: any }) {
             href={`/dashboard/courses/${course.id}/analytics`}
             className={cn(buttonVariants({ variant: "ghost", size: "icon" }))}
           >
-            <ArrowLeft className="rotate-rtl h-4 w-4" />
+            <IconArrowLeft className="rotate-rtl h-4 w-4" />
           </Link>
           <div>
             <h1 className="text-2xl font-bold tracking-tight">
@@ -101,11 +102,11 @@ export default function CourseEdit({ course }: { course: any }) {
             className="gap-2"
           >
             {publishLoading ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
+              <IconLoader className="h-4 w-4 animate-spin" />
             ) : course.published ? (
-              <EyeOff className="h-4 w-4" />
+              <IconEyeOff className="h-4 w-4" />
             ) : (
-              <Eye className="h-4 w-4" />
+              <IconEye className="h-4 w-4" />
             )}
             {course.published ? t("unpublish") : t("publish")}
           </Button>
@@ -116,7 +117,7 @@ export default function CourseEdit({ course }: { course: any }) {
                 variant="destructive"
                 className="gap-2"
               >
-                <Trash className="h-4 w-4" />
+                <IconTrash className="h-4 w-4" />
                 {tCommon("delete")}
               </Button>
             </DialogTrigger>
@@ -137,7 +138,7 @@ export default function CourseEdit({ course }: { course: any }) {
                   className="gap-2"
                 >
                   {publishLoading && (
-                    <Loader2 className="h-4 w-4 animate-spin" />
+                    <IconLoader2 className="h-4 w-4 animate-spin" />
                   )}
                   {tCommon("delete")} {t("course")}
                 </Button>
@@ -154,7 +155,7 @@ export default function CourseEdit({ course }: { course: any }) {
           <CardHeader className="flex-row justify-start px-0 pt-0">
             <div className="flex gap-3">
               <div className="bg-primary/10 flex h-10 w-10 items-center justify-center rounded-full">
-                <LayoutDashboard className="text-primary" />
+                <IconLayoutDashboard className="text-primary" />
               </div>
               <div>
                 <CardTitle className="text-xl">{t("courseDetails")}</CardTitle>
@@ -188,7 +189,7 @@ export default function CourseEdit({ course }: { course: any }) {
             <div className="space-y-1">
               <div className="flex items-center gap-3">
                 <div className="bg-primary/10 flex h-10 w-10 items-center justify-center rounded-full">
-                  <QrCode className="text-primary" />
+                  <IconQrcode className="text-primary" />
                 </div>
                 <div>
                   <h2 className="text-xl font-semibold">{t("courseCodes")}</h2>
@@ -206,7 +207,7 @@ export default function CourseEdit({ course }: { course: any }) {
                 href={`/dashboard/courses/${course.id}/codes`}
                 className={buttonVariants({ variant: "outline" })}
               >
-                <Settings2 className="mr-1 h-4 w-4" />
+                <IconSettings2 className="mr-1 h-4 w-4" />
                 {t("courseCodesGenerate")}
               </Link>
             </div>
@@ -219,7 +220,7 @@ export default function CourseEdit({ course }: { course: any }) {
               <div className="space-y-1">
                 <div className="flex items-center gap-3">
                   <div className="bg-primary/10 flex h-10 w-10 items-center justify-center rounded-full">
-                    <List className="text-primary" />
+                    <IconList className="text-primary" />
                   </div>
                   <div>
                     <h2 className="text-xl font-semibold">

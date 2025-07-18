@@ -9,7 +9,14 @@ import {
   updateCourseSection,
 } from "@/lib/courses";
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
-import { ListChecks, Plus, GripVertical, Trash2, Pen } from "lucide-react";
+import {
+  IconListCheck,
+  IconPlus,
+  IconGripVertical,
+  IconTrash,
+  IconPin,
+  IconPencil,
+} from "@tabler/icons-react";
 import { useState } from "react";
 import Link from "next/link";
 import {
@@ -127,7 +134,7 @@ export const ChaptersList = ({ course }: { course: any }) => {
                                 {...provided.dragHandleProps}
                                 className="hover:bg-muted mt-1 cursor-grab rounded-md p-1"
                               >
-                                <GripVertical className="text-muted-foreground h-4 w-4" />
+                                <IconGripVertical className="text-muted-foreground h-4 w-4" />
                               </div>
                               <div className="flex-1 space-y-1">
                                 <h3 className="font-medium">{section.title}</h3>
@@ -145,7 +152,7 @@ export const ChaptersList = ({ course }: { course: any }) => {
                                   size="sm"
                                   className="gap-2"
                                 >
-                                  <Pen className="h-4 w-4" />
+                                  <IconPencil className="h-4 w-4" />
                                   {tCommon("edit")}
                                 </Button>
                               </Link>
@@ -156,7 +163,7 @@ export const ChaptersList = ({ course }: { course: any }) => {
                                     size="icon"
                                     className="text-muted-foreground hover:text-destructive"
                                   >
-                                    <Trash2 className="h-4 w-4" />
+                                    <IconTrash className="h-4 w-4" />
                                   </Button>
                                 </AlertDialogTrigger>
                                 <AlertDialogContent>
@@ -191,7 +198,7 @@ export const ChaptersList = ({ course }: { course: any }) => {
                   ))
                 ) : (
                   <div className="flex flex-col items-center justify-center rounded-lg border border-dashed p-8 text-center">
-                    <ListChecks className="text-muted-foreground mb-4 h-12 w-12" />
+                    <IconListCheck className="text-muted-foreground mb-4 h-12 w-12" />
                     <h3 className="mb-2 text-lg font-medium">
                       {t("noSectionsCreatedYet")}
                     </h3>
@@ -199,7 +206,7 @@ export const ChaptersList = ({ course }: { course: any }) => {
                       {t("getStartedByCreatingYourFirstCourseSection")}
                     </p>
                     <Button onClick={addSection} className="gap-2">
-                      <Plus className="h-4 w-4" />
+                      <IconPlus className="h-4 w-4" />
                       {tCommon("add")} {t("section")}
                     </Button>
                   </div>
@@ -216,7 +223,7 @@ export const ChaptersList = ({ course }: { course: any }) => {
             variant="outline"
             className="w-full gap-2"
           >
-            <Plus className="h-4 w-4" />
+            <IconPlus className="h-4 w-4" />
             {tCommon("add")} {t("section")}
           </Button>
         )}

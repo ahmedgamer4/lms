@@ -13,6 +13,7 @@ import { Input } from "@/components/ui/input";
 import { createCourse } from "@/lib/courses";
 import { classValidatorResolver } from "@hookform/resolvers/class-validator";
 import { CreateCourseDto } from "@lms-saas/shared-lib/dtos";
+import { IconLoader } from "@tabler/icons-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
 import { Dispatch, SetStateAction, useMemo } from "react";
@@ -68,7 +69,14 @@ export function CreateCourseForm({
             </FormItem>
           )}
         />
-        <Button className="w-full" type="submit">
+        <Button
+          disabled={form.formState.isSubmitting}
+          className="w-full"
+          type="submit"
+        >
+          {form.formState.isSubmitting && (
+            <IconLoader className="mr-2 h-4 w-4 animate-spin" />
+          )}
           {t("common.create")}
         </Button>
       </form>

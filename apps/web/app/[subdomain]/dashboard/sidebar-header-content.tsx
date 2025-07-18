@@ -11,11 +11,11 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { ChartBar, Book, Settings, GraduationCap } from "lucide-react";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import Image from "next/image";
+import { IconChartBar, IconBook, IconSettings } from "@tabler/icons-react";
 
 export default function SidebarHeaderContent() {
   const t = useTranslations("sidebar");
@@ -53,7 +53,7 @@ export default function SidebarHeaderContent() {
                 asChild
               >
                 <Link replace={true} href="/dashboard/courses">
-                  <Book className="h-5 w-5 opacity-90" />
+                  <IconBook className="h-5 w-5 opacity-90" />
                   <span className="text-md">{t("courses")}</span>
                 </Link>
               </SidebarMenuButton>
@@ -69,7 +69,7 @@ export default function SidebarHeaderContent() {
                 asChild
               >
                 <Link replace={true} href="/dashboard/analytics">
-                  <ChartBar className="h-5 w-5 opacity-90" />
+                  <IconChartBar className="h-5 w-5 opacity-90" />
                   <span className="text-md">{t("analytics")}</span>
                 </Link>
               </SidebarMenuButton>
@@ -85,7 +85,7 @@ export default function SidebarHeaderContent() {
                 asChild
               >
                 <Link replace={true} href="/dashboard/settings">
-                  <Settings className="h-5 w-5 opacity-90" />
+                  <IconSettings size={20} className="opacity-90" />
                   <span className="text-md">{t("settings")}</span>
                 </Link>
               </SidebarMenuButton>
