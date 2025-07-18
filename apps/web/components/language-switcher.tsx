@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { localeAtom } from "@/lib/atoms";
 import { useAtom } from "jotai";
-import { Globe } from "lucide-react";
+import { IconWorld } from "@tabler/icons-react";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
@@ -41,7 +41,7 @@ export default function LanguageSwitcher() {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="outline" size="icon" className="gap-2">
-          <Globe className="h-4 w-4" />
+          <IconWorld />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
