@@ -19,22 +19,20 @@ import {
   CartesianGrid,
 } from "recharts";
 import {
-  Users,
-  BookOpen,
-  TrendingUp,
-  DollarSign,
-  Star,
-  ArrowUpRight,
-  ArrowDownRight,
-  Calendar,
-  Target,
-  Activity,
-  BarChart3,
-  PieChart,
-  LineChart as LineChartIcon,
-  RefreshCw,
-  Loader,
-} from "lucide-react";
+  IconUsers,
+  IconBook,
+  IconTrendingUp,
+  IconTrendingDown,
+  IconStar,
+  IconActivity,
+  IconCalendar,
+  IconRefresh,
+  IconLoader,
+  IconTarget,
+  IconChartBar,
+  IconChartLine,
+  IconCurrencyDollar,
+} from "@tabler/icons-react";
 import { useState } from "react";
 import { useAnalytics } from "@/hooks/use-analytics";
 import {
@@ -43,6 +41,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { RefreshCw } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 const mockData = {
@@ -175,9 +174,9 @@ const MetricCard = ({
             <p className="text-2xl font-bold">{value}</p>
             <div className="flex items-center space-x-1">
               {trend === "up" ? (
-                <ArrowUpRight className="h-4 w-4 text-green-500" />
+                <IconTrendingUp className="h-4 w-4 text-green-500" />
               ) : (
-                <ArrowDownRight className="h-4 w-4 text-red-500" />
+                <IconTrendingDown className="h-4 w-4 text-red-500" />
               )}
               <span
                 className={`text-sm font-medium ${trend === "up" ? "text-green-500" : "text-red-500"}`}
@@ -204,15 +203,15 @@ const ActivityItem = ({ activity }: { activity: any }) => {
   const getActivityIcon = (type: string) => {
     switch (type) {
       case "enrollment":
-        return <Users className="h-4 w-4 text-blue-500" />;
+        return <IconUsers className="h-4 w-4 text-blue-500" />;
       case "completion":
-        return <BookOpen className="h-4 w-4 text-green-500" />;
+        return <IconBook className="h-4 w-4 text-green-500" />;
       case "review":
-        return <Star className="h-4 w-4 text-yellow-500" />;
+        return <IconStar className="h-4 w-4 text-yellow-500" />;
       case "purchase":
-        return <DollarSign className="h-4 w-4 text-purple-500" />;
+        return <IconCurrencyDollar className="h-4 w-4 text-purple-500" />;
       default:
-        return <Activity className="h-4 w-4 text-gray-500" />;
+        return <IconActivity className="h-4 w-4 text-gray-500" />;
     }
   };
 
@@ -304,7 +303,7 @@ export default function AnalyticsPage() {
   if (isLoading) {
     return (
       <div className="flex h-screen items-center justify-center">
-        <Loader className="text-muted-foreground h-10 w-10 animate-spin" />
+        <IconLoader className="text-muted-foreground h-10 w-10 animate-spin" />
       </div>
     );
   }
@@ -321,7 +320,7 @@ export default function AnalyticsPage() {
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" size="sm">
-                <Calendar className="mr-2 h-4 w-4" />
+                <IconCalendar className="mr-2 h-4 w-4" />
                 {timeRange === "90d"
                   ? t("timeRanges.last90Days")
                   : timeRange === "6m"
@@ -349,7 +348,7 @@ export default function AnalyticsPage() {
             onClick={handleRefresh}
             disabled={isRefreshing}
           >
-            <RefreshCw
+            <IconRefresh
               className={`mr-2 h-4 w-4 ${isRefreshing ? "animate-spin" : ""}`}
             />
             {t("refresh")}
@@ -363,28 +362,28 @@ export default function AnalyticsPage() {
           title={t("metrics.totalStudents")}
           value={overview?.totalStudents || 0}
           change={Number(overview?.studentGrowth) || 0}
-          icon={Users}
+          icon={IconUsers}
           trend="up"
         />
         <MetricCard
           title={t("metrics.totalCourses")}
           value={overview?.totalCourses || 0}
           change={Number(overview?.courseGrowth) || 0}
-          icon={BookOpen}
+          icon={IconBook}
           trend="up"
         />
         <MetricCard
           title={t("metrics.totalRevenue")}
           value={`$${overview?.totalRevenue?.toLocaleString()}`}
           change={Number(overview?.revenueGrowth) || 0}
-          icon={DollarSign}
+          icon={IconCurrencyDollar}
           trend="up"
         />
         <MetricCard
           title={t("metrics.completionRate")}
           value={`${Number(overview?.avgCompletionRate).toFixed(2)}%`}
           change={overview?.completionGrowth || 0}
-          icon={Target}
+          icon={IconTarget}
           trend="down"
         />
       </div>
@@ -404,7 +403,7 @@ export default function AnalyticsPage() {
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center space-x-2">
-                  <TrendingUp className="h-5 w-5" />
+                  <IconTrendingUp className="h-5 w-5" />
                   <span>{t("charts.studentGrowth")}</span>
                 </CardTitle>
               </CardHeader>
@@ -484,7 +483,7 @@ export default function AnalyticsPage() {
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center space-x-2">
-                  <DollarSign className="h-5 w-5" />
+                  <IconCurrencyDollar className="h-5 w-5" />
                   <span>{t("charts.revenueTrend")}</span>
                 </CardTitle>
               </CardHeader>
@@ -553,7 +552,7 @@ export default function AnalyticsPage() {
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center space-x-2">
-                  <Target className="h-5 w-5" />
+                  <IconTarget className="h-5 w-5" />
                   <span>{t("charts.completionRate")}</span>
                 </CardTitle>
               </CardHeader>
@@ -583,7 +582,7 @@ export default function AnalyticsPage() {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
-                <Activity className="h-5 w-5" />
+                <IconActivity className="h-5 w-5" />
                 <span>{t("activity.recentActivity")}</span>
               </CardTitle>
             </CardHeader>
@@ -603,7 +602,7 @@ export default function AnalyticsPage() {
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center space-x-2">
-                  <BarChart3 className="h-5 w-5" />
+                  <IconChartBar className="h-5 w-5" />
                   <span>{t("charts.topPerformingCourses")}</span>
                 </CardTitle>
               </CardHeader>
@@ -623,7 +622,7 @@ export default function AnalyticsPage() {
                           </span>
                           <span>${course.revenue.toLocaleString()}</span>
                           <div className="flex items-center space-x-1">
-                            <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
+                            <IconStar className="h-3 w-3 fill-yellow-400 text-yellow-400" />
                             <span>{mockData.topCourses[0]?.rating}</span>
                           </div>
                         </div>
@@ -639,7 +638,7 @@ export default function AnalyticsPage() {
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center space-x-2">
-                  <PieChart className="h-5 w-5" />
+                  <IconChartBar className="h-5 w-5" />
                   <span>{t("charts.coursePerformance")}</span>
                 </CardTitle>
               </CardHeader>
@@ -811,7 +810,7 @@ export default function AnalyticsPage() {
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center space-x-2">
-                  <DollarSign className="h-5 w-5" />
+                  <IconCurrencyDollar className="h-5 w-5" />
                   <span>{t("revenue.revenueBreakdown")}</span>
                 </CardTitle>
               </CardHeader>
@@ -846,7 +845,7 @@ export default function AnalyticsPage() {
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center space-x-2">
-                  <LineChartIcon className="h-5 w-5" />
+                  <IconChartLine className="h-5 w-5" />
                   <span>{t("charts.revenueTrend")}</span>
                 </CardTitle>
               </CardHeader>
